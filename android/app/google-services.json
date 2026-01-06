@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "252373470684",
+    "project_id": "hinges-1d143",
+    "storage_bucket": "hinges-1d143.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252373470684:android:72f5ba4f75208846c7d319",
+        "android_client_info": {
+          "package_name": "com.example.hinges_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7B6FMigj1RTUIB9qrKSL9yJEdxtK3M50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
