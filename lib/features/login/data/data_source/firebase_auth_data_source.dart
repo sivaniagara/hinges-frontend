@@ -11,8 +11,9 @@ class FirebaseAuthDataSource{
     print("cred.additionalUserInfo : ${userCredential.additionalUserInfo}");
     print("cred.credential : ${userCredential.credential}");
     print("cred.user : ${userCredential.user}");
-    // await cred.user!.sendEmailVerification();
+    if(userCredential.user != null){
+      await userCredential.user!.sendEmailVerification();
+    }
     return userCredential;
   }
-
 }
