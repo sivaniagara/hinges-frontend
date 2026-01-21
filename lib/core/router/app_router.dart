@@ -22,7 +22,7 @@ Widget pageSlider(context, animation, secondaryAnimation, child){
 }
 
 final router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/loading',
   routes: [
     GoRoute(
       path: '/login',

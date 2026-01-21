@@ -39,7 +39,7 @@ class AppTheme {
         titleSmall: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
         bodyLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
         bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: hintTextColor),
-        bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: onSurfaceVariantTextColor),
+        bodySmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: onSurfaceVariantTextColor),
         labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariantTextColor),
         labelMedium: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
         labelSmall: TextStyle(fontSize: 11, color: Colors.grey[400]),
