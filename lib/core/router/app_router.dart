@@ -6,6 +6,7 @@ import '../../features/login/presentation/bloc/user_auth_bloc.dart';
 import '../../features/login/presentation/pages/email_auth_screen.dart';
 import '../../features/login/presentation/pages/sign_up_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
+import '../../features/login/presentation/pages/loading_screen.dart';
 
 Widget pageSlider(context, animation, secondaryAnimation, child){
   const begin = Offset(2.0, 0.0);
@@ -32,6 +33,7 @@ final router = GoRouter(
           transitionsBuilder: pageSlider,
         );
       },
+      // builder: (context, state) => EmailAuthScreen(),
       routes: [
         GoRoute(
           path: 'signUp',
@@ -44,16 +46,41 @@ final router = GoRouter(
             );
           },
         ),
+
       ]
     ),
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
     ),
+    GoRoute(
+      path: '/loading',
+      builder: (context, state) => const LoadingScreen(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Home')),
+        body: const Center(child: Text('Home Page')),
+      ),
+    ),
+    // Keeping this as a fallback if it was intended to be the home
+    GoRoute(
+      path: '/leaveSummary',
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Leave Summary')),
+        body: const Center(child: Text('Leave Summary Page')),
+      ),
+    ),
   ],
 
+  // Example redirect (auth check)
   redirect: (context, state) {
-    // Auth redirection logic can be added here
+    // final isLoggedIn = context.read<AuthBloc>().state is Authenticated;
+    // final loggingIn = state.matchedLocation == '/login';
+    //
+    // if (!isLoggedIn && !loggingIn) return '/login';
+
     return null;
   },
 );

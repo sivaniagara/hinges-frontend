@@ -4,16 +4,15 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/error/failure.dart';
 import '../../domain/repository/auth_repository.dart';
-import '../data_source/fire_store_auth_data_source.dart';
 import '../data_source/firebase_auth_data_source.dart';
+import '../data_source/remote_auth_data_source.dart';
 
 class AuthRepositoryImp extends AuthRepository {
   final FirebaseAuthDataSource firebaseAuthDataSource;
-  final FireStoreAuthDataSource fireStoreAuthDataSource;
-
+  final RemoteAuthDataSource remoteAuthDataSource;
   AuthRepositoryImp({
     required this.firebaseAuthDataSource,
-    required this.fireStoreAuthDataSource,
+    required this.remoteAuthDataSource,
   });
 
   @override
@@ -34,6 +33,19 @@ class AuthRepositoryImp extends AuthRepository {
       UserCredential userCredential =
       await firebaseAuthDataSource.registerEmailIdAndPasswordInFirebaseAuth(
           emailId, password);
+
+      if (userCredential.user == null) {
+        return Left(ServerFailure('User is null'));
+      }
+
+      final response = await remoteAuthDataSource.storeUserInDb(
+        uid: userCredential.user!.uid,
+        email:  emailId,
+        userName: userName,
+        phoneNumber: phoneNumber,
+      );
+
+      print("storeUserInDb response => $response");
 
       return Right(userCredential);
     } catch (e) {

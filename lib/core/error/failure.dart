@@ -54,3 +54,11 @@ class ConflictFailure extends Failure {
 class AuthFailure extends Failure {
   const AuthFailure(super.message);
 }
+
+class WebSocketFailure extends Failure {
+  const WebSocketFailure(super.message);
+}
+
+class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure(super.message);
+}

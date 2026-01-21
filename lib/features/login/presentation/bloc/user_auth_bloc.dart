@@ -120,19 +120,15 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
             final user = userCredential.user;
             if (user != null) {
               try {
-                // Only send verification once per sign-up
-                await user.sendEmailVerification();
-
                 emit(currentState.copyWith(
                   status: SignUpStatus.success,
                   message: "Account Created Successfully! Verification email sent.",
                 ));
-
                 // Transition to authenticated state
-                emit(EmailAuthenticated(
-                  user: user,
-                  isEmailVerified: user.emailVerified,
-                ));
+                // emit(EmailAuthenticated(
+                //   user: user,
+                //   isEmailVerified: user.emailVerified,
+                // ));
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'too-many-requests') {
                   emit(currentState.copyWith(
