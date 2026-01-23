@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/utils/app_images.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({super.key});
@@ -74,7 +75,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             child: Opacity(
               opacity: 0.3,
               child: Image.asset(
-                'assets/images/png/auctioner_box.png',
+                AppImages.auctionerBox,
                 width: 300,
                 height: 300,
               ),
@@ -85,7 +86,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             child: Opacity(
               opacity: 0.2,
               child: Image.asset(
-                'assets/images/png/bidding_people.png',
+                AppImages.biddingPeople,
                 width: MediaQuery.of(context).size.width,
                 height: 300,
               ),
@@ -97,7 +98,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/png/indian_bidding_league.png',
+                  AppImages.indianBiddingLeague,
                   height: 180,
                 ),
                 const SizedBox(height: 20),

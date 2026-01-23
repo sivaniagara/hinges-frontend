@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/presentation/widgets/long_button.dart';
+import '../../../../core/utils/app_images.dart';
 import '../../../../core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import '../../../../core/utils/text_field_requirements.dart';
 import '../bloc/user_auth_bloc.dart';
@@ -112,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ],
                         ),
                         child: Image.asset(
-                          'assets/images/png/indian_bidding_league.png',
+                          AppImages.indianBiddingLeague,
                           width: 50,
                           height: 50,
                           fit: BoxFit.contain,

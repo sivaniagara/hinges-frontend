@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/rule_book_dialog.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/setting_dialog.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/shop_dialog.dart';
 
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
-import 'profile_page.dart';
+import '../../../../core/utils/app_images.dart';
+import 'profile_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,13 +51,16 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               _buildTopBar(context),
-              const Expanded(
+              Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _AuctionCard(
                       title: "MINI AUCTION",
                       isLocked: false,
+                      onTap: (){
+                        context.pushReplacement('/miniAuction');
+                      },
                     ),
                     _AuctionCard(
                       title: "MEGA AUCTION",
@@ -74,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Profile Section
           Positioned(
-            left: 10,
+            left: 0,
             child: GestureDetector(
               onTap: () {
                 showDialog(
@@ -83,61 +92,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                margin: const EdgeInsets.symmetric(vertical: 4),
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.cyan, width: 1),
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber, width: 1),
                 ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.amber,
-                      child: Icon(Icons.person, color: Colors.white, size: 20),
-                    ),
+                    const Icon(Icons.person, color: Colors.amber, size: 16),
                     const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          "RAGUNATH",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Pro Level Player",
-                          style: TextStyle(
-                            color: Colors.cyan[200],
-                            fontSize: 10,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        // XP Bar
-                        Container(
-                          height: 4,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[800],
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: 0.6,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+                    Text(
+                      "RAGUNATH K",
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -193,41 +164,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Image.asset(
                                       width: 45,
                                       height: 40,
-                                      'assets/images/png/coins_menu_icon.png'
+                                      AppImages.coinsMenuIcon
                                   ),
                                 )
                               ],
                             ),
                           ),
-                          Text('Coins', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),)
+                          Text('Coins', style: GoogleFonts.jockeyOne(textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),)
                         ],
                       ),
                       _TopActionButton(
-                          icon: 'assets/images/png/shop_menu_icon.png',
+                          icon: AppImages.shopMenuIcon,
+                          title: 'Shop',
+                          onTap: (){
+                            showDialog(
+                              context: context,
+                              builder: (context) => const ShopDialog(),
+                            );
+                          }
+                      ),
+                      _TopActionButton(
+                          icon: AppImages.freeCoinMenuIcon,
                           title: 'Free Coins',
                           onTap: (){
 
                           }
                       ),
                       _TopActionButton(
-                          icon: 'assets/images/png/free_coin_menu_icon.png',
-                          title: 'Rule Book',
+                          icon: AppImages.settingsMenuIcon,
+                          title: 'Setting',
                           onTap: (){
-
-                          }
-                      ),
-                      _TopActionButton(
-                          icon: 'assets/images/png/rule_book_menu_icon.png',
-                          title: 'Settings',
-                          onTap: (){
-
-                          }
-                      ),
-                      _TopActionButton(
-                          icon: 'assets/images/png/settings_menu_icon.png',
-                          title: 'Shop',
-                          onTap: (){
-
+                            showDialog(
+                              context: context,
+                              builder: (context) => const SettingDialog(),
+                            );
                           }
                       ),
                     ],
@@ -235,7 +205,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          )
+          ),
+          Positioned(
+            right: 10,
+            top: 10,
+            child: _TopActionButton(
+                icon: AppImages.ruleBookMenuIcon,
+                title: 'Rule Book',
+                onTap: (){
+                  showDialog(
+                    context: context,
+                    builder: (context) => const RuleBookDialog(),
+                  );
+                }
+            ),
+          ),
         ],
       ),
     );
@@ -250,20 +234,18 @@ class _TopActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: (){
-
-          },
-          child: Image.asset(
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Image.asset(
               width: 35,
               icon
           ),
-        ),
-        Text(title, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),)
+          Text(title, style: GoogleFonts.jockeyOne(textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),))
 
-      ],
+        ],
+      ),
     );
   }
 }
@@ -271,116 +253,124 @@ class _TopActionButton extends StatelessWidget {
 class _AuctionCard extends StatelessWidget {
   final String title;
   final bool isLocked;
+  void Function()? onTap;
   
-  const _AuctionCard({required this.title, required this.isLocked});
+  _AuctionCard({
+    required this.title,
+    required this.isLocked,
+    this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            // Wood Frame Background
-            Container(
-              margin: const EdgeInsets.only(top: 20),
-              width: 250,
-              height: 150,
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/png/auction_card.png'), // Placeholder for wood texture
-                  fit: BoxFit.fitHeight,
-                ),
-                borderRadius: BorderRadius.circular(40),
-                // border: Border.all(color: const Color(0xFF5D3A1A), width: 8),
-              ),
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                // decoration: BoxDecoration(
-                //   gradient: const RadialGradient(
-                //     colors: [Color(0xFF800000), Color(0xFF4A0000)],
-                //   ),
-                //   borderRadius: BorderRadius.circular(30),
-                // ),
-                child: isLocked
-
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.lock, color: Color(0xFFFFD700), size: 50),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                            color: const Color(0xFFFFD700),
-                            child: const Text(
-                              "LOCKED",
-                              style: TextStyle(color: Color(0xFF4A0000), fontWeight: FontWeight.bold),
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  : null,
-            ),
-            ),
-            // Header Tag
-            if(!isLocked)
-              Positioned(
-                top: 30,
-                child: Image.asset(
-                  'assets/images/png/auctioner_box.png',
-                  height: 100,
-                  width: 100,
-                ),
-              ),
-            Positioned(
-              top: 10,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              // Wood Frame Background
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                width: 250,
+                height: 150,
                 decoration: BoxDecoration(
-                  color: isLocked ? const Color(0xFFFFD700) : const Color(0xFFD32F2F),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4)],
+                  image: const DecorationImage(
+                    image: AssetImage(AppImages.auctionCard), // Placeholder for wood texture
+                    fit: BoxFit.fitHeight,
+                  ),
+                  borderRadius: BorderRadius.circular(40),
+                  // border: Border.all(color: const Color(0xFF5D3A1A), width: 8),
                 ),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: isLocked ? const Color(0xFF4A0000) : Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  // decoration: BoxDecoration(
+                  //   gradient: const RadialGradient(
+                  //     colors: [Color(0xFF800000), Color(0xFF4A0000)],
+                  //   ),
+                  //   borderRadius: BorderRadius.circular(30),
+                  // ),
+                  child: isLocked
+
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.lock, color: Color(0xFFFFD700), size: 50),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              color: const Color(0xFFFFD700),
+                              child: const Text(
+                                "LOCKED",
+                                style: TextStyle(color: Color(0xFF4A0000), fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    : null,
+              ),
+              ),
+              // Header Tag
+              if(!isLocked)
+                Positioned(
+                  top: 30,
+                  child: Image.asset(
+                    AppImages.auctionerBox,
+                    height: 100,
+                    width: 100,
+                  ),
+                ),
+              Positioned(
+                top: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isLocked ? const Color(0xFFFFD700) : const Color(0xFFD32F2F),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4)],
+                  ),
+                  child: Text(
+                    title,
+                    style: GoogleFonts.oxanium(textStyle: TextStyle(
+                      color: isLocked ? const Color(0xFF4A0000) : Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    )),
                   ),
                 ),
               ),
-            ),
-            if(!isLocked)
-              Positioned(
-                bottom: -10,
-                child: Image.asset(
-                    'assets/images/png/bidding_people.png',
-                  height: 100,
-                  width: 140,
-                ),
-              )
+              if(!isLocked)
+                Positioned(
+                  bottom: -10,
+                  child: Image.asset(
+                      AppImages.biddingPeople,
+                    height: 100,
+                    width: 140,
+                  ),
+                )
 
-          ],
-        ),
-        const SizedBox(height: 8),
-        // Info Button
-        Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            margin: const EdgeInsets.only(left: 240),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFD32F2F),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.info_outline, color: Colors.white, size: 20),
+            ],
           ),
-        )
-      ],
+          const SizedBox(height: 8),
+          // Info Button
+          Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              margin: const EdgeInsets.only(left: 240),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFD32F2F),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.info_outline, color: Colors.white, size: 20),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
