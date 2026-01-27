@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
 
 import '../../features/login/presentation/bloc/user_auth_bloc.dart';
@@ -23,7 +24,7 @@ Widget pageSlider(context, animation, secondaryAnimation, child){
 }
 
 final router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/game',
   routes: [
     GoRoute(
       path: '/login',
@@ -64,11 +65,8 @@ final router = GoRouter(
     ),
     // Keeping this as a fallback if it was intended to be the home
     GoRoute(
-      path: '/leaveSummary',
-      builder: (context, state) => Scaffold(
-        appBar: AppBar(title: const Text('Leave Summary')),
-        body: const Center(child: Text('Leave Summary Page')),
-      ),
+      path: '/game',
+      builder: (context, state) => GameScreen(),
     ),
   ],
 

@@ -27,6 +27,13 @@ class AppImages {
   static const String redTag = '${base}red_tag.png';
   static const String yellowSharpEdgeTag = '${base}yellow_sharp_edge_tag.png';
 
+  /// game
+  static const String gameBase = '${base}game/';
+  static const String batsmanIcon = '${gameBase}batsman_icon.png';
+  static const String bowlerIcon = '${gameBase}bowler_icon.png';
+  static const String allRounderIcon = '${gameBase}all_rounder_icon.png';
+  static const String wicketKeeperIcon = '${gameBase}wicket_keeper_icon.png';
+
   /// franchise
   static const String csk = '${base}csk.png';
   static const String mi = '${base}mi.png';
