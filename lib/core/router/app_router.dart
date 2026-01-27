@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hinges_frontend/features/home/mini_auction/presentation/pages/mini_auction_screen.dart';
+import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
 
 import '../../features/login/presentation/bloc/user_auth_bloc.dart';
 import '../../features/login/presentation/pages/email_auth_screen.dart';

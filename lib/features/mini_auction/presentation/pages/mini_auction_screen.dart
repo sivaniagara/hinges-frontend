@@ -6,8 +6,8 @@ import 'package:hinges_frontend/features/home/presentation/pages/rule_book_dialo
 import 'package:hinges_frontend/features/home/presentation/pages/setting_dialog.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/shop_dialog.dart';
 
-import '../../../../../core/presentation/widgets/adaptive_status_bar.dart';
-import '../../../../../core/utils/app_images.dart';
+import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
+import '../../../../core/utils/app_images.dart';
 
 
 class MiniAuctionScreen extends StatefulWidget {
