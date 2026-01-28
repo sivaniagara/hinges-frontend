@@ -33,6 +33,7 @@ class AppImages {
   static const String bowlerIcon = '${gameBase}bowler_icon.png';
   static const String allRounderIcon = '${gameBase}all_rounder_icon.png';
   static const String wicketKeeperIcon = '${gameBase}wicket_keeper_icon.png';
+  static const String gameAuctioner = '${gameBase}game_auctioner.png';
 
   /// franchise
   static const String csk = '${base}csk.png';

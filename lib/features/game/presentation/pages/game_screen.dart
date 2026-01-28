@@ -14,6 +14,8 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  List<Color> textColorForRedTag = [Colors.white, Color(0xffFF1D2B)];
+  List<Color> textColorForYellowTag = [Color(0xff330000), Color(0xffFF1D2B)];
 
   @override
   void initState() {
@@ -46,28 +48,73 @@ class _GameScreenState extends State<GameScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
+              spacing: 10,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 firstColumn(),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.45,
-                  height: MediaQuery.of(context).size.height * 0.8,
-                  decoration: const BoxDecoration(
-                    gradient: RadialGradient(
-                      colors: [
-                        Color(0xFFBB1311), // Outer darker red
-                        Color(0xFF670201)
-                      ],
-                      radius: 0.7,
+                Expanded(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                      gradient: const RadialGradient(
+                        colors: [
+                          Color(0xFFBB1311), // Outer darker red
+                          Color(0xFF670201)
+                        ],
+                        radius: 0.7,
+                      ),
+                      // borderRadius: BorderRadius.circular(90),
                     ),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          decoration: BoxDecoration(
+                            image: const DecorationImage(
+                              image: AssetImage(AppImages.auctionCard), // Placeholder for wood texture
+                              fit: BoxFit.fill,
+                            ),
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          child: Stack(
+                            children: [
+                              ...[
+                                Positioned(
+                                  left: 50,
+                                  top: 30,
+                                  child: getFranchiseLogo(imagePath: AppImages.csk),
+                                ),
+                                Positioned(
+                                  right: 50,
+                                  top: 30,
+                                  child: getFranchiseLogo(imagePath: AppImages.mi),
+                                ),
+                                Positioned(
+                                  right: 50,
+                                  bottom: 35,
+                                  child: getFranchiseLogo(imagePath: AppImages.rcb),
+                                ),
+                                Positioned(
+                                  left: 50,
+                                  bottom: 35,
+                                  child: getFranchiseLogo(imagePath: AppImages.kkr),
+                                ),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: getFranchiseLogo(imagePath: AppImages.srh)
+                                ),
+                              ]
+                            ],
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
-                firstColumn(),
+                secondColumn(),
               ],
             ),
           ),
@@ -76,8 +123,26 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  Widget getFranchiseLogo({required String imagePath}){
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        image: DecorationImage(
+          fit: BoxFit.fill,
+            image: AssetImage(
+                imagePath,
+            ),
+        )
+
+      ),
+    );
+  }
+
   Widget firstColumn(){
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
@@ -102,22 +167,22 @@ class _GameScreenState extends State<GameScreen> {
             ],
           ),
         ),
-        Text('PLAYERS LIST', style: GoogleFonts.oxanium(textStyle: TextStyle(fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold)),),
+        Text('PLAYERS LIST', style: GoogleFonts.oxanium(textStyle: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),),
         Column(
           spacing: 5,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            playerCategory(title: 'BATSMAN', image: AppImages.batsmanIcon),
-            playerCategory(title: 'WICKET KEEPER', image: AppImages.wicketKeeperIcon),
-            playerCategory(title: 'ALL ROUNDER', image: AppImages.allRounderIcon),
-            playerCategory(title: 'BOWLER', image: AppImages.bowlerIcon),
+            playerCategory(title: 'BATSMAN', image: AppImages.batsmanIcon, colors: textColorForRedTag, ),
+            playerCategory(title: 'WICKET KEEPER', image: AppImages.wicketKeeperIcon, colors: textColorForRedTag),
+            playerCategory(title: 'ALL ROUNDER', image: AppImages.allRounderIcon, colors: textColorForRedTag),
+            playerCategory(title: 'BOWLER', image: AppImages.bowlerIcon, colors: textColorForRedTag),
           ],
         ),
         Column(
           spacing: 5,
           children: [
-            redCard('MY SQUAD'),
-            redCard('POINTS TABLE'),
+            getTag(title: 'MY SQUAD', tagImage: AppImages.redTag, colors: textColorForRedTag, ),
+            getTag(title: 'POINTS TABLE', tagImage: AppImages.redTag, colors: textColorForRedTag, ),
           ],
         ),
         SizedBox(height: 1,)
@@ -125,18 +190,116 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget redCard(String title){
+  Widget secondColumn(){
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            spacing: 10,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(AppImages.redTag),
+                        fit: BoxFit.fill
+                    )
+                ),
+                child: gradientText('Table No 38', textColorForRedTag, fontSize: 13),
+              ),
+              GestureDetector(
+                onTap: (){
+                  // context.pushReplacement('/home');
+                },
+                child: Image.asset(
+                    width: 40,
+                    AppImages.settingMenuIcon
+                ),
+              ),
+            ],
+          ),
+          Column(
+            spacing: 5,
+            children: [
+              Image.asset(
+                  width: MediaQuery.of(context).size.height * 0.25,
+                  AppImages.gameAuctioner
+              ),
+              Column(
+                children: [
+                  Text('MY PURSE', style: TextStyle(color: Colors.white),),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(AppImages.yellowTag),
+                            fit: BoxFit.fill
+                        )
+                    ),
+                    child: gradientText('60 CR', textColorForYellowTag, fontSize: 25),
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Text('PURSE REM', style: TextStyle(color: Colors.white),),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(AppImages.redTag),
+                            fit: BoxFit.fill
+                        )
+                    ),
+                    child: gradientText('25 CR', textColorForRedTag, fontSize: 25),
+                  )
+                ],
+              ),
+            ],
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.1,
+            height: MediaQuery.of(context).size.width * 0.1,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              gradient: RadialGradient(
+                colors: [
+                  Color(0xFF800000), // Center deep red
+                  Color(0xFFA7100E), // Outer darker red
+                ],
+                radius: 1.0,
+              ),
+              border: Border.all(color: Colors.yellow, width: 2, strokeAlign: BorderSide.strokeAlignOutside)
+            ),
+            child: Center(
+              child: gradientText('BID', textColorForRedTag),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getTag({
+    required String title,
+    required String tagImage,
+    required List<Color> colors,
+  }){
     return Container(
-      width: 150,
-      height: 50,
+      width: 130,
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage(AppImages.redTag),
+              image: AssetImage(tagImage),
               fit: BoxFit.fill
           )
       ),
       child: Center(
-        child: gradientText(title),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: gradientText(title, colors, fontSize: 16),
+        ),
       ),
     );
   }
@@ -145,6 +308,7 @@ class _GameScreenState extends State<GameScreen> {
   {
     required String title,
     required String image,
+    required List<Color> colors,
 }
       ){
     return Row(
@@ -156,25 +320,25 @@ class _GameScreenState extends State<GameScreen> {
             image,
           fit: BoxFit.cover,
         ),
-        gradientText(title)
+        gradientText(title, colors, fontSize: 14)
       ],
     );
   }
   
-  Widget gradientText(String title){
+  Widget gradientText(String title, List<Color> colors, {double? fontSize}){
     return ShaderMask(
       shaderCallback: (Rect bounds) {
         return LinearGradient(
           begin: Alignment.topCenter,    // starts at top
           end: Alignment.bottomCenter,   // ends at bottom
-          colors: [Colors.white, Color(0xffFF1D2B)],
+          colors: colors,
         ).createShader(bounds);          // uses actual text size automatically!
       },
       blendMode: BlendMode.srcIn,        // important for text coloring
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 18,
+          fontSize: fontSize ?? 18,
           fontWeight: FontWeight.bold,
           color: Colors.white,           // base color (white works well with srcIn)
         ),

@@ -92,29 +92,6 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
   }
 }
 
-class _TopActionButton extends StatelessWidget {
-  final void Function()? onTap;
-  final String icon;
-  final String title;
-  const _TopActionButton({required this.icon, required this.title, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Image.asset(
-              width: 35,
-              icon
-          ),
-          Text(title, style: GoogleFonts.jockeyOne(textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),))
-
-        ],
-      ),
-    );
-  }
-}
 
 class _MiniAuctionCard extends StatelessWidget {
   final String title;
