@@ -13,11 +13,21 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   UserAuthBloc({required this.signUpUseCase}) : super(AuthInitial()){
     on<AppStarted>((event, emit){
+      print('app started function called..............');
       final user = _auth.currentUser;
+      print("user => ${user}");
       if (user != null) {
-        emit(EmailAuthenticated(user: user, isEmailVerified: user.emailVerified));
+        print("user uuid ==> ${user.uid}");
+        if(user.emailVerified){
+          print("email is verified...");
+          emit(EmailAuthenticated(user: user, isEmailVerified: user.emailVerified));
+        }else {
+          print("email is not verified verified...");
+          emit(EmailSignInState());
+        }
       } else {
-        emit(EmailUnauthenticated());
+        print('emit to EmailSignInState');
+        emit(EmailSignInState());
       }
     });
 
@@ -85,7 +95,7 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
       } catch (e) {
         print(e.toString());
         emit(EmailAuthError(e.toString()));
-        emit(EmailUnauthenticated());
+        // emit(EmailUnauthenticated());
       }
     });
 
@@ -157,6 +167,7 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
     on<SignOutRequested>((_, emit) async {
       await _auth.signOut();
       emit(EmailUnauthenticated());
+      emit(EmailSignInState());
     });
 
     on<ResendEmailVerification>((_, emit) async {

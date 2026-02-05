@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -25,8 +26,12 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _emailController.text = 'sivamuthuraj1999@gmail.com';
-    _passwordController.text = 'Siva@123';
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    // _emailController.text = 'sivamuthuraj1999@gmail.com';
+    // _passwordController.text = 'Siva@123';
   }
 
 
@@ -137,14 +142,31 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                     ),
                     BlocListener<UserAuthBloc, UserAuthState>(
                         listener: (context, state){
+                          print('listener on sign in page...');
                           if(state is AuthLoading && state.loading == 'signIn'){
                             showLoadingDialog(context);
+                          }else if(state is EmailAuthenticated && state.isEmailVerified){
+                            context.pop();
+                            context.go('/loading');
                           }else if(state is EmailAuthenticated && !state.isEmailVerified){
                             context.pop();
                             emailVerificationBottomSheet(context, EmailVerificationScreen(email: _emailController.text));
-                          }else if(state is EmailAuthenticated && state.isEmailVerified && state is! SignUpState){
+                          }else if(state is EmailAuthError){
                             context.pop();
-                            context.go('/leaveSummary');
+                            showMessageDialog(
+                                context: context,
+                                icon: Icon(Icons.error_outline, color: Colors.red),
+                                title: 'Error on Sign In',
+                                message: state.message,
+                                actionButtons: [
+                                  ElevatedButton(
+                                      onPressed: (){
+                                        context.pop();
+                                      },
+                                      child: Text('Ok')
+                                  ),
+                                ]
+                            );
                           }
                         },
                       child: LongButton(
@@ -195,8 +217,10 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                     Text('Don’t have an account?', style: Theme.of(context).textTheme.labelMedium,),
                     TextButton(
                         onPressed: (){
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            context.go('/login/signUp');
+                          });
                           context.read<UserAuthBloc>().add(SignUpPage()) ;
-                          context.go('/login/signUp');
                         },
                         child: Text('Sign Up Here')
                     )

@@ -42,6 +42,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         _timer?.cancel();
 
         if (mounted) {
+          print('going to home..');
           context.go('/home'); // Navigate next
         }
       }

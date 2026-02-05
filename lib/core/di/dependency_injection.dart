@@ -1,5 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
+import '../../features/game/di/initialize_game_dependencies.dart';
+import '../../features/home/di/initialize_home_dependecies.dart';
 import '../../features/login/data/data_source/firebase_auth_data_source.dart';
 import '../../features/login/data/data_source/remote_auth_data_source.dart';
 import '../../features/login/data/repository/auth_repository_imp.dart';
@@ -32,4 +34,8 @@ Future<void> init() async {
   ));
   sl.registerLazySingleton(() => FirebaseAuthDataSource());
   sl.registerLazySingleton<RemoteAuthDataSource>(() => RemoteAuthDataSourceImpl(httpService: sl()));
+
+  initializeHomeDependencies();
+
+  initializeGameDependencies();
 }

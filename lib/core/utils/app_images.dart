@@ -16,6 +16,7 @@ class AppImages {
   static const String ruleBookMenuIcon = '${base}rule_book_menu_icon.png';
   static const String ruleBookIcon = '${base}rule_book_icon.png';
   static const String secondPrice = '${base}second_price.png';
+  static const String exitIcon = '${base}exit_icon.png';
   static const String settingMenuIcon = '${base}setting_menu_icon.png';
   static const String settingsMenuIcon = '${base}settings_menu_icon.png';
   static const String shopMenuIcon = '${base}shop_menu_icon.png';
@@ -26,6 +27,7 @@ class AppImages {
   static const String yellowTag = '${base}yellow_tag.png';
   static const String redTag = '${base}red_tag.png';
   static const String yellowSharpEdgeTag = '${base}yellow_sharp_edge_tag.png';
+  static const String startIcon = '${base}star_icon.png';
 
   /// game
   static const String gameBase = '${base}game/';
@@ -34,6 +36,10 @@ class AppImages {
   static const String allRounderIcon = '${gameBase}all_rounder_icon.png';
   static const String wicketKeeperIcon = '${gameBase}wicket_keeper_icon.png';
   static const String gameAuctioner = '${gameBase}game_auctioner.png';
+  static const String virat = '${gameBase}virat.png';
+  static const String bat = '${gameBase}bat.png';
+  static const String cap = '${gameBase}cap.png';
+  static const String indiaFlag = '${gameBase}india_flag.png';
 
   /// franchise
   static const String csk = '${base}csk.png';

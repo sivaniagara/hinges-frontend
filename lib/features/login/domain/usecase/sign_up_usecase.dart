@@ -27,12 +27,6 @@ class SignUpUseCase implements UseCase<UserCredential, SignUpParams>{
 
   @override
   Future<Either<Failure, UserCredential>> call(SignUpParams params) {
-    return authRepository.signUp(
-        userName: params.userName,
-        phoneNumber: params.phoneNumber,
-        emailId: params.emailId,
-        password: params.password,
-        agreeTermsAndCondition: params.agreeTermsAndCondition
-    );
+    return authRepository.signUp(params);
   }
 }

@@ -23,7 +23,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => di.sl<UserAuthBloc>()),
+        BlocProvider(create: (_) => di.sl<UserAuthBloc>()..add(AppStarted())),
       ],
       child: const MyApp(),
     ),

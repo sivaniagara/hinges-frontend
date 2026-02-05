@@ -1,4 +1,6 @@
 
+import 'package:hinges_frontend/features/login/utils/login_urls.dart';
+
 import '../../../../core/network/http_service.dart';
 
 abstract class RemoteAuthDataSource{
@@ -23,7 +25,7 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
     required String phoneNumber,
   }) async {
     final response = await httpService.post(
-      'http://192.168.1.90:8000/user/login',
+      LoginUrls.signUp,
       body: {
         "fire_base_id": uid,
         "user_email_id": email,
@@ -34,6 +36,5 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
       },
     );
     return response;
-
   }
 }

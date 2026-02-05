@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/utils/app_images.dart';
+import '../../../login/presentation/bloc/user_auth_bloc.dart';
+import '../../domain/entities/user_data_entity.dart';
 
 class ProfileDialog extends StatelessWidget {
-  const ProfileDialog({super.key});
+  final UserDataEntity userData;
+  const ProfileDialog({super.key, required this.userData});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,7 @@ class ProfileDialog extends StatelessWidget {
                             const Icon(Icons.person, color: Colors.amber, size: 16),
                             const SizedBox(width: 8),
                             Text(
-                              "RAGUNATH K",
+                              userData.userName,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -94,21 +99,22 @@ class ProfileDialog extends StatelessWidget {
                   _buildInfoSection(
                     context,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "AUCTION PLAYED - 20",
+                          "AUCTION PLAYED - ${userData.gamePlayed}",
                           style: GoogleFonts.oxanium(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)) ,
                         ),
-                        const Divider(color: Colors.black, thickness: 2),
+                        const Divider(color: Colors.black, thickness: 1),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Text("QUALIFIED - 11", style: GoogleFonts.oxanium(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))),
+                            Text("QUALIFIED - ${userData.qualified}", style: GoogleFonts.oxanium(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))),
                             VerticalDivider(color: Colors.black, thickness: 2),
-                            Text("DISQUALIFIED - 9", style: GoogleFonts.oxanium(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))),
+                            Text("DISQUALIFIED - ${userData.disqualified}", style: GoogleFonts.oxanium(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))),
                           ],
                         ),
-                        const Divider(color: Colors.black, thickness: 2),
+                        const Divider(color: Colors.black, thickness: 1),
                         const Text(
                           "COINS AVAILABLE",
                           style: TextStyle(color: Colors.white, fontSize: 10),
@@ -118,7 +124,7 @@ class ProfileDialog extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "3500",
+                              userData.coinWon.toString(),
                               style: GoogleFonts.oxanium(textStyle: TextStyle(
                                 color: Color(0xFFFFD700),
                                 fontSize: 20,
@@ -137,6 +143,7 @@ class ProfileDialog extends StatelessWidget {
                   _buildInfoSection(
                     context,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +191,10 @@ class ProfileDialog extends StatelessWidget {
                     style: GoogleFonts.goldman(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                   ),
                   TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<UserAuthBloc>().add(SignOutRequested());
+                      context.go('/login');
+                    },
                     icon: const Icon(Icons.logout, color: Colors.white, size: 16),
                     label: Text(
                       "LOG OUT",

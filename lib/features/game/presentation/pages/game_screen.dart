@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
+import '../../../../core/presentation/widgets/gradient_text.dart';
 
 
 class GameScreen extends StatefulWidget {
@@ -46,7 +48,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.only(left: 20, right: 8),
             child: Row(
               spacing: 10,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,6 +71,97 @@ class _GameScreenState extends State<GameScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              getTag(title: 'BATSMAN SET', tagImage: AppImages.redTag, colors: textColorForRedTag),
+                              Row(
+                                children: [
+                                  Image.asset(
+                                      width: 120,
+                                      height: 120,
+                                      AppImages.virat
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 8,
+                                    children: [
+                                      Row(
+                                        spacing: 10,
+                                        children: [
+                                          Text(
+                                            '18  Virat Kohli',
+                                            style: TextStyle(
+                                              fontFamily: 'Zuume',
+                                              fontWeight: FontWeight.w700,
+                                              fontStyle: FontStyle.italic,
+                                              fontSize: 25,
+                                            ),
+                                          ),
+                                          Image.asset(
+                                              width: 30,
+                                              height: 30,
+                                              AppImages.bat
+                                          ),
+                                          Image.asset(
+                                              width: 30,
+                                              height: 30,
+                                              AppImages.cap
+                                          ),
+                                          Image.asset(
+                                              width: 30,
+                                              height: 30,
+                                              AppImages.indiaFlag
+                                          ),
+                                        ],
+                                      ),
+                                      Text('Right Hand Batsman', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
+                                      Row(
+                                        spacing: 10,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Text('BASE PRICE', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
+                                              Text(
+                                                '2 CR',
+                                                style: TextStyle(
+                                                  fontFamily: 'Zuume',
+                                                  fontWeight: FontWeight.w700,
+                                                  fontStyle: FontStyle.italic,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            width: 0.5,
+                                            height: 30,
+                                            color: Colors.white,
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text('RATING', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
+                                              Text(
+                                                '10',
+                                                style: TextStyle(
+                                                  fontFamily: 'Zuume',
+                                                  fontWeight: FontWeight.w700,
+                                                  fontStyle: FontStyle.italic,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                         Container(
                           width: double.infinity,
                           height: MediaQuery.of(context).size.height * 0.5,
@@ -82,6 +175,34 @@ class _GameScreenState extends State<GameScreen> {
                           child: Stack(
                             children: [
                               ...[
+                                Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                        children: [
+                                          TextSpan(
+                                            text: 'CURRENT BID',
+                                            style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+
+                                          ),
+                                          TextSpan(
+                                            text: '  9.25 CR',
+                                            style: TextStyle(
+                                              fontFamily: 'Zuume',
+                                              fontWeight: FontWeight.w700,
+                                              fontStyle: FontStyle.italic,
+                                              fontSize: 25,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 Positioned(
                                   left: 50,
                                   top: 30,
@@ -114,7 +235,7 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                secondColumn(),
+                thirdColumn(),
               ],
             ),
           ),
@@ -190,7 +311,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget secondColumn(){
+  Widget thirdColumn(){
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       child: Column(
@@ -199,15 +320,14 @@ class _GameScreenState extends State<GameScreen> {
           Row(
             spacing: 10,
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(AppImages.redTag),
-                        fit: BoxFit.fill
-                    )
+              GestureDetector(
+                onTap: (){
+                  context.pushReplacement('/miniAuctionLiteMode');
+                },
+                child: Image.asset(
+                    width: 40,
+                    AppImages.exitIcon
                 ),
-                child: gradientText('Table No 38', textColorForRedTag, fontSize: 13),
               ),
               GestureDetector(
                 onTap: (){
@@ -238,7 +358,7 @@ class _GameScreenState extends State<GameScreen> {
                             fit: BoxFit.fill
                         )
                     ),
-                    child: gradientText('60 CR', textColorForYellowTag, fontSize: 25),
+                    child: GradientText(title: '60 CR', colors: textColorForYellowTag, fontSize: 25),
                   )
                 ],
               ),
@@ -253,7 +373,7 @@ class _GameScreenState extends State<GameScreen> {
                             fit: BoxFit.fill
                         )
                     ),
-                    child: gradientText('25 CR', textColorForRedTag, fontSize: 25),
+                    child: GradientText(title: '25 CR', colors: textColorForRedTag, fontSize: 25),
                   )
                 ],
               ),
@@ -274,7 +394,7 @@ class _GameScreenState extends State<GameScreen> {
               border: Border.all(color: Colors.yellow, width: 2, strokeAlign: BorderSide.strokeAlignOutside)
             ),
             child: Center(
-              child: gradientText('BID', textColorForRedTag),
+              child: GradientText(title: 'BID', colors: textColorForRedTag),
             ),
           )
         ],
@@ -298,7 +418,7 @@ class _GameScreenState extends State<GameScreen> {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: gradientText(title, colors, fontSize: 16),
+          child: GradientText(title: title, colors: colors, fontSize: 16),
         ),
       ),
     );
@@ -320,29 +440,9 @@ class _GameScreenState extends State<GameScreen> {
             image,
           fit: BoxFit.cover,
         ),
-        gradientText(title, colors, fontSize: 14)
+        GradientText(title: title, colors: colors, fontSize: 14)
       ],
     );
   }
   
-  Widget gradientText(String title, List<Color> colors, {double? fontSize}){
-    return ShaderMask(
-      shaderCallback: (Rect bounds) {
-        return LinearGradient(
-          begin: Alignment.topCenter,    // starts at top
-          end: Alignment.bottomCenter,   // ends at bottom
-          colors: colors,
-        ).createShader(bounds);          // uses actual text size automatically!
-      },
-      blendMode: BlendMode.srcIn,        // important for text coloring
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: fontSize ?? 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,           // base color (white works well with srcIn)
-        ),
-      ),
-    );
-  }
 }

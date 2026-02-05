@@ -71,7 +71,6 @@ class EmailVerificationScreen extends StatelessWidget {
                       showLoadingDialog(context);
                     }else if(state is EmailAuthenticated && state.isEmailVerified) {
                       context.pop();
-                      context.go('/leaveSummary');
                     }else if(state is EmailAuthenticated && !state.isEmailVerified){
                       context.pop();
                       showMessageDialog(

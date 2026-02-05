@@ -1,14 +1,35 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
+import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_lite_mode.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
-
+import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_mode.dart';
+import '../../features/home/presentation/bloc/home_bloc.dart';
 import '../../features/login/presentation/bloc/user_auth_bloc.dart';
 import '../../features/login/presentation/pages/email_auth_screen.dart';
 import '../../features/login/presentation/pages/sign_up_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/login/presentation/pages/loading_screen.dart';
+import '../../features/login/presentation/pages/splash_screen.dart';
+import '../di/dependency_injection.dart';
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    _subscription = stream.asBroadcastStream().listen(
+          (dynamic _) => notifyListeners(),
+        );
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 Widget pageSlider(context, animation, secondaryAnimation, child){
   const begin = Offset(2.0, 0.0);
@@ -24,8 +45,13 @@ Widget pageSlider(context, animation, secondaryAnimation, child){
 }
 
 final router = GoRouter(
-  initialLocation: '/game',
+  initialLocation: '/',
+  debugLogDiagnostics: true,
   routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/login',
       pageBuilder: (context, state) {
@@ -35,12 +61,10 @@ final router = GoRouter(
           transitionsBuilder: pageSlider,
         );
       },
-      // builder: (context, state) => EmailAuthScreen(),
       routes: [
         GoRoute(
           path: 'signUp',
           pageBuilder: (context, state) {
-            context.read<UserAuthBloc>().add(SignUpPage());
             return CustomTransitionPage(
               key: state.pageKey,
               child: const SignUpScreen(),
@@ -48,12 +72,16 @@ final router = GoRouter(
             );
           },
         ),
-
       ]
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state){
+        return BlocProvider.value(
+          value: sl<HomeBloc>(),
+          child: const HomeScreen(),
+        );
+      },
     ),
     GoRoute(
       path: '/loading',
@@ -63,20 +91,17 @@ final router = GoRouter(
       path: '/miniAuction',
       builder: (context, state) => MiniAuctionScreen(),
     ),
-    // Keeping this as a fallback if it was intended to be the home
+    // GoRoute(
+    //   path: '/miniAuctionMode',
+    //   builder: (context, state) => MiniAuctionMode(),
+    // ),
+    GoRoute(
+      path: '/miniAuctionLiteMode',
+      builder: (context, state) => MiniAuctionLiteMode(),
+    ),
     GoRoute(
       path: '/game',
       builder: (context, state) => GameScreen(),
     ),
   ],
-
-  // Example redirect (auth check)
-  redirect: (context, state) {
-    // final isLoggedIn = context.read<AuthBloc>().state is Authenticated;
-    // final loggingIn = state.matchedLocation == '/login';
-    //
-    // if (!isLoggedIn && !loggingIn) return '/login';
-
-    return null;
-  },
 );

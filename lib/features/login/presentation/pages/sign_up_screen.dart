@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
@@ -59,13 +60,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _emailController.text = 'sivamuthuraj1999@gmail.com';
-    _passwordController.text = 'Siva@123';
-    _confirmPasswordController.text = 'Siva@123';
-    _phoneNumberController.text = '8220676342';
-    _userNameController.text = 'siva prakash';
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    // _emailController.text = 'sivamuthuraj1999@gmail.com';
+    // _passwordController.text = 'Siva@123';
+    // _confirmPasswordController.text = 'Siva@123';
+    // _phoneNumberController.text = '8220676342';
+    // _userNameController.text = 'siva prakash';
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -338,6 +342,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     );
                                   }
                                 },
+                              listenWhen: (previous, current){
+                                  if(current is SignUpState){
+                                    return true;
+                                  }
+                                  return false;
+                              },
                               child: LongButton(
                                   title: 'Sign Up',
                                   onPressed: _submitForm,

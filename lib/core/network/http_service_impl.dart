@@ -10,6 +10,8 @@ class HttpServiceImpl implements HttpService {
   final http.Client client;
   final Duration timeout;
 
+  final String ipAddress = 'https://api.hingesgames.com/';
+
   HttpServiceImpl({
     required this.client,
     this.timeout = const Duration(seconds: 15),
@@ -30,7 +32,7 @@ class HttpServiceImpl implements HttpService {
         Map<String, dynamic>? queryParams,
       }) async {
     try {
-      final uri = Uri.parse(url).replace(queryParameters: queryParams);
+      final uri = Uri.parse('$ipAddress$url').replace(queryParameters: queryParams);
       final response = await client
           .get(uri, headers: _defaultHeaders(headers))
           .timeout(timeout);
@@ -52,7 +54,7 @@ class HttpServiceImpl implements HttpService {
     try {
       final response = await client
           .post(
-        Uri.parse(url),
+        Uri.parse('$ipAddress$url'),
         headers: _defaultHeaders(headers),
         body: jsonEncode(body),
       )
@@ -115,6 +117,8 @@ class HttpServiceImpl implements HttpService {
 
   Map<String, dynamic> _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      print("response => ${response.body}");
+
       if (response.body.isEmpty) return {};
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else if (response.statusCode == 401) {

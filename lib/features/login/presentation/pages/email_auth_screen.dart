@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../bloc/user_auth_bloc.dart';
 import 'email_sign_in_screen.dart';
@@ -43,44 +44,15 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    // return Scaffold(
-    //   appBar: AppBar(title: const Text('Sign In')),
-    //   body: BlocListener<EmailAuthBloc, EmailAuthState>(
-    //     listener: (context, state) {
-    //       if (state is AuthError) {
-    //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-    //       }
-    //     },
-    //     child: Padding(
-    //       padding: const EdgeInsets.all(16),
-    //       child: Column(
-    //         children: [
-    //           TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Email')),
-    //           TextField(controller: passCtrl, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
-    //           const SizedBox(height: 16),
-    //           FilledButton(
-    //             onPressed: () {
-    //               context.read<EmailAuthBloc>().add(SignInRequested(emailCtrl.text, passCtrl.text));
-    //             },
-    //             child: const Text('Sign In'),
-    //           ),
-    //           TextButton(
-    //             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SignUpScreen())),
-    //             child: const Text('Create Account'),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
     return AdaptiveStatusBar(
         color: Theme.of(context).colorScheme.secondary,
         child: Scaffold(
           body: BlocListener<UserAuthBloc, UserAuthState>(
             listener: (context, state){
-              print('state ::: $state');
-              if (state is EmailSignInState && !_emailSignInSheetOpened) {
+              print('auth screen ::: $state');
+              if(state is EmailAuthenticated && state.isEmailVerified && !_emailSignInSheetOpened){
+                context.go('/loading');
+              }else if ((state is EmailSignInState && !_emailSignInSheetOpened) || state is SignOutRequested) {
                 _emailSignInSheetOpened = true;
                 _emailSignInSheet(context);
               }
@@ -93,5 +65,3 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
     );
   }
 }
-
-
