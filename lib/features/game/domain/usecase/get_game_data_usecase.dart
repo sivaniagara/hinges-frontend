@@ -15,6 +15,7 @@ class GetGameDataUseCase extends UseCase<GameDataEntity, GetGameDataParam> {
 
   GetGameDataUseCase({required this.repository});
 
+  @override
   Future<Either<Failure, GameDataEntity>> call(GetGameDataParam params) async {
     return await repository.getGameData(params);
   }

@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import '../../domain/entities/game_data_entity.dart';
+part of 'game_bloc.dart';
 
 abstract class GameEvent extends Equatable {
   @override
@@ -33,3 +32,5 @@ class OnGameMessageReceived extends GameEvent {
   @override
   List<Object?> get props => [gameData];
 }
+
+class GameCountdownTick extends GameEvent {}

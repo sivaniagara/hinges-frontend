@@ -7,9 +7,11 @@ class AuctionCategoryItemModel extends AuctionCategoryItemEntity {
     required super.coinsGameFees,
     required super.coinsFirstPrize,
     required super.coinsSecondPrize,
+    required super.coinsThirdPrize,
     required super.cashGameFees,
     required super.cashFirstPrize,
     required super.cashSecondPrize,
+    required super.cashThirdPrize,
   });
 
   factory AuctionCategoryItemModel.fromJson(Map<String, dynamic> json) {
@@ -19,9 +21,11 @@ class AuctionCategoryItemModel extends AuctionCategoryItemEntity {
       coinsGameFees: json['coins_game_fees'] ?? 0,
       coinsFirstPrize: json['coins_first_prize'] ?? 0,
       coinsSecondPrize: json['coins_second_prize'] ?? 0,
+      coinsThirdPrize: json['coins_third_prize'] ?? 0,
       cashGameFees: json['cash_game_fees'] ?? 0,
       cashFirstPrize: json['cash_first_prize'] ?? 0,
       cashSecondPrize: json['cash_second_prize'] ?? 0,
+      cashThirdPrize: json['cash_third_prize'] ?? 0,
     );
   }
 }

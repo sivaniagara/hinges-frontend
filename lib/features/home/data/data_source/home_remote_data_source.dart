@@ -24,6 +24,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     );
 
     if (response['status'] == 200) {
+      print("getUserData response => ${response}");
       return UserDataModel.fromJson(response['data']);
     } else {
       throw Exception(response['message'] ?? 'Failed to fetch user data');

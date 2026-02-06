@@ -13,18 +13,25 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
 
   @override
   Future<GameDataModel> getGameData(Map<String, dynamic> jsonData) async {
-    final response = await httpService.post(
-      GameUrls.joinMatch,
-      body: {
-        {
-          "user_id" : jsonData['userId'],
-          "auction_category_id": jsonData['auctionCategoryId']
-        }
-      }
-    );
+    try{
+      print("going to get gameData.....");
+      final response = await httpService.post(
+          GameUrls.joinMatch,
+          body: {
+            "user_id" : jsonData['userId'],
+            "auction_category_id": jsonData['auctionCategoryId']
+          }
+      );
 
-    // Assuming the API returns the JSON structure directly or wrapped in a data field
-    // Based on previous patterns, let's assume it's direct or we handle the wrapper
-    return GameDataModel.fromJson(response);
+      // Assuming the API returns the JSON structure directly or wrapped in a data field
+      // Based on previous patterns, let's assume it's direct or we handle the wrapper
+      print("getGameData response => $response");
+      return GameDataModel.fromJson(response['data']);
+    }catch(e, stackTrace){
+      print('getGameData error => $e');
+      print('getGameData stackTrace => $stackTrace');
+      rethrow;
+    }
+
   }
 }

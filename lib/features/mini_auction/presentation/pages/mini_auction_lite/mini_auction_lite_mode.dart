@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/rule_book_dialog.dart';
@@ -11,6 +12,8 @@ import '../../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../../core/presentation/widgets/dialog_details.dart';
 import '../../../../../core/presentation/widgets/gradient_text.dart';
 import '../../../../../core/utils/app_images.dart';
+import '../../../../home/domain/entities/auction_category_item_entity.dart';
+import '../../../../home/presentation/bloc/home_bloc.dart';
 
 
 class MiniAuctionLiteMode extends StatefulWidget {
@@ -181,28 +184,36 @@ class _MiniAuctionLiteModeCard extends StatelessWidget {
                       : Center(
                     child: SizedBox(
                       width: screenWidth * 0.3,
-                      child: Column(
-                        spacing: 2,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GradientText(title: 'ENTRY - 200', colors: gradientTextColor, fontSize: 20),
-                          _buildPrizeRow(
-                            title: '1ST PRICE',
-                            image: 'first_price',
-                            count: '300',
-                          ),
-                          _buildPrizeRow(
-                            title: '2ND PRICE',
-                            image: 'second_price',
-                            count: '150',
-                          ),
-                          _buildPrizeRow(
-                            title: '3RD PRICE',
-                            image: 'third_price',
-                            count: '50',
-                          ),
-                        ],
-                      ),
+                      child: BlocBuilder<HomeBloc, HomeState>(
+                          builder: (context, state){
+                            if(state is HomeLoaded){
+                              AuctionCategoryItemEntity classic = state.userData.auctionCategoryItem[0];
+
+                              return Column(
+                                spacing: 2,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GradientText(title: 'ENTRY - ${classic.coinsGameFees}', colors: gradientTextColor, fontSize: 20),
+                                  _buildPrizeRow(
+                                    title: '1ST PRICE',
+                                    image: 'first_price',
+                                    count: classic.coinsFirstPrize.toString(),
+                                  ),
+                                  _buildPrizeRow(
+                                    title: '2ND PRICE',
+                                    image: 'second_price',
+                                    count: classic.coinsSecondPrize.toString(),
+                                  ),
+                                  _buildPrizeRow(
+                                    title: '3RD PRICE',
+                                    image: 'third_price',
+                                    count: classic.coinsThirdPrize.toString(),
+                                  ),
+                                ],
+                              );
+                            }
+                            return Container();
+                      }),
                     ),
                   ),
                 ),

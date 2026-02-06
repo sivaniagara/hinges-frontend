@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_lite_mode.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
@@ -77,10 +78,7 @@ final router = GoRouter(
     GoRoute(
       path: '/home',
       builder: (context, state){
-        return BlocProvider.value(
-          value: sl<HomeBloc>(),
-          child: const HomeScreen(),
-        );
+        return HomeScreen();
       },
     ),
     GoRoute(
@@ -97,11 +95,29 @@ final router = GoRouter(
     // ),
     GoRoute(
       path: '/miniAuctionLiteMode',
-      builder: (context, state) => MiniAuctionLiteMode(),
+      builder: (context, state){
+        return const MiniAuctionLiteMode();
+      },
     ),
     GoRoute(
       path: '/game',
-      builder: (context, state) => GameScreen(),
+      builder: (context, state){
+        final homeData = context.read<HomeBloc>().state as HomeLoaded;
+        print("homeData.userData.auctionCategoryItem.first.id => ${homeData.userData.auctionCategoryItem.first.id}");
+        return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => sl<GameBloc>()..add(
+                    FetchGameData(
+                        userId: homeData.userData.userId,
+                        auctionCategoryId: homeData.userData.auctionCategoryItem.first.id
+                    )
+                ),
+              )
+            ],
+            child: GameScreen()
+        );
+        },
     ),
   ],
 );

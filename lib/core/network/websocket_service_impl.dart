@@ -17,7 +17,7 @@ class WebSocketServiceImpl implements WebSocketService {
   @override
   Future<Either<Failure, void>> connect(String url) async {
     try {
-      _socket = await WebSocket.connect(url);
+      _socket = await WebSocket.connect('$ipAddress$url');
       return const Right(null);
     } catch (e) {
       return Left(WebSocketFailure(e.toString()));

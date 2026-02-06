@@ -52,6 +52,8 @@ class HttpServiceImpl implements HttpService {
         Object? body,
       }) async {
     try {
+      print("url => ${'$ipAddress$url'}");
+      print("body => $body");
       final response = await client
           .post(
         Uri.parse('$ipAddress$url'),

@@ -20,11 +20,13 @@ class GameDataModel extends GameDataEntity {
   });
 
   factory GameDataModel.fromJson(Map<String, dynamic> json) {
+    print("json['match_created_at'] => ${json}");
+    print("json['match_created_at'] => ${json['match_created_at'].runtimeType}");
     return GameDataModel(
       matchId: json['match_id'] ?? '',
       auctionCategoryId: json['auction_category_id'] ?? '',
       matchStatus: json['match_status'] ?? '',
-      gameCreatedAt: json['match_created_at'] ?? '',
+      gameCreatedAt: json['match_created_at'],
       gameStartDuration: json['game_start_duration'] ?? 0,
       gameStartAt: json['game_start_at'],
       currentAuctionPlayerIndex: json['current_auction_player_index'] ?? 0,

@@ -6,11 +6,11 @@ class GameDataEntity extends Equatable {
   final String matchId;
   final String auctionCategoryId;
   final String matchStatus;
-  final int gameCreatedAt;
+  final double gameCreatedAt;
   final int gameStartDuration;
-  final String? gameStartAt;
+  final double? gameStartAt;
   final int currentAuctionPlayerIndex;
-  final String? auctionExpiresAt;
+  final double? auctionExpiresAt;
   final int highestBid;
   final String? highestBidUserId;
   final List<String> teamList;
