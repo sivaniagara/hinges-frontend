@@ -15,6 +15,7 @@ class GameRepositoryImpl implements GameRepository {
     try {
       final result = await remoteDataSource.getGameData({
         "userId": params.userId,
+        "userName": params.userName,
         "auctionCategoryId": params.auctionCategoryId,
       });
       return Right(result);

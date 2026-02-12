@@ -19,6 +19,7 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
           GameUrls.joinMatch,
           body: {
             "user_id" : jsonData['userId'],
+            "user_name" : jsonData['userName'],
             "auction_category_id": jsonData['auctionCategoryId']
           }
       );

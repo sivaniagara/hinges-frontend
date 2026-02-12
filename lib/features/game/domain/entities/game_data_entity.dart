@@ -1,11 +1,24 @@
 import 'package:equatable/equatable.dart';
+import '../../data/models/auction_player_status_model.dart';
+import '../../data/models/user_status_model.dart';
 import 'user_status_entity.dart';
 import 'auction_player_status_entity.dart';
+
+enum MatchStatusEnum {
+  notStarted,
+  initialMatch,
+  started,
+  stopped,
+  finished,
+  paused,
+}
+
+
 
 class GameDataEntity extends Equatable {
   final String matchId;
   final String auctionCategoryId;
-  final String matchStatus;
+  final MatchStatusEnum matchStatus;
   final double gameCreatedAt;
   final int gameStartDuration;
   final double? gameStartAt;
@@ -32,6 +45,7 @@ class GameDataEntity extends Equatable {
     required this.usersStatusList,
     required this.auctionPlayersStatusList,
   });
+
 
   @override
   List<Object?> get props => [

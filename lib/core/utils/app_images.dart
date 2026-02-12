@@ -36,7 +36,6 @@ class AppImages {
   static const String allRounderIcon = '${gameBase}all_rounder_icon.png';
   static const String wicketKeeperIcon = '${gameBase}wicket_keeper_icon.png';
   static const String gameAuctioner = '${gameBase}game_auctioner.png';
-  static const String virat = '${gameBase}virat.png';
   static const String bat = '${gameBase}bat.png';
   static const String cap = '${gameBase}cap.png';
   static const String indiaFlag = '${gameBase}india_flag.png';
@@ -47,4 +46,9 @@ class AppImages {
   static const String kkr = '${base}kkr.png';
   static const String srh = '${base}srh.png';
   static const String rcb = '${base}rcb.png';
+
+  /// players
+  static const String playerBase = '${gameBase}players';
+  static const String virat = '${playerBase}virat.png';
+
 }

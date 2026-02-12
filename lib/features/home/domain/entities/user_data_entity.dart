@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'category_and_items_entity.dart';
 import 'auction_category_item_entity.dart';
+import 'player_entity.dart';
 
 class UserDataEntity extends Equatable {
   final String userId;
@@ -20,6 +21,7 @@ class UserDataEntity extends Equatable {
   final int thirdPrice;
   final CategoryAndItemsEntity categoryAndItsItem;
   final List<AuctionCategoryItemEntity> auctionCategoryItem;
+  final List<PlayerEntity> players;
 
   const UserDataEntity({
     required this.userId,
@@ -39,6 +41,7 @@ class UserDataEntity extends Equatable {
     required this.thirdPrice,
     required this.categoryAndItsItem,
     required this.auctionCategoryItem,
+    required this.players,
   });
 
   @override
@@ -60,5 +63,6 @@ class UserDataEntity extends Equatable {
         thirdPrice,
         categoryAndItsItem,
         auctionCategoryItem,
+        players,
       ];
 }

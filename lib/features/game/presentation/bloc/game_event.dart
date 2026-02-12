@@ -7,9 +7,14 @@ abstract class GameEvent extends Equatable {
 
 class FetchGameData extends GameEvent {
   final String userId;
+  final String userName;
   final String auctionCategoryId;
 
-  FetchGameData({required this.userId, required this.auctionCategoryId});
+  FetchGameData({
+    required this.userId,
+    required this.userName,
+    required this.auctionCategoryId
+  });
 
   @override
   List<Object?> get props => [userId, auctionCategoryId];
@@ -34,3 +39,4 @@ class OnGameMessageReceived extends GameEvent {
 }
 
 class GameCountdownTick extends GameEvent {}
+class AuctionPlayerTick extends GameEvent {}

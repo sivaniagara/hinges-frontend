@@ -32,4 +32,19 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return 'ROYAL CHAMPIONS BENGALURU';
     }
   }
+
+  String teamId(){
+    switch(this){
+      case MiniAuctionFranchiseEnum.csk:
+        return '68807887cdb3a1195b5a1fd1';
+      case MiniAuctionFranchiseEnum.mi:
+        return '688078e2cdb3a1195b5a1fd4';
+      case MiniAuctionFranchiseEnum.kkr:
+        return '68807861cdb3a1195b5a1fd0';
+      case MiniAuctionFranchiseEnum.srh:
+        return '688078c5cdb3a1195b5a1fd3';
+      case MiniAuctionFranchiseEnum.rcb:
+        return '688078a7cdb3a1195b5a1fd2';
+    }
+  }
 }

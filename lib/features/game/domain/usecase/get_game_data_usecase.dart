@@ -6,8 +6,13 @@ import '../repository/game_repository.dart';
 
 class GetGameDataParam{
   final String userId;
+  final String userName;
   final String auctionCategoryId;
-  GetGameDataParam({required this.userId, required this.auctionCategoryId});
+  GetGameDataParam({
+    required this.userId,
+    required this.userName,
+    required this.auctionCategoryId
+  });
 }
 
 class GetGameDataUseCase extends UseCase<GameDataEntity, GetGameDataParam> {

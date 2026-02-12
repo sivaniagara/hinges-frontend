@@ -1,6 +1,7 @@
 import '../../domain/entities/user_data_entity.dart';
 import 'category_and_items_model.dart';
 import 'auction_category_item_model.dart';
+import 'player_model.dart';
 
 class UserDataModel extends UserDataEntity {
   const UserDataModel({
@@ -21,6 +22,7 @@ class UserDataModel extends UserDataEntity {
     required super.thirdPrice,
     required CategoryAndItemsModel super.categoryAndItsItem,
     required List<AuctionCategoryItemModel> super.auctionCategoryItem,
+    required List<PlayerModel> super.players,
   });
 
   factory UserDataModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,9 @@ class UserDataModel extends UserDataEntity {
       ),
       auctionCategoryItem: (json['auction_category_item'] as List? ?? [])
           .map((i) => AuctionCategoryItemModel.fromJson(i))
+          .toList(),
+      players: (json['player_list'] as List? ?? [])
+          .map((i) => PlayerModel.fromJson(i))
           .toList(),
     );
   }

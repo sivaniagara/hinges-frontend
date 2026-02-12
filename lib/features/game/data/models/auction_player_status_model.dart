@@ -26,4 +26,31 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
       playerAuctionStatus: json['player_auction_status'] ?? '',
     );
   }
+
+  factory AuctionPlayerStatusModel.fromEntity(AuctionPlayerStatusEntity entity) {
+    return AuctionPlayerStatusModel(
+        playerId: entity.playerId,
+        playerName: entity.playerName,
+        playerRoleId: entity.playerRoleId,
+        teamId: entity.teamId,
+        basePrice: entity.basePrice,
+        currentPrice: entity.currentPrice,
+        priceIncrement: entity.priceIncrement,
+        playerAuctionStatus: entity.playerAuctionStatus
+    );
+  }
+
+  AuctionPlayerStatusEntity toEntity() {
+    return AuctionPlayerStatusEntity(
+        playerId: playerId,
+        playerName: playerName,
+        playerRoleId: playerRoleId,
+        teamId: teamId,
+        basePrice: basePrice,
+        currentPrice: currentPrice,
+        priceIncrement: priceIncrement,
+        playerAuctionStatus: playerAuctionStatus
+    );
+  }
+
 }

@@ -12,18 +12,26 @@ class GameLoading extends GameState {}
 class GameLoaded extends GameState {
   final GameDataEntity gameData;
   final double remainingSecondsToStart;
+  final double remainingSecondsToExpireAuctionPlayer;
 
   GameLoaded({
     required this.gameData,
-    required this.remainingSecondsToStart
+    required this.remainingSecondsToStart,
+    required this.remainingSecondsToExpireAuctionPlayer,
   });
 
-  GameLoaded copyWith({GameDataEntity? gameData, double? remainingSecondsToStart}){
+  GameLoaded copyWith({
+    GameDataEntity? gameData,
+    double? remainingSecondsToStart,
+    double? remainingSecondsToExpireAuctionPlayer,
+  }){
     return GameLoaded(
         gameData: gameData ?? this.gameData,
-        remainingSecondsToStart: remainingSecondsToStart ?? this.remainingSecondsToStart
+        remainingSecondsToStart: remainingSecondsToStart ?? this.remainingSecondsToStart,
+      remainingSecondsToExpireAuctionPlayer: remainingSecondsToStart ?? this.remainingSecondsToExpireAuctionPlayer,
     );
   }
+
 
   @override
   List<Object?> get props => [gameData, remainingSecondsToStart];

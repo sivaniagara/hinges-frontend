@@ -110,6 +110,7 @@ final router = GoRouter(
                 create: (context) => sl<GameBloc>()..add(
                     FetchGameData(
                         userId: homeData.userData.userId,
+                        userName: homeData.userData.userName,
                         auctionCategoryId: homeData.userData.auctionCategoryItem.first.id
                     )
                 ),

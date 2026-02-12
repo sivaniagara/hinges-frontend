@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class UserStatusEntity extends Equatable {
   final String userId;
+  final String userName;
   final String teamId;
   final bool isActive;
   final String lastSeen;
@@ -9,6 +10,7 @@ class UserStatusEntity extends Equatable {
 
   const UserStatusEntity({
     required this.userId,
+    required this.userName,
     required this.teamId,
     required this.isActive,
     required this.lastSeen,
