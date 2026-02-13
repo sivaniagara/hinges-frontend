@@ -12,7 +12,7 @@ class GameLoading extends GameState {}
 class GameLoaded extends GameState {
   final GameDataEntity gameData;
   final double remainingSecondsToStart;
-  final double remainingSecondsToExpireAuctionPlayer;
+  final double? remainingSecondsToExpireAuctionPlayer;
 
   GameLoaded({
     required this.gameData,
@@ -28,13 +28,13 @@ class GameLoaded extends GameState {
     return GameLoaded(
         gameData: gameData ?? this.gameData,
         remainingSecondsToStart: remainingSecondsToStart ?? this.remainingSecondsToStart,
-      remainingSecondsToExpireAuctionPlayer: remainingSecondsToStart ?? this.remainingSecondsToExpireAuctionPlayer,
+      remainingSecondsToExpireAuctionPlayer: remainingSecondsToExpireAuctionPlayer ?? this.remainingSecondsToExpireAuctionPlayer,
     );
   }
 
 
   @override
-  List<Object?> get props => [gameData, remainingSecondsToStart];
+  List<Object?> get props => [gameData, remainingSecondsToStart, remainingSecondsToExpireAuctionPlayer];
 }
 
 class GameError extends GameState {

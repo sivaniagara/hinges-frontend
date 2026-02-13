@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/batsman_style.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/player_name_widget.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -124,49 +126,7 @@ class _GameScreenState extends State<GameScreen> {
                                                 Row(
                                                   spacing: 10,
                                                   children: [
-                                                    BlocBuilder<HomeBloc, HomeState>(
-                                                      builder: (context, state) {
-
-                                                        if (state is! HomeLoaded) {
-                                                          return const SizedBox();
-                                                        }
-                                                        print(state.userData.players);
-                                                        for(var p in state.userData.players){
-                                                          print('p :: ${p.playerId}');
-                                                        }
-
-                                                        if (gameData.auctionPlayersStatusList.isEmpty ||
-                                                            gameData.currentAuctionPlayerIndex >=
-                                                                gameData.auctionPlayersStatusList.length) {
-                                                          return const SizedBox();
-                                                        }
-
-                                                        final currentPlayerId =
-                                                            gameData.auctionPlayersStatusList[
-                                                            gameData.currentAuctionPlayerIndex].playerId;
-
-                                                        final player = state.userData.players
-                                                            .where((e) => e.playerId == currentPlayerId)
-                                                            .toList();
-
-                                                        if (player.isEmpty) {
-                                                          return const Text(
-                                                            'Unknown Player',
-                                                            style: TextStyle(color: Colors.white),
-                                                          );
-                                                        }
-
-                                                        return Text(
-                                                          player.first.playerName,
-                                                          style: const TextStyle(
-                                                            fontFamily: 'Zuume',
-                                                            fontWeight: FontWeight.w700,
-                                                            fontStyle: FontStyle.italic,
-                                                            fontSize: 25,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
+                                                    PlayerNameWidget(gameData: gameData),
                                                     Image.asset(
                                                         width: 30,
                                                         height: 30,
@@ -184,7 +144,7 @@ class _GameScreenState extends State<GameScreen> {
                                                     ),
                                                   ],
                                                 ),
-                                                Text('Right Hand Batsman', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
+                                                BatsmanStyle(gameData: gameData),
                                                 Row(
                                                   spacing: 10,
                                                   children: [

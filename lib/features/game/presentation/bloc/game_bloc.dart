@@ -46,7 +46,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
                   GameLoaded(
                       gameData: gameData,
                       remainingSecondsToStart: _calculateRemaining(gameData.gameCreatedAt, 120),
-                    remainingSecondsToExpireAuctionPlayer: _calculateRemaining(gameData.gameCreatedAt, 10)
+                    remainingSecondsToExpireAuctionPlayer: gameData.auctionExpiresAt == null ? null : _calculateRemainingForPlayerAuction(gameData.auctionExpiresAt!, 10)
                   )
               );
               /// 🔥 IMPORTANT FIX
@@ -89,24 +89,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if(state is! GameLoaded) return null;
       final currentState = state as GameLoaded;
       final game = event.gameData;
-      for(var user in event.gameData.usersStatusList){
-        print('user => ${user.userId}');
-      }
-
+      print("game.auctionExpiresAt => ${game.auctionExpiresAt}");
       emit(currentState.copyWith(
         gameData: game,
         remainingSecondsToStart: game.matchStatus == MatchStatusEnum.notStarted ? _calculateRemaining(game.gameCreatedAt, 120) : null,
-        remainingSecondsToExpireAuctionPlayer: game.auctionExpiresAt != null ? _calculateRemaining(game.auctionExpiresAt!, 10) : null
+        remainingSecondsToExpireAuctionPlayer: game.auctionExpiresAt != null ? _calculateRemainingForPlayerAuction(game.auctionExpiresAt!, 10) : null
       ));
 
       if(game.matchStatus == MatchStatusEnum.started){
-        if(_timerForAuctionPlayer != null){
-          _timerForAuctionPlayer?.cancel();
-        }
+        _timerForAuctionPlayer?.cancel();
         _timerForAuctionPlayer = Timer.periodic(
             const Duration(seconds: 1),
                 (_){
-              print('seconds...');
               add(AuctionPlayerTick());
             });
       }
@@ -115,8 +109,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<GameCountdownTick>((event, emit){
       if(state is! GameLoaded) return null;
       final currentState = state as GameLoaded;
-      print("currentState.remainingSecondsToStart :: ${currentState.remainingSecondsToStart}");
-      if (currentState.remainingSecondsToStart > 0) {
+      if(currentState.gameData.matchStatus == MatchStatusEnum.notStarted){
+        print("currentState.remainingSecondsToStart :: ${currentState.remainingSecondsToStart}");
         emit(
           currentState.copyWith(
             remainingSecondsToStart: currentState.remainingSecondsToStart - 1,
@@ -129,10 +123,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if(state is! GameLoaded) return null;
       final currentState = state as GameLoaded;
       print("currentState.remainingSecondsToExpireAuctionPlayer :: ${currentState.remainingSecondsToExpireAuctionPlayer}");
-      if (currentState.remainingSecondsToExpireAuctionPlayer > 0) {
+      if (currentState.remainingSecondsToExpireAuctionPlayer != null && currentState.remainingSecondsToExpireAuctionPlayer! > 0) {
         emit(
           currentState.copyWith(
-            remainingSecondsToExpireAuctionPlayer: currentState.remainingSecondsToExpireAuctionPlayer - 1,
+            remainingSecondsToExpireAuctionPlayer: currentState.remainingSecondsToExpireAuctionPlayer! - 1,
           ),
         );
       }
@@ -147,15 +141,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
 
-  double _calculateRemaining(double gameCreatedAt, secondsLimit) {
-    print("gameCreatedAt :: ${gameCreatedAt}");
+  double _calculateRemaining(double startAt, secondsLimit) {
     final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    print("nowSeconds :: ${nowSeconds}");
-
-    final elapsed = nowSeconds - gameCreatedAt;
-    print("elapsed :: ${elapsed}");
+    final elapsed = nowSeconds - startAt;
     final startingDuration = secondsLimit - elapsed;
-    print("startingDuration :: ${startingDuration}");
     return startingDuration > 0 ? startingDuration : 0;
+  }
+
+  double _calculateRemainingForPlayerAuction(double expireAt, secondsLimit) {
+    final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final remaining = expireAt - nowSeconds;
+    return remaining > 0 ? remaining.toDouble() : 0.0;
   }
 }
