@@ -38,8 +38,8 @@ class BatsmanStyle extends StatelessWidget {
           );
         }
 
-        final battingStyle = state.userData.categoryAndItsItem.battingStyleCategoryId
-            .where((e) => e.id == player.first.battingStyle).toList();
+        final battingStyle = state.userData.categoryAndItsItem.playerRoleCategoryId
+            .where((e) => e.id == player.first.playerRole).toList();
 
         return Text(
           battingStyle.first.categoryItemName,
