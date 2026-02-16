@@ -38,5 +38,19 @@ class OnGameMessageReceived extends GameEvent {
   List<Object?> get props => [gameData];
 }
 
+class BidAuctionPlayer extends GameEvent {
+  final String userId;
+
+  BidAuctionPlayer(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+
 class GameCountdownTick extends GameEvent {}
 class AuctionPlayerTick extends GameEvent {}
+
+class GameSocketDisconnected extends GameEvent {}
+
+

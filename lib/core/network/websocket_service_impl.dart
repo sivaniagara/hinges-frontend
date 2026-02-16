@@ -8,7 +8,8 @@ import 'websocket_service.dart';
 
 class WebSocketServiceImpl implements WebSocketService {
   WebSocket? _socket;
-  final String ipAddress = 'wss://api.hingesgames.com/';
+  // final String ipAddress = 'wss://api.hingesgames.com/';
+  static final String ipAddress = 'ws://192.168.43.23:8000/';
   @override
   Stream<dynamic> get stream =>
       _socket?.map((event) => jsonDecode(event)) ??
@@ -18,11 +19,17 @@ class WebSocketServiceImpl implements WebSocketService {
   Future<Either<Failure, void>> connect(String url) async {
     try {
       _socket = await WebSocket.connect('$ipAddress$url');
+
+      _socket!.done.then((_) {
+        print("Socket closed from server");
+      });
+
       return const Right(null);
     } catch (e) {
       return Left(WebSocketFailure(e.toString()));
     }
   }
+
 
   @override
   void send(dynamic data) {

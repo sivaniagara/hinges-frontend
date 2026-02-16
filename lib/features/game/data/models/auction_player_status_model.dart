@@ -8,8 +8,9 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
     required super.teamId,
     required super.basePrice,
     required super.currentPrice,
+    required super.baseRating,
     required super.priceIncrement,
-    super.userId,
+    required super.userId,
     required super.playerAuctionStatus,
   });
 
@@ -21,6 +22,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
       teamId: json['team_id'] ?? '',
       basePrice: json['base_price'] ?? 0,
       currentPrice: json['current_price'] ?? 0,
+      baseRating: json['base_rating'] ?? 0,
       priceIncrement: json['price_increment'] ?? 0,
       userId: json['user_id'],
       playerAuctionStatus: json['player_auction_status'] ?? '',
@@ -35,8 +37,9 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
         teamId: entity.teamId,
         basePrice: entity.basePrice,
         currentPrice: entity.currentPrice,
+        baseRating: entity.baseRating,
         priceIncrement: entity.priceIncrement,
-        playerAuctionStatus: entity.playerAuctionStatus
+        playerAuctionStatus: entity.playerAuctionStatus, userId: entity.userId
     );
   }
 
@@ -48,8 +51,9 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
         teamId: teamId,
         basePrice: basePrice,
         currentPrice: currentPrice,
+        baseRating: baseRating,
         priceIncrement: priceIncrement,
-        playerAuctionStatus: playerAuctionStatus
+        playerAuctionStatus: playerAuctionStatus, userId: userId
     );
   }
 

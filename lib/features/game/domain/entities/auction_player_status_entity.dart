@@ -7,6 +7,7 @@ class AuctionPlayerStatusEntity extends Equatable {
   final String teamId;
   final int basePrice;
   final int currentPrice;
+  final double baseRating;
   final int priceIncrement;
   final String? userId;
   final String playerAuctionStatus;
@@ -18,8 +19,9 @@ class AuctionPlayerStatusEntity extends Equatable {
     required this.teamId,
     required this.basePrice,
     required this.currentPrice,
+    required this.baseRating,
     required this.priceIncrement,
-    this.userId,
+    required this.userId,
     required this.playerAuctionStatus,
   });
 
@@ -31,6 +33,7 @@ class AuctionPlayerStatusEntity extends Equatable {
         teamId,
         basePrice,
         currentPrice,
+        baseRating,
         priceIncrement,
         userId,
         playerAuctionStatus,

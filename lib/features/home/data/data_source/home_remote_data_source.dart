@@ -16,18 +16,25 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   Future<UserDataModel> getUserData(String firebaseId) async {
     // Assuming the endpoint is /user/details?firebase_id=...
     // You should update this with your actual endpoint URL
-    final response = await httpService.post(
-      HomeUrls.fetchHome,
-      body: {
-        'fire_base_id': firebaseId,
-      },
-    );
+    try{
+      final response = await httpService.post(
+        HomeUrls.fetchHome,
+        body: {
+          'fire_base_id': firebaseId,
+        },
+      );
 
-    if (response['status'] == 200) {
-      print("getUserData response => ${response}");
-      return UserDataModel.fromJson(response['data']);
-    } else {
-      throw Exception(response['message'] ?? 'Failed to fetch user data');
+      if (response['status'] == 200) {
+        print("getUserData response => ${response}");
+        return UserDataModel.fromJson(response['data']);
+      } else {
+        throw Exception(response['message'] ?? 'Failed to fetch user data');
+      }
+    }catch(e, stackTrace){
+      print("error : $e");
+      print("stackTrace : $stackTrace");
+      rethrow;
     }
+
   }
 }

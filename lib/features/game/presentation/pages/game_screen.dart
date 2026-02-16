@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
-import 'package:hinges_frontend/features/game/presentation/widgets/batsman_style.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_name_widget.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
@@ -16,9 +16,11 @@ import '../../../../core/presentation/widgets/gradient_text.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
 import '../../../home/presentation/pages/profile_dialog.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
+import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/game_data_entity.dart';
 import '../../domain/entities/user_status_entity.dart';
 import '../bloc/game_bloc.dart';
+import 'package:square_progress_indicator/square_progress_indicator.dart';
 
 
 class GameScreen extends StatefulWidget {
@@ -87,6 +89,8 @@ class _GameScreenState extends State<GameScreen> {
                             return Container();
                           }
                           GameDataEntity gameData = state.gameData;
+                          final playerData = state.gameData
+                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -100,24 +104,53 @@ class _GameScreenState extends State<GameScreen> {
                                       GameStartDuration()
                                     else
                                       ...[
-                                        getTag(title: 'BATSMAN SET', tagImage: AppImages.redTag, colors: textColorForRedTag),
+                                        getTag(title: '${getPlayerRole(gameData).toUpperCase()} SET', tagImage: AppImages.redTag, colors: textColorForRedTag, imageSize: 200),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           spacing: 10,
                                           children: [
-                                            BlocSelector<GameBloc, GameState, String>(
-                                                selector: (state){
-                                                  if (state is! GameLoaded) return '';
-                                                  return state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].playerId;
-                                                },
-                                                builder: (context, value){
-                                                  print('get another image......');
-                                                  return Image.network(
-                                                    width: 100,
-                                                    height: 100,
-                                                    "${HttpServiceImpl.ipAddress}images/players/${state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].playerId}.png",
-                                                  );
-                                                }
+                                            TweenAnimationBuilder<double>(
+                                              tween: Tween(
+                                                begin: 1,
+                                                end: state.remainingSecondsToExpireAuctionPlayer! / 10,
+                                              ),
+                                              duration: Duration(seconds: state.remainingSecondsToExpireAuctionPlayer! > 9 ? 0 : 1),
+                                              curve: Curves.linear,
+                                              builder: (context, animatedValue, child) {
+                                                return SquareProgressIndicator(
+                                                  value: animatedValue,
+                                                  width: 90,
+                                                  height: 90,
+                                                  borderRadius: 8,
+                                                  startPosition: StartPosition.topCenter,
+                                                  strokeCap: StrokeCap.square,
+                                                  clockwise: false,
+                                                  color: Colors.yellow,
+                                                  emptyStrokeColor: Colors.yellow.withValues(alpha: 0.1),
+                                                  strokeWidth: 4,
+                                                  emptyStrokeWidth: 4,
+                                                  strokeAlign: SquareStrokeAlign.outside,
+                                                  child: child,
+                                                );
+                                              },
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(6),
+                                                child: BlocSelector<GameBloc, GameState, String>(
+                                                    selector: (state){
+                                                      if (state is! GameLoaded) return '';
+                                                      return state.gameData
+                                                          .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+                                                          .playerId;
+                                                    },
+                                                    builder: (context, value){
+                                                      return Image.network(
+                                                        width: 90,
+                                                        height: 90,
+                                                        "${HttpServiceImpl.ipAddress}images/players/$value.png",
+                                                      );
+                                                    }
+                                                ),
+                                              ),
                                             ),
                                             Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +177,7 @@ class _GameScreenState extends State<GameScreen> {
                                                     ),
                                                   ],
                                                 ),
-                                                BatsmanStyle(gameData: gameData),
+                                                PlayerStyleWidget(gameData: gameData),
                                                 Row(
                                                   spacing: 10,
                                                   children: [
@@ -152,7 +185,9 @@ class _GameScreenState extends State<GameScreen> {
                                                       children: [
                                                         Text('BASE PRICE', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
                                                         Text(
-                                                          '2 CR',
+                                                          '${state.gameData
+                                                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+                                                              .basePrice} L',
                                                           style: TextStyle(
                                                             fontFamily: 'Zuume',
                                                             fontWeight: FontWeight.w700,
@@ -171,7 +206,9 @@ class _GameScreenState extends State<GameScreen> {
                                                       children: [
                                                         Text('RATING', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
                                                         Text(
-                                                          '10',
+                                                          '${state.gameData
+                                                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+                                                              .baseRating}',
                                                           style: TextStyle(
                                                             fontFamily: 'Zuume',
                                                             fontWeight: FontWeight.w700,
@@ -219,7 +256,7 @@ class _GameScreenState extends State<GameScreen> {
 
                                                 ),
                                                 TextSpan(
-                                                  text: '  9.25 CR',
+                                                  text: '  ${playerData.currentPrice/10000000 } CR',
                                                   style: TextStyle(
                                                     fontFamily: 'Zuume',
                                                     fontWeight: FontWeight.w700,
@@ -236,30 +273,51 @@ class _GameScreenState extends State<GameScreen> {
                                         Positioned(
                                           left: 50,
                                           top: 50,
-                                          child: getFranchiseLogo(imagePath: AppImages.csk, userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId())),
+                                          child: getFranchiseLogo(
+                                              imagePath: AppImages.csk,
+                                              userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId()),
+                                            glow: findOutWhoCurrentlyBuy(playerData, gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId())
+                                          ),
                                         ),
                                       if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.mi.teamId()))
                                         Positioned(
                                           right: 50,
                                           top: 50,
-                                          child: getFranchiseLogo(imagePath: AppImages.mi, userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId())),
+                                          child: getFranchiseLogo(
+                                              imagePath: AppImages.mi,
+                                              userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId()),
+                                              glow: findOutWhoCurrentlyBuy(playerData, gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId())
+                                          ),
                                         ),
                                       if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.rcb.teamId()))
                                         Positioned(
                                           right: 50,
                                           bottom: 35,
-                                          child: getFranchiseLogo(imagePath: AppImages.rcb, userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.rcb.teamId())),
+                                          child: getFranchiseLogo(
+                                              imagePath: AppImages.rcb,
+                                              userName: getUserName(gameData.usersStatusList,
+                                                  MiniAuctionFranchiseEnum.rcb.teamId()),
+                                              glow: findOutWhoCurrentlyBuy(playerData, gameData.usersStatusList, MiniAuctionFranchiseEnum.rcb.teamId())
+                                          ),
                                         ),
                                       if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.kkr.teamId()))
                                         Positioned(
                                           left: 50,
                                           bottom: 35,
-                                          child: getFranchiseLogo(imagePath: AppImages.kkr, userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId())),
+                                          child: getFranchiseLogo(
+                                              imagePath: AppImages.kkr,
+                                              userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId()),
+                                              glow: findOutWhoCurrentlyBuy(playerData, gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId())
+                                          ),
                                         ),
                                       if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.srh.teamId()))
                                         Align(
                                             alignment: Alignment.center,
-                                            child: getFranchiseLogo(imagePath: AppImages.srh, userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId()))
+                                            child: getFranchiseLogo(
+                                                imagePath: AppImages.srh,
+                                                userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId()),
+                                                glow: findOutWhoCurrentlyBuy(playerData, gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId())
+                                            )
                                         ),
                                     ]
                                   ],
@@ -290,6 +348,18 @@ class _GameScreenState extends State<GameScreen> {
     return userName;
   }
 
+  bool findOutWhoCurrentlyBuy(AuctionPlayerStatusEntity playerData, List<UserStatusEntity> userList, String teamId){
+    bool val = false;
+    for(var user in userList){
+      print("playerData.userId : ${playerData.userId}(${playerData.playerName})  |  user.userId : ${user.userId}  |  team id : ${user.teamId} = $teamId");
+
+      if(playerData.userId != null && playerData.userId == user.userId && user.teamId == teamId){
+        val = true;
+      }
+    }
+    return val;
+  }
+
   Widget gameExpireLoadingWidget(GameLoaded loadedState){
     return RichText(
       textAlign: TextAlign.center,
@@ -318,6 +388,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget getFranchiseLogo({
     required String imagePath,
     required String userName,
+    required bool glow,
   }){
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.1,
@@ -327,11 +398,18 @@ class _GameScreenState extends State<GameScreen> {
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: glow ? 45 : 40,
+            height: glow ? 45 : 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
+                boxShadow: glow ? [
+                  BoxShadow(
+                    color: Colors.yellow,
+                    blurRadius: 15,
+                    spreadRadius: 6,
+                  ),
+                ] : null,
+                image: DecorationImage(
                 fit: BoxFit.fill,
                   image: AssetImage(
                       imagePath,
@@ -476,22 +554,28 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ],
           ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.1,
-            height: MediaQuery.of(context).size.width * 0.1,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient: RadialGradient(
-                colors: [
-                  Color(0xFF800000), // Center deep red
-                  Color(0xFFA7100E), // Outer darker red
-                ],
-                radius: 1.0,
+          GestureDetector(
+            onTap: (){
+              final currentState = context.read<HomeBloc>().state as HomeLoaded;
+              context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.width * 0.1,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                gradient: RadialGradient(
+                  colors: [
+                    Color(0xFF800000), // Center deep red
+                    Color(0xFFA7100E), // Outer darker red
+                  ],
+                  radius: 1.0,
+                ),
+                border: Border.all(color: Colors.yellow, width: 2, strokeAlign: BorderSide.strokeAlignOutside)
               ),
-              border: Border.all(color: Colors.yellow, width: 2, strokeAlign: BorderSide.strokeAlignOutside)
-            ),
-            child: Center(
-              child: GradientText(title: 'BID', colors: textColorForRedTag),
+              child: Center(
+                child: GradientText(title: 'BID', colors: textColorForRedTag),
+              ),
             ),
           )
         ],
@@ -503,9 +587,10 @@ class _GameScreenState extends State<GameScreen> {
     required String title,
     required String tagImage,
     required List<Color> colors,
+    double? imageSize,
   }){
     return Container(
-      width: 130,
+      width: imageSize ?? 130,
       decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage(tagImage),
@@ -519,6 +604,21 @@ class _GameScreenState extends State<GameScreen> {
         ),
       ),
     );
+  }
+
+  String getPlayerRole(GameDataEntity gameData){
+    final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
+    final currentPlayerId =
+        gameData.auctionPlayersStatusList[
+        gameData.currentAuctionPlayerIndex].playerId;
+
+    final player = homeLoaded.userData.players
+        .where((e) => e.playerId == currentPlayerId)
+        .toList();
+
+    final playerStyle = homeLoaded.userData.categoryAndItsItem.playerRoleCategoryId
+        .where((e) => e.id == player.first.playerRole).toList();
+    return playerStyle.first.categoryItemName;
   }
 
   Widget playerCategory(

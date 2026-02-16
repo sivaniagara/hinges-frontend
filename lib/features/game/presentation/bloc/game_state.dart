@@ -13,29 +13,41 @@ class GameLoaded extends GameState {
   final GameDataEntity gameData;
   final double remainingSecondsToStart;
   final double? remainingSecondsToExpireAuctionPlayer;
+  final bool isReconnecting;
 
   GameLoaded({
     required this.gameData,
     required this.remainingSecondsToStart,
     required this.remainingSecondsToExpireAuctionPlayer,
+    this.isReconnecting = false,   // ✅ default false
   });
 
   GameLoaded copyWith({
     GameDataEntity? gameData,
     double? remainingSecondsToStart,
     double? remainingSecondsToExpireAuctionPlayer,
-  }){
+    bool? isReconnecting,
+  }) {
     return GameLoaded(
-        gameData: gameData ?? this.gameData,
-        remainingSecondsToStart: remainingSecondsToStart ?? this.remainingSecondsToStart,
-      remainingSecondsToExpireAuctionPlayer: remainingSecondsToExpireAuctionPlayer ?? this.remainingSecondsToExpireAuctionPlayer,
+      gameData: gameData ?? this.gameData,
+      remainingSecondsToStart:
+      remainingSecondsToStart ?? this.remainingSecondsToStart,
+      remainingSecondsToExpireAuctionPlayer:
+      remainingSecondsToExpireAuctionPlayer ??
+          this.remainingSecondsToExpireAuctionPlayer,
+      isReconnecting: isReconnecting ?? this.isReconnecting,
     );
   }
 
-
   @override
-  List<Object?> get props => [gameData, remainingSecondsToStart, remainingSecondsToExpireAuctionPlayer];
+  List<Object?> get props => [
+    gameData,
+    remainingSecondsToStart,
+    remainingSecondsToExpireAuctionPlayer,
+    isReconnecting,   // ✅ important
+  ];
 }
+
 
 class GameError extends GameState {
   final String message;
