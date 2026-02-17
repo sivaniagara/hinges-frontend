@@ -24,6 +24,7 @@ class GameDataEntity extends Equatable {
   final double? gameStartAt;
   final int currentAuctionPlayerIndex;
   final double? auctionExpiresAt;
+  final double? serverTime;
   final int highestBid;
   final String? highestBidUserId;
   final List<String> teamList;
@@ -39,6 +40,7 @@ class GameDataEntity extends Equatable {
     required this.gameStartAt,
     required this.currentAuctionPlayerIndex,
     required this.auctionExpiresAt,
+    required this.serverTime,
     required this.highestBid,
     this.highestBidUserId,
     required this.teamList,
@@ -57,6 +59,7 @@ class GameDataEntity extends Equatable {
         gameStartAt,
         currentAuctionPlayerIndex,
         auctionExpiresAt,
+        serverTime,
         highestBid,
         highestBidUserId,
         teamList,

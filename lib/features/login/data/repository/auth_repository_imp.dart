@@ -74,4 +74,14 @@ class AuthRepositoryImp extends AuthRepository {
       debugPrint('Failed to delete Firebase user: $e');
     }
   }
+
+  @override
+  Future<Either<Failure, void>> forgotPassword(String email) async {
+    try {
+      await firebaseAuthDataSource.forgotPassword(email);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

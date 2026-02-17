@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
+import 'package:hinges_frontend/features/game/presentation/pages/my_squad_screen.dart';
+import 'package:hinges_frontend/features/login/presentation/pages/forgot_password_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_lite_mode.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_mode.dart';
@@ -73,6 +75,16 @@ final router = GoRouter(
             );
           },
         ),
+        GoRoute(
+          path: 'forgotPassword',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const ForgotPasswordScreen(),
+              transitionsBuilder: pageSlider,
+            );
+          },
+        ),
       ]
     ),
     GoRoute(
@@ -99,26 +111,68 @@ final router = GoRouter(
         return const MiniAuctionLiteMode();
       },
     ),
-    GoRoute(
-      path: '/game',
-      builder: (context, state){
+    // GoRoute(
+    //   path: '/game',
+    //   builder: (context, state) {
+    //     final homeData = context.read<HomeBloc>().state as HomeLoaded;
+    //
+    //     return MultiBlocProvider(
+    //       providers: [
+    //         BlocProvider(
+    //           create: (context) => sl<GameBloc>()
+    //             ..add(
+    //               FetchGameData(
+    //                 userId: homeData.userData.userId,
+    //                 userName: homeData.userData.userName,
+    //                 auctionCategoryId:
+    //                 homeData.userData.auctionCategoryItem.first.id,
+    //               ),
+    //             ),
+    //         ),
+    //       ],
+    //       child: GameScreen(),
+    //     );
+    //   },
+    //   routes: [
+    //     GoRoute(
+    //       path: 'mySquad', // ✅ removed slash
+    //       builder: (context, state) {
+    //         return BlocProvider.value(
+    //           value: context.read<GameBloc>(),
+    //           child: MySquadScreen(),
+    //         );
+    //       },
+    //     ),
+    //   ],
+    // ),
+    ShellRoute(
+      builder: (context, state, child) {
         final homeData = context.read<HomeBloc>().state as HomeLoaded;
-        print("homeData.userData.auctionCategoryItem.first.id => ${homeData.userData.auctionCategoryItem.first.id}");
-        return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => sl<GameBloc>()..add(
-                    FetchGameData(
-                        userId: homeData.userData.userId,
-                        userName: homeData.userData.userName,
-                        auctionCategoryId: homeData.userData.auctionCategoryItem.first.id
-                    )
-                ),
-              )
-            ],
-            child: GameScreen()
+
+        return BlocProvider(
+          create: (_) => sl<GameBloc>()
+            ..add(
+              FetchGameData(
+                userId: homeData.userData.userId,
+                userName: homeData.userData.userName,
+                auctionCategoryId:
+                homeData.userData.auctionCategoryItem.first.id,
+              ),
+            ),
+          child: child,
         );
-        },
+      },
+      routes: [
+        GoRoute(
+          path: '/game',
+          builder: (context, state) => GameScreen(),
+        ),
+        GoRoute(
+          path: '/game/mySquad',
+          builder: (context, state) => MySquadScreen(),
+        ),
+      ],
     ),
+
   ],
 );

@@ -24,25 +24,27 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    // _emailController.text = 'sivamuthuraj1999@gmail.com';
-    // _passwordController.text = 'Siva@123';
   }
+
 
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      // Proceed with valid email
-      print('Valid email: ${_emailController.text}');
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Email submitted successfully')),
-      // );
-      context.read<UserAuthBloc>().add(SignInRequested(_emailController.text, _passwordController.text));
+      final state = context.read<UserAuthBloc>().state;
+      bool rememberMe = false;
+      if (state is EmailSignInState) {
+        rememberMe = state.rememberMe;
+      }
+      context.read<UserAuthBloc>().add(SignInRequested(
+        _emailController.text,
+        _passwordController.text,
+        rememberMe: rememberMe,
+      ));
     }
   }
 
@@ -91,22 +93,29 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                         prefixIcon: Icons.pages_outlined,
                         suffix: BlocBuilder<UserAuthBloc, UserAuthState>(
                           builder: (context, state) {
-                            if (state is! EmailSignInState) return const SizedBox.shrink();
-                            final currentState = state;
+                            bool showPassword = false;
+                            if (state is EmailSignInState) {
+                              showPassword = state.showPassword;
+                            }
                             return IconButton(
-                              padding: EdgeInsets.all(0),
-                              constraints: BoxConstraints(maxHeight: 30),
+                              padding: const EdgeInsets.all(0),
+                              constraints: const BoxConstraints(maxHeight: 30),
                               iconSize: 20,
                               onPressed: () {
                                 context.read<UserAuthBloc>().add(UpdatePasswordVisibilityForEmailSignIn());
                               },
                               icon: Icon(
-                                currentState.showPassword ? Icons.visibility : Icons.visibility_off,
+                                showPassword ? Icons.visibility : Icons.visibility_off,
                                 color: Theme.of(context).colorScheme.primaryContainer,
                               ),
                             );
                           },
                         ),
+                        // obscureText: context.select((UserAuthBloc bloc) {
+                        //   final state = bloc.state;
+                        //   if (state is EmailSignInState) return !state.showPassword;
+                        //   return true;
+                        // }),
                         validator: validatePassword,
                       ),
                     ),
@@ -119,9 +128,12 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                             children: [
                               BlocBuilder<UserAuthBloc, UserAuthState>(
                                 builder: (context, state) {
-                                  if (state is! EmailSignInState) return const SizedBox.shrink();
+                                  bool rememberMe = false;
+                                  if (state is EmailSignInState) {
+                                    rememberMe = state.rememberMe;
+                                  }
                                   return Checkbox(
-                                    value: state.rememberMe,
+                                    value: rememberMe,
                                     onChanged: (_) {
                                       context.read<UserAuthBloc>().add(UpdateRememberMe());
                                     },
@@ -133,16 +145,15 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                           ),
                           TextButton(
                               onPressed: (){
-
+                                context.push('/login/forgotPassword');
                               },
-                              child: Text('Forget Password')
+                              child: const Text('Forget Password')
                           ),
                         ],
                       ),
                     ),
                     BlocListener<UserAuthBloc, UserAuthState>(
                         listener: (context, state){
-                          print('listener on sign in page...');
                           if(state is AuthLoading && state.loading == 'signIn'){
                             showLoadingDialog(context);
                           }else if(state is EmailAuthenticated && state.isEmailVerified){
@@ -155,7 +166,7 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                             context.pop();
                             showMessageDialog(
                                 context: context,
-                                icon: Icon(Icons.error_outline, color: Colors.red),
+                                icon: const Icon(Icons.error_outline, color: Colors.red),
                                 title: 'Error on Sign In',
                                 message: state.message,
                                 actionButtons: [
@@ -163,7 +174,7 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                                       onPressed: (){
                                         context.pop();
                                       },
-                                      child: Text('Ok')
+                                      child: const Text('Ok')
                                   ),
                                 ]
                             );
@@ -184,9 +195,9 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
                   children: [
-                    Expanded(child: Divider()),
+                    const Expanded(child: Divider()),
                     Text('  OR  ', style: Theme.of(context).textTheme.bodyMedium,),
-                    Expanded(child: Divider())
+                    const Expanded(child: Divider())
                   ],
                 ),
               ),
@@ -222,7 +233,7 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                           });
                           context.read<UserAuthBloc>().add(SignUpPage()) ;
                         },
-                        child: Text('Sign Up Here')
+                        child: const Text('Sign Up Here')
                     )
                   ],
                 ),
@@ -232,11 +243,5 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
         ),
       ),
     );
-    return BlocBuilder<UserAuthBloc, UserAuthState>(builder: (context, state){
-      if((state is EmailSignInState) == false){
-        return Container();
-      }
-
-    });
   }
 }

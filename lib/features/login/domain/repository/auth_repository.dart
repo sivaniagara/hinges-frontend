@@ -6,4 +6,5 @@ import '../usecase/sign_up_usecase.dart';
 
 abstract class AuthRepository{
   Future<Either<Failure, UserCredential>> signUp(SignUpParams params);
+  Future<Either<Failure, void>> forgotPassword(String email);
 }

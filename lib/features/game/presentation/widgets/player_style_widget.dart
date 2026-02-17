@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/core/utils/app_ids.dart';
 
 import '../../../home/presentation/bloc/home_bloc.dart';
 import '../../domain/entities/game_data_entity.dart';
@@ -47,12 +48,8 @@ class PlayerStyleWidget extends StatelessWidget {
         final bowlingStyle = state.userData.categoryAndItsItem.bowlingStyleCategoryId
             .where((e) => e.id == player.first.bowlingStyle).toList();
 
-        final batsmanId = '6881ba0f36213beb0017be9c';
-        final wicketKeeperId = '6881ba3936213beb0017be9d';
-        print('playerStyle : ${playerStyle.first.id} | battingStyle : ${battingStyle.first.categoryItemName} | bowlingStyle : ${bowlingStyle.first.categoryItemName}');
-
         return Text(
-          [batsmanId, wicketKeeperId].contains(playerStyle.first.id) ? battingStyle.first.categoryItemName : bowlingStyle.first.categoryItemName,
+          [AppIds.batsmanId, AppIds.wicketKeeperId].contains(playerStyle.first.id) ? battingStyle.first.categoryItemName : bowlingStyle.first.categoryItemName,
           style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
         );
       },

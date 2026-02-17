@@ -1,5 +1,13 @@
 import 'package:equatable/equatable.dart';
 
+enum PlayerAuctionStatusEnum {
+  sold,
+  notSold,
+  buy,
+  notShown,
+  available,
+}
+
 class AuctionPlayerStatusEntity extends Equatable {
   final String playerId;
   final String playerName;
@@ -9,8 +17,7 @@ class AuctionPlayerStatusEntity extends Equatable {
   final int currentPrice;
   final double baseRating;
   final int priceIncrement;
-  final String? userId;
-  final String playerAuctionStatus;
+  final PlayerAuctionStatusEnum playerAuctionStatus;
 
   const AuctionPlayerStatusEntity({
     required this.playerId,
@@ -21,7 +28,6 @@ class AuctionPlayerStatusEntity extends Equatable {
     required this.currentPrice,
     required this.baseRating,
     required this.priceIncrement,
-    required this.userId,
     required this.playerAuctionStatus,
   });
 
@@ -35,7 +41,6 @@ class AuctionPlayerStatusEntity extends Equatable {
         currentPrice,
         baseRating,
         priceIncrement,
-        userId,
         playerAuctionStatus,
       ];
 }

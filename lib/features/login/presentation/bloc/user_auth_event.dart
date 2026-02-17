@@ -20,7 +20,13 @@ class UpdateAgreeTermsAndCondition extends UserAuthEvent {}
 
 class SignInRequested extends UserAuthEvent {
   final String email, password;
-  SignInRequested(this.email, this.password);
+  final bool rememberMe;
+  SignInRequested(this.email, this.password, {this.rememberMe = false});
+}
+
+class ForgotPasswordRequested extends UserAuthEvent {
+  final String email;
+  ForgotPasswordRequested(this.email);
 }
 
 class SignUpRequested extends UserAuthEvent {

@@ -18,7 +18,7 @@ class EmailSignInState extends UserAuthState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [showPassword, rememberMe];
 }
 
 enum SignUpStatus { initial, loading, success, error }
@@ -63,6 +63,11 @@ class AuthLoading extends UserAuthState {
   AuthLoading({required this.loading});
   @override
   // TODO: implement props
+  List<Object?> get props => [loading];
+}
+
+class ForgotPasswordSuccess extends UserAuthState {
+  @override
   List<Object?> get props => [];
 }
 
@@ -73,7 +78,7 @@ class EmailAuthenticated extends UserAuthState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [user, isEmailVerified];
 }
 class EmailUnauthenticated extends UserAuthState {
   @override
@@ -87,6 +92,6 @@ class EmailAuthError extends UserAuthState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [message];
 }
 

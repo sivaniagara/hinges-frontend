@@ -17,14 +17,14 @@ class FirebaseAuthDataSource{
       email: emailId,
       password: password,
     );
-
-    print("cred.additionalUserInfo : ${userCredential.additionalUserInfo}");
-    print("cred.credential : ${userCredential.credential}");
-    print("cred.user : ${userCredential.user}");
     if(userCredential.user != null){
       await userCredential.user!.updateDisplayName(userName);
       await userCredential.user!.sendEmailVerification();
     }
     return userCredential;
+  }
+
+  Future<void> forgotPassword(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
   }
 }

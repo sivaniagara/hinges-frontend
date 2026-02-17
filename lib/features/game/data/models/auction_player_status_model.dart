@@ -10,7 +10,6 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
     required super.currentPrice,
     required super.baseRating,
     required super.priceIncrement,
-    required super.userId,
     required super.playerAuctionStatus,
   });
 
@@ -24,9 +23,22 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
       currentPrice: json['current_price'] ?? 0,
       baseRating: json['base_rating'] ?? 0,
       priceIncrement: json['price_increment'] ?? 0,
-      userId: json['user_id'],
-      playerAuctionStatus: json['player_auction_status'] ?? '',
+      playerAuctionStatus: getAuctionPlayerStatus(json['player_auction_status']),
     );
+  }
+
+  static PlayerAuctionStatusEnum getAuctionPlayerStatus(String playerStatus) {
+    if(playerStatus == 'sold'){
+      return PlayerAuctionStatusEnum.sold;
+    }else if(playerStatus == 'buy'){
+      return PlayerAuctionStatusEnum.buy;
+    }else if(playerStatus == 'not_sold'){
+      return PlayerAuctionStatusEnum.notSold;
+    }else if(playerStatus == 'not_shown'){
+      return PlayerAuctionStatusEnum.notShown;
+    }else{
+      return PlayerAuctionStatusEnum.available;
+    }
   }
 
   factory AuctionPlayerStatusModel.fromEntity(AuctionPlayerStatusEntity entity) {
@@ -39,7 +51,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
         currentPrice: entity.currentPrice,
         baseRating: entity.baseRating,
         priceIncrement: entity.priceIncrement,
-        playerAuctionStatus: entity.playerAuctionStatus, userId: entity.userId
+        playerAuctionStatus: entity.playerAuctionStatus,
     );
   }
 
@@ -53,7 +65,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
         currentPrice: currentPrice,
         baseRating: baseRating,
         priceIncrement: priceIncrement,
-        playerAuctionStatus: playerAuctionStatus, userId: userId
+        playerAuctionStatus: playerAuctionStatus,
     );
   }
 

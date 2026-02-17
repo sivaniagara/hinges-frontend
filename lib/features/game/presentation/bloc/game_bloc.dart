@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/network/websocket_service.dart';
+import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../data/models/game_data_model.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/game_data_entity.dart';
@@ -68,7 +69,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
                     gameData.auctionExpiresAt == null
                         ? null
                         : _calculateRemainingForPlayerAuction(
-                        gameData.auctionExpiresAt!, 10),
+                        gameData.auctionExpiresAt!, gameData.serverTime!, 10),
                     isReconnecting: false,
                   ),
                 );
@@ -133,7 +134,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     on<BidAuctionPlayer>((event, emit){
       Map<String, dynamic> dataToSend = {
-        'user_id': event.userId,
+        'team_id': getTeamId(event.userId),
         'payload_code': 200
       };
       add(SendGameMessage(dataToSend));
@@ -158,9 +159,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             ? _calculateRemaining(game.gameCreatedAt, 120)
             : null,
         remainingSecondsToExpireAuctionPlayer:
-        game.auctionExpiresAt != null
+        (game.auctionExpiresAt != null && game.serverTime != null)
             ? _calculateRemainingForPlayerAuction(
-            game.auctionExpiresAt!, 10)
+            game.auctionExpiresAt!, game.serverTime!, 10)
             : null,
       ));
 
@@ -268,9 +269,109 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   double _calculateRemainingForPlayerAuction(
-      double expireAt, secondsLimit) {
-    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final remaining = expireAt - now;
+      double expireAt,
+      double serverTime,
+      secondsLimit
+      ) {
+    final remaining = expireAt - serverTime - 1;
     return remaining > 0 ? remaining.toDouble() : 0.0;
+  }
+
+  String getTeamId(String userId) {
+    if (state is! GameLoaded) return '';
+    int indexOfUser = (state as GameLoaded).gameData.usersStatusList.indexWhere((user) => user.userId == userId);
+    String givenTeamId = (state as GameLoaded).gameData.usersStatusList[indexOfUser].teamId;
+    return givenTeamId;
+  }
+
+  bool enableBidButton(String userId){
+    final currentState = state as GameLoaded;
+    return currentState.gameData.auctionPlayersStatusList[currentState.gameData.currentAuctionPlayerIndex].teamId == getTeamId(userId);
+  }
+
+  Map<int, AuctionPlayerStatusEntity?> getMySquad(String userId){
+    final currentState = state as GameLoaded;
+    Map<int, AuctionPlayerStatusEntity> mySquad = {};
+    String batsmanRoleId = '6881ba0f36213beb0017be9c';
+    String bowlerRoleId = '6881e28cc8d219cd96a5c4b2';
+    String allRounderRoleId = '6881bba636213beb0017be9e';
+    String wicketKeeperRoleId = '6881ba3936213beb0017be9d';
+    List<AuctionPlayerStatusEntity> batsmanList = [];
+    List<AuctionPlayerStatusEntity> bowlerList = [];
+    List<AuctionPlayerStatusEntity> allRounderList = [];
+    List<AuctionPlayerStatusEntity> wicketKeeperList = [];
+    int batsmanStartingPoint = 1;
+    int wicketKeeperStartingPoint = 4;
+    int allRounderStartingPoint = 6;
+    int bowlerStartingPoint = 10;
+    for(int i = 0; i < currentState.gameData.auctionPlayersStatusList.length;i++){
+      final player = currentState.gameData.auctionPlayersStatusList[i];
+      if(player.teamId == getTeamId(userId)){
+        if(player.playerRoleId == batsmanRoleId){
+          batsmanList.add(player);
+        }else if(player.playerRoleId == bowlerRoleId){
+          bowlerList.add(player);
+        }else if(player.playerRoleId == allRounderRoleId){
+          allRounderList.add(player);
+        }else if(player.playerRoleId == wicketKeeperRoleId){
+          wicketKeeperList.add(player);
+        }
+      }
+    }
+    batsmanList = sortPlayerByStatus(batsmanList);
+    bowlerList = sortPlayerByStatus(bowlerList);
+    allRounderList = sortPlayerByStatus(allRounderList);
+    wicketKeeperList = sortPlayerByStatus(wicketKeeperList);
+    for(var player = 0;player < batsmanList.length;player++){
+      mySquad[batsmanStartingPoint + player] = batsmanList[player];
+    }
+    for(var player = 0;player < wicketKeeperList.length;player++){
+      mySquad[wicketKeeperStartingPoint + player] = wicketKeeperList[player];
+    }
+    for(var player = 0;player < allRounderList.length;player++){
+      mySquad[allRounderStartingPoint + player] = allRounderList[player];
+    }
+    for(var player = 0;player < bowlerList.length;player++){
+      mySquad[bowlerStartingPoint + player] = bowlerList[player];
+    }
+    return mySquad;
+  }
+
+  List<AuctionPlayerStatusEntity> sortPlayerByStatus(List<AuctionPlayerStatusEntity> listOfPlayer){
+    listOfPlayer.sort((a, b) {
+      if (a.playerAuctionStatus == PlayerAuctionStatusEnum.sold &&
+          b.playerAuctionStatus != PlayerAuctionStatusEnum.sold) {
+        return -1; // a comes first
+      } else if (a.playerAuctionStatus != PlayerAuctionStatusEnum.sold &&
+          b.playerAuctionStatus == PlayerAuctionStatusEnum.sold) {
+        return 1; // b comes first
+      }
+      return 0; // keep original order
+    });
+    return listOfPlayer;
+  }
+
+  String getRole(int position){
+    if(position >= 1 && position <= 3){
+      return 'BAT ${getRoleCount(1, 3, position)}';
+    }else if(position >= 4 && position <= 5){
+      return 'WK ${getRoleCount(4, 5, position)}';
+    }else if(position >= 6 && position <= 9){
+     return 'AL ${getRoleCount(6, 9, position)}';
+    }else if(position >= 10 && position <= 12){
+      return 'BWL ${getRoleCount(10, 12, position)}';
+    }else{
+      return '';
+    }
+  }
+
+  int getRoleCount(int start, int end, int position){
+    if(start == position){
+      return 1;
+    }else if(end == position){
+      return (end + 1) - start;
+    }else{
+      return ((end + 1) - start) - (end - position);
+    }
   }
 }
