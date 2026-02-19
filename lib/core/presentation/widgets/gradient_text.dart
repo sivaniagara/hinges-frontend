@@ -4,10 +4,12 @@ class GradientText extends StatelessWidget {
   final String title;
   final List<Color> colors;
   double? fontSize;
+  TextAlign? textAlign;
   GradientText({super.key,
     required this.title,
     required this.colors,
-    this.fontSize
+    this.fontSize,
+    this.textAlign,
   });
 
   @override
@@ -23,6 +25,7 @@ class GradientText extends StatelessWidget {
       blendMode: BlendMode.srcIn,        // important for text coloring
       child: Text(
         title,
+        textAlign: textAlign,
         style: TextStyle(
           fontSize: fontSize ?? 18,
           fontWeight: FontWeight.bold,

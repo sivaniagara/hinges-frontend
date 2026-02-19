@@ -169,7 +169,10 @@ final router = GoRouter(
         ),
         GoRoute(
           path: '/game/mySquad',
-          builder: (context, state) => MySquadScreen(),
+          builder: (context, state) {
+            final userId = state.uri.queryParameters['userId'] ?? '';
+            return MySquadScreen(userId: userId);
+          },
         ),
       ],
     ),

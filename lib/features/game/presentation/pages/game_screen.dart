@@ -456,7 +456,7 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               );
             }),
-        Text('PLAYERS LIST', style: GoogleFonts.oxanium(textStyle: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),),
+        Text('PLAYER LIST', style: GoogleFonts.oxanium(textStyle: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),),
         Column(
           spacing: 5,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -474,7 +474,8 @@ class _GameScreenState extends State<GameScreen> {
               title: 'MY SQUAD',
               tagImage: AppImages.redTag, colors: textColorForRedTag,
               onTap: (){
-                context.push('/game/mySquad');
+                final homeLoadedState = context.read<HomeBloc>().state as HomeLoaded;
+                context.push('/game/mySquad?userId=${homeLoadedState.userData.userId}');
               }
             ),
             getTag(title: 'POINTS TABLE', tagImage: AppImages.redTag, colors: textColorForRedTag, ),
@@ -666,7 +667,10 @@ class _GameScreenState extends State<GameScreen> {
             image,
           fit: BoxFit.cover,
         ),
-        GradientText(title: title, colors: colors, fontSize: 14)
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.12,
+            child: GradientText(title: title, colors: colors, fontSize: 9, textAlign: TextAlign.center,)
+        )
       ],
     );
   }

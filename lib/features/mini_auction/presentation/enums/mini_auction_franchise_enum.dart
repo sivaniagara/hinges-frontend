@@ -47,4 +47,21 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return '688078a7cdb3a1195b5a1fd2';
     }
   }
+
+  MiniAuctionFranchiseEnum teamEnum(String teamId){
+    switch(teamId){
+      case '68807887cdb3a1195b5a1fd1':
+        return MiniAuctionFranchiseEnum.csk;
+      case '688078e2cdb3a1195b5a1fd4':
+        return MiniAuctionFranchiseEnum.mi;
+      case '68807861cdb3a1195b5a1fd0':
+        return MiniAuctionFranchiseEnum.kkr;
+      case '688078c5cdb3a1195b5a1fd3':
+        return MiniAuctionFranchiseEnum.srh;
+      case '688078a7cdb3a1195b5a1fd2':
+        return MiniAuctionFranchiseEnum.rcb;
+      default:
+        return MiniAuctionFranchiseEnum.csk;
+    }
+  }
 }

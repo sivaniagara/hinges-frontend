@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/core/presentation/widgets/gradient_text.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
+import 'package:hinges_frontend/features/mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
+import '../../domain/entities/user_status_entity.dart';
 
 class MySquadScreen extends StatelessWidget {
-  const MySquadScreen({super.key});
+  final String userId;
+  const MySquadScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +66,6 @@ class MySquadScreen extends StatelessWidget {
                   Expanded(
                     child: Row(
                       children: [
-                        const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_drop_up, color: Colors.white, size: 24),
-                            Icon(Icons.arrow_drop_down, color: Colors.white, size: 24),
-                          ],
-                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Container(
@@ -82,7 +79,7 @@ class MySquadScreen extends StatelessWidget {
                                 _buildTableHeader(),
                                 BlocBuilder<GameBloc,GameState>(builder: (context, state){
                                   final userState = context.read<HomeBloc>().state as HomeLoaded;
-                                  final mySquad = context.read<GameBloc>().getMySquad(userState.userData.userId);
+                                  final mySquad = context.read<GameBloc>().getMySquad(userId);
                                   if(state is GameLoaded){
                                     return Expanded(
                                       child: ListView(
@@ -98,10 +95,10 @@ class MySquadScreen extends StatelessWidget {
                                                       mySquad[key]!.playerName,
                                                       getRoleStyle(key, mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
                                                       getPlayerCategory(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      true,
-                                                      'IND',
-                                                      true,
-                                                      '${mySquad[key]!.currentPrice} CR',
+                                                      getPlayerCategoryImage(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                      getPlayerCountryShortForm(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                      getPlayerCountryFlag(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                      '${(mySquad[key]!.currentPrice/10000000).toStringAsFixed(2)} CR',
                                                       mySquad[key]!.baseRating.toString()
                                                   ),
                                                   const Divider(height: 1, color: Colors.brown, thickness: 1),
@@ -110,17 +107,10 @@ class MySquadScreen extends StatelessWidget {
                                             else
                                               Column(
                                                 children: [
-                                                  _buildTableRow('$key', context.read<GameBloc>().getRole(key), '', '', '', false, '', false, '', ''),
+                                                  _buildTableRow('$key', context.read<GameBloc>().getRole(key), '', '', '', '', '', '', '', ''),
                                                   const Divider(height: 1, color: Colors.brown, thickness: 1),
                                                 ],
                                               )
-
-
-                                          // _buildTableRow('2', 'BAT 2', 'SHIVAM DUBE', 'LHB', 'ICP', true, 'IND', true, '6 CR', '8.5'),
-                                          // const Divider(height: 1, color: Colors.brown, thickness: 1),
-                                          // _buildTableRow('3', 'BAT 3', '', '', '', false, '', false, '', ''),
-                                          // const Divider(height: 1, color: Colors.brown, thickness: 1),
-                                          // _buildTableRow('4', 'WK 1', 'MS TONY', 'WK/RHB', 'ICP', true, 'IND', true, '8.25 CR', '10'),
                                         ],
                                       ),
                                     );
@@ -135,115 +125,119 @@ class MySquadScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_drop_up, color: Colors.white, size: 24),
-                            Icon(Icons.arrow_drop_down, color: Colors.white, size: 24),
-                          ],
-                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 10),
                   // Bottom Section
-                  Container(
-                    height: 140,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF4D2),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.brown, width: 2),
-                    ),
-                    child: Row(
-                      children: [
-                        // Purchase Criteria
-                        Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                            child: Column(
-                              children: [
-                                Text('PURCHASE CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
-                                const SizedBox(height: 4),
-                                const Divider(color: Colors.brown, height: 1),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      _buildCriteriaRow('ICP', Colors.blue, [true, true, true, false, false]),
-                                      _buildCriteriaRow('FP', Colors.orange, [true, true, false, false, false]),
-                                      _buildCriteriaRow('IUP', Colors.grey, [true, true, false, false, false]),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                  BlocBuilder<GameBloc,GameState>(builder: (context, state){
+                    final userState = context.read<HomeBloc>().state as HomeLoaded;
+                    final mySquad = context.read<GameBloc>().getMySquad(userId);
+                    if(state is GameLoaded){
+                      return Container(
+                        height: 140,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF4D2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.brown, width: 2),
                         ),
-                        const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
-                        // Bowler Criteria
-                        Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                            child: Column(
-                              children: [
-                                Text('BOWLER CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
-                                const SizedBox(height: 4),
-                                const Divider(color: Colors.brown, height: 1),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      _buildBowlerRow('RIGHT ARM SPIN', false),
-                                      _buildBowlerRow('LEFT ARM SPIN', true),
-                                      _buildBowlerRow('RIGHT ARM FAST', true),
-                                      _buildBowlerRow('LEFT ARM FAST', false),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
-                        // Team Info
-                        Expanded(
-                          flex: 5,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                        child: Row(
+                          children: [
+                            // Purchase Criteria
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                                child: Column(
                                   children: [
-                                    Image.asset(AppImages.csk, height: 50),
-                                    const SizedBox(width: 10),
+                                    Text('PURCHASE CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
+                                    const SizedBox(height: 4),
+                                    const Divider(color: Colors.brown, height: 1),
                                     Expanded(
-                                      child: Text(
-                                        'CHENNAI SUPREME KINGS',
-                                        style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
-                                        overflow: TextOverflow.ellipsis,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          _buildCriteriaRow('ICP', Colors.blue, getPlayerCategoryStatusList(mySquad, AppIds.cappedPlayerId, userState.userData.players, 5)),
+                                          _buildCriteriaRow('FP', Colors.orange, getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, userState.userData.players, 4)),
+                                          _buildCriteriaRow('IUP', Colors.grey, getPlayerCategoryStatusList(mySquad, AppIds.unCappedPlayerId, userState.userData.players, 3)),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                                const Spacer(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _buildStatBox('MY PURSE', '60 CR', AppImages.yellowTag, textColorForYellowTag),
-                                    _buildStatBox('PURSE REM', '25 CR', AppImages.redTag, textColorForRedTag),
-                                    _buildStatBox('TOTAL RATING', '59.5', AppImages.redTag, textColorForRedTag),
-                                  ],
-                                )
-                              ],
+                              ),
                             ),
-                          ),
+                            const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
+                            // Bowler Criteria
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                                child: Column(
+                                  children: [
+                                    Text('BOWLER CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
+                                    const SizedBox(height: 4),
+                                    const Divider(color: Colors.brown, height: 1),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          _buildBowlerRow('RIGHT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmSpin, userState.userData.players)),
+                                          _buildBowlerRow('LEFT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmSpin, userState.userData.players)),
+                                          _buildBowlerRow('RIGHT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmFast, userState.userData.players)),
+                                          _buildBowlerRow('LEFT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmFast, userState.userData.players)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
+                            // Team Info
+                            Expanded(
+                              flex: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                            getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).image(),                                        height: 50
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).fullName(),
+                                            style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        _buildStatBox('MY PURSE', '60 CR', AppImages.yellowTag, textColorForYellowTag),
+                                        _buildStatBox('PURSE REM', '${((state.gameData.usersStatusList.firstWhere((e) => e.userId == userId).balanceAmount)/10000000).toStringAsFixed(2)} CR', AppImages.redTag, textColorForRedTag),
+                                        _buildStatBox('TOTAL RATING', getSquadRating(mySquad).toStringAsFixed(2), AppImages.redTag, textColorForRedTag),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+
+                  }),
                 ],
               ),
               // Close Button
@@ -261,6 +255,85 @@ class MySquadScreen extends StatelessWidget {
       ),
     );
   }
+  
+  double getSquadRating(Map<int, AuctionPlayerStatusEntity?> squad){
+    double rating = 0.0;
+    for(var key in squad.keys) {
+      if(squad[key] != null){
+        rating += squad[key]!.baseRating;
+      }
+    }
+    return rating;
+  }
+  
+  
+  MiniAuctionFranchiseEnum getFranchise(List<UserStatusEntity> userList, List<String> teamList, String userId ){
+    int indexOfUser = userList.indexWhere((e) => e.userId == userId);
+    String teamId = teamList[indexOfUser];
+    if(MiniAuctionFranchiseEnum.csk.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.csk;
+    }else if(MiniAuctionFranchiseEnum.mi.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.mi;
+    }else if(MiniAuctionFranchiseEnum.kkr.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.kkr;
+    }else if(MiniAuctionFranchiseEnum.srh.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.srh;
+    }else{
+      return MiniAuctionFranchiseEnum.rcb;
+    }
+    
+  }
+
+  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
+    String playerCountryId = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    playerCountryId = categoryAndItemsEntity.countryCategoryId.firstWhere((e) => e.id == playerEntity.countryId).id;
+    Map<String, String> flagMap = {
+      '6880d715f960074f0cf61be7': '\u{1F1EE}\u{1F1F3}', // India 🇮🇳
+      '6880d71ef960074f0cf61be8': '\u{1F1E6}\u{1F1FA}', // Australia 🇦🇺
+      '6880d725f960074f0cf61be9': '\u{1F1EC}\u{1F1E7}', // England 🇬🇧
+      '6880d72bf960074f0cf61bea': '\u{1F1F5}\u{1F1F0}', // Pakistan 🇵🇰
+      '6880d734f960074f0cf61beb': '\u{1F1F3}\u{1F1FF}', // New Zealand 🇳🇿
+      '6880d73ff960074f0cf61bec': '\u{1F1FF}\u{1F1E6}', // South Africa 🇿🇦
+      '6880d748f960074f0cf61bed': '\u{1F1F1}\u{1F1F0}', // Sri Lanka 🇱🇰
+      '6880d751f960074f0cf61bee': '\u{1F1F2}\u{1F1FC}', // West Indies (Montserrat 🇲🇸 often used)
+      '6880d759f960074f0cf61bef': '\u{1F1E7}\u{1F1E9}', // Bangladesh 🇧🇩
+      '6880d760f960074f0cf61bf0': '\u{1F1E6}\u{1F1EB}', // Afghanistan 🇦🇫
+      '6880d766f960074f0cf61bf1': '\u{1F1EE}\u{1F1EA}', // Ireland 🇮🇪
+      '6880d76df960074f0cf61bf2': '\u{1F1FF}\u{1F1FC}', // Zimbabwe 🇿🇼
+    };
+    if(flagMap.containsKey(playerCountryId)){
+      return flagMap[playerCountryId]!;
+    }else{
+      return 'N/A';
+    }
+  }
+
+  String getPlayerCountryShortForm(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
+    String playerCountryId = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    playerCountryId = categoryAndItemsEntity.countryCategoryId.firstWhere((e) => e.id == playerEntity.countryId).id;
+    Map<String, String> countryShortForms = {
+      '6880d715f960074f0cf61be7': 'IND', // India
+      '6880d71ef960074f0cf61be8': 'AUS', // Australia
+      '6880d725f960074f0cf61be9': 'ENG', // England
+      '6880d72bf960074f0cf61bea': 'PAK', // Pakistan
+      '6880d734f960074f0cf61beb': 'NZ',  // New Zealand
+      '6880d73ff960074f0cf61bec': 'SA',  // South Africa
+      '6880d748f960074f0cf61bed': 'SL',  // Sri Lanka
+      '6880d751f960074f0cf61bee': 'WI',  // West Indies
+      '6880d759f960074f0cf61bef': 'BAN', // Bangladesh
+      '6880d760f960074f0cf61bf0': 'AFG', // Afghanistan
+      '6880d766f960074f0cf61bf1': 'IRE', // Ireland
+      '6880d76df960074f0cf61bf2': 'ZIM', // Zimbabwe
+    };
+
+    if(countryShortForms.containsKey(playerCountryId)){
+      return countryShortForms[playerCountryId]!;
+    }else{
+      return 'N/A';
+    }
+  }
 
   String getPlayerCategory(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
     String playerCategory = '';
@@ -269,6 +342,53 @@ class MySquadScreen extends StatelessWidget {
     return playerCategory;
   }
 
+  bool getPlayerBowlingStyleAvailable(Map<int, AuctionPlayerStatusEntity?> squad, String playerBowlingStyleId, List<PlayerEntity> playerList){
+    bool available = false;
+    for(var key in squad.keys) {
+      if(squad[key] != null){
+        PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
+        if(playerEntity.bowlingStyle == playerBowlingStyleId){
+          available = true;
+          break;
+        }
+      }
+    }
+    return available;
+  }
+  List<bool> getPlayerCategoryStatusList(Map<int, AuctionPlayerStatusEntity?> squad, String playerCategoryId, List<PlayerEntity> playerList, totalCount){
+    int total = 0;
+    for(var key in squad.keys) {
+      if(squad[key] != null){
+        PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
+        if(playerEntity.playerCategory == playerCategoryId){
+          total++;
+        }
+      }
+    }
+    return List.generate(totalCount, (index) {
+      if(index < total){
+        return true;
+      }
+      return false;
+    });
+  }
+  String getPlayerCategoryImage(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
+    String playerRoleId = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
+    Map<String, String> roleCategory = {
+      '6881ba0f36213beb0017be9c': AppImages.batsmanIcon,
+      '6881ba3936213beb0017be9d': AppImages.wicketKeeperIcon,
+      '6881bba636213beb0017be9e': AppImages.allRounderIcon,
+      '6881e28cc8d219cd96a5c4b2': AppImages.bowlerIcon,
+    };
+
+    if(roleCategory.containsKey(playerRoleId)){
+      return roleCategory[playerRoleId]!;
+    }else{
+      return 'N/A';
+    }
+  }
   String getRoleStyle(int position, AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
     String playerRoleStyle = '';
     if(position >= 1 && position <= 3){
@@ -296,7 +416,6 @@ class MySquadScreen extends StatelessWidget {
   }
 
 
-
   Widget _buildTableHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -318,7 +437,8 @@ class MySquadScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTableRow(String slotNo, String slotType, String name, String desc, String category, bool showCatIcon, String country, bool showFlag, String price, String rating) {
+  Widget _buildTableRow(String slotNo, String slotType, String name, String desc, String category, String roleImage, String country, String flag, String price, String rating) {
+    print('roleImage => ${roleImage}');
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -327,16 +447,16 @@ class MySquadScreen extends StatelessWidget {
           _buildCell(slotType, flex: 1),
           _buildCell(name, flex: 3, isBold: true),
           _buildCell(desc, flex: 2),
-          _buildCell(category, flex: 1, showIcon: showCatIcon),
-          _buildCell(country, flex: 1, showFlag: showFlag),
-          _buildCell(price, flex: 1, isBold: true, useZuume: true),
-          _buildCell(rating, flex: 1, isBold: true, useZuume: true),
+          _buildCell(category, flex: 1, image: roleImage),
+          _buildCell(country, flex: 1, flag: flag),
+          _buildCell(price, flex: 1, isBold: true,),
+          _buildCell(rating, flex: 1, isBold: true),
         ],
       ),
     );
   }
 
-  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, bool showIcon = false, bool showFlag = false, bool useZuume = false}) {
+  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, bool useZuume = false , String image = '', String flag = ''}) {
     return Expanded(
       flex: flex,
       child: Center(
@@ -359,13 +479,19 @@ class MySquadScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
             ),
-            if (showIcon) ...[
+            if (flag.isNotEmpty) ...[
               const SizedBox(width: 4),
-              const Icon(Icons.circle, color: Colors.blue, size: 10),
-            ],
-            if (showFlag) ...[
+              Text(
+                flag,
+                style: GoogleFonts.oxanium(
+                  fontSize: isHeader ? 9 : 11,
+                  fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
+                  color: Colors.black,
+                )
+              )            ],
+            if (image.isNotEmpty) ...[
               const SizedBox(width: 4),
-              Image.asset(AppImages.indiaFlag, width: 18),
+              Image.asset(image, width: 18),
             ]
           ],
         ),
