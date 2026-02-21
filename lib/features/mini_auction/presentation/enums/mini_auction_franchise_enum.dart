@@ -1,6 +1,6 @@
 import '../../../../core/utils/app_images.dart';
 
-enum MiniAuctionFranchiseEnum {csk, mi, kkr, srh, rcb}
+enum MiniAuctionFranchiseEnum {csk, mi, kkr, srh, rcb, empty}
 
 extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
   String image(){
@@ -15,6 +15,8 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return AppImages.srh;
       case MiniAuctionFranchiseEnum.rcb:
         return AppImages.rcb;
+      case MiniAuctionFranchiseEnum.empty:
+        return 'empty image';
     }
   }
 
@@ -30,6 +32,24 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return 'STORMRISERS HYDERABAD';
       case MiniAuctionFranchiseEnum.rcb:
         return 'ROYAL CHAMPIONS BENGALURU';
+      case MiniAuctionFranchiseEnum.empty:
+        return ' - ';
+    }
+  }
+  String shortName(){
+    switch(this){
+      case MiniAuctionFranchiseEnum.csk:
+        return 'CSK';
+      case MiniAuctionFranchiseEnum.mi:
+        return 'MI';
+      case MiniAuctionFranchiseEnum.kkr:
+        return 'KKR';
+      case MiniAuctionFranchiseEnum.srh:
+        return 'SRH';
+      case MiniAuctionFranchiseEnum.rcb:
+        return 'RCB';
+      case MiniAuctionFranchiseEnum.empty:
+        return ' - ';
     }
   }
 
@@ -45,6 +65,8 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return '688078c5cdb3a1195b5a1fd3';
       case MiniAuctionFranchiseEnum.rcb:
         return '688078a7cdb3a1195b5a1fd2';
+      case MiniAuctionFranchiseEnum.empty:
+        return ' - ';
     }
   }
 
@@ -61,7 +83,7 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
       case '688078a7cdb3a1195b5a1fd2':
         return MiniAuctionFranchiseEnum.rcb;
       default:
-        return MiniAuctionFranchiseEnum.csk;
+        return MiniAuctionFranchiseEnum.empty;
     }
   }
 }

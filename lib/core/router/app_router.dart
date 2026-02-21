@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/my_squad_screen.dart';
+import 'package:hinges_frontend/features/game/presentation/pages/players_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/forgot_password_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_lite_mode.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
@@ -172,6 +173,16 @@ final router = GoRouter(
           builder: (context, state) {
             final userId = state.uri.queryParameters['userId'] ?? '';
             return MySquadScreen(userId: userId);
+          },
+        ),
+        GoRoute(
+          path: '/game/playerList',
+          builder: (context, state) {
+            final userId = state.uri.queryParameters['userId'] ?? '';
+            final playerRoleId = state.uri.queryParameters['playerRole'] ?? '';
+            final playerRoleName = state.uri.queryParameters['playerRoleName'] ?? '';
+            print("state.uri.queryParameters => ${state.uri.queryParameters}");
+            return PlayersScreen(userId: userId, playerRole: playerRoleId,playerRoleName: playerRoleName,);
           },
         ),
       ],

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
@@ -461,10 +462,10 @@ class _GameScreenState extends State<GameScreen> {
           spacing: 5,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            playerCategory(title: 'BATSMAN', image: AppImages.batsmanIcon, colors: textColorForRedTag, ),
-            playerCategory(title: 'WICKET KEEPER', image: AppImages.wicketKeeperIcon, colors: textColorForRedTag),
-            playerCategory(title: 'ALL ROUNDER', image: AppImages.allRounderIcon, colors: textColorForRedTag),
-            playerCategory(title: 'BOWLER', image: AppImages.bowlerIcon, colors: textColorForRedTag),
+            playerCategory(title: 'BATSMAN', image: AppImages.batsmanIcon, colors: textColorForRedTag, playerRoleId: AppIds.batsmanId),
+            playerCategory(title: 'WICKET KEEPER', image: AppImages.wicketKeeperIcon, colors: textColorForRedTag, playerRoleId: AppIds.wicketKeeperId),
+            playerCategory(title: 'ALL ROUNDER', image: AppImages.allRounderIcon, colors: textColorForRedTag, playerRoleId: AppIds.allRounderId),
+            playerCategory(title: 'BOWLER', image: AppImages.bowlerIcon, colors: textColorForRedTag, playerRoleId: AppIds.bowlerId),
           ],
         ),
         Column(
@@ -654,24 +655,32 @@ class _GameScreenState extends State<GameScreen> {
   Widget playerCategory(
   {
     required String title,
+    required String playerRoleId,
     required String image,
     required List<Color> colors,
 }
       ){
-    return Row(
-      spacing: 10,
-      children: [
-        Image.asset(
-          width: 25,
-            height: 25,
-            image,
-          fit: BoxFit.cover,
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.12,
-            child: GradientText(title: title, colors: colors, fontSize: 9, textAlign: TextAlign.center,)
-        )
-      ],
+    return GestureDetector(
+      onTap: (){
+        final homeLoadedState = context.read<HomeBloc>().state as HomeLoaded;
+        context.push(
+            '/game/playerList?userId=${homeLoadedState.userData.userId}&playerRole=$playerRoleId&playerRoleName=$title'
+        );      },
+      child: Row(
+        spacing: 10,
+        children: [
+          Image.asset(
+            width: 25,
+              height: 25,
+              image,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.12,
+              child: GradientText(title: title, colors: colors, fontSize: 11, textAlign: TextAlign.center,)
+          )
+        ],
+      ),
     );
   }
   

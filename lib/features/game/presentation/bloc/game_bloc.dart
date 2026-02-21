@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/network/websocket_service.dart';
+import '../../../../core/utils/app_ids.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../data/models/game_data_model.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
@@ -360,6 +361,20 @@ class GameBloc extends Bloc<GameEvent, GameState> {
      return 'AL ${getRoleCount(6, 9, position)}';
     }else if(position >= 10 && position <= 12){
       return 'BWL ${getRoleCount(10, 12, position)}';
+    }else{
+      return '';
+    }
+  }
+
+  String getRoleById(String playerRoleId){
+    if(playerRoleId == AppIds.batsmanId){
+      return 'BAT';
+    }else if(playerRoleId == AppIds.bowlerId){
+      return 'BWL';
+    }else if(playerRoleId == AppIds.wicketKeeperId){
+      return 'WK';
+    }else if(playerRoleId == AppIds.allRounderId){
+      return 'AL';
     }else{
       return '';
     }
