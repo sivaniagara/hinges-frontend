@@ -277,7 +277,7 @@ class _GameScreenState extends State<GameScreen> {
                                           top: 50,
                                           child: getFranchiseLogo(
                                               imagePath: AppImages.csk,
-                                              userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId()),
+                                              user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId()),
                                             glow: playerData.teamId == MiniAuctionFranchiseEnum.csk.teamId()
                                           ),
                                         ),
@@ -287,7 +287,7 @@ class _GameScreenState extends State<GameScreen> {
                                           top: 50,
                                           child: getFranchiseLogo(
                                               imagePath: AppImages.mi,
-                                              userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId()),
+                                              user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId()),
                                               glow: playerData.teamId == MiniAuctionFranchiseEnum.mi.teamId()
                                           ),
                                         ),
@@ -297,7 +297,7 @@ class _GameScreenState extends State<GameScreen> {
                                           bottom: 35,
                                           child: getFranchiseLogo(
                                               imagePath: AppImages.rcb,
-                                              userName: getUserName(gameData.usersStatusList,
+                                              user: getUser(gameData.usersStatusList,
                                                   MiniAuctionFranchiseEnum.rcb.teamId()),
                                               glow: playerData.teamId == MiniAuctionFranchiseEnum.rcb.teamId()
                                           ),
@@ -308,7 +308,7 @@ class _GameScreenState extends State<GameScreen> {
                                           bottom: 35,
                                           child: getFranchiseLogo(
                                               imagePath: AppImages.kkr,
-                                              userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId()),
+                                              user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId()),
                                               glow: playerData.teamId == MiniAuctionFranchiseEnum.kkr.teamId()
                                           ),
                                         ),
@@ -317,7 +317,7 @@ class _GameScreenState extends State<GameScreen> {
                                             alignment: Alignment.center,
                                             child: getFranchiseLogo(
                                                 imagePath: AppImages.srh,
-                                                userName: getUserName(gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId()),
+                                                user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId()),
                                                 glow: playerData.teamId == MiniAuctionFranchiseEnum.srh.teamId()
                                             )
                                         ),
@@ -339,15 +339,15 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  String getUserName(List<UserStatusEntity> userList, String teamId){
-    String userName = '';
+  UserStatusEntity getUser(List<UserStatusEntity> userList, String teamId){
+    UserStatusEntity? user;
     for(var user in userList){
       if(user.teamId == teamId){
-        userName = user.userName;
+        user = user;
         break;
       }
     }
-    return userName;
+    return user!;
   }
 
   bool findOutWhoCurrentlyBuy(AuctionPlayerStatusEntity playerData, List<UserStatusEntity> userList, String teamId){
@@ -381,39 +381,45 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget getFranchiseLogo({
     required String imagePath,
-    required String userName,
+    required UserStatusEntity user,
     required bool glow,
   }){
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.1,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: glow ? 45 : 40,
-            height: glow ? 45 : 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-                boxShadow: glow ? [
-                  BoxShadow(
-                    color: Colors.yellow,
-                    blurRadius: 15,
-                    spreadRadius: 6,
-                  ),
-                ] : null,
-                image: DecorationImage(
-                fit: BoxFit.fill,
-                  image: AssetImage(
-                      imagePath,
-                  ),
-              )
+    return GestureDetector(
+      onTap: (){
+        final homeLoadedState = context.read<HomeBloc>().state as HomeLoaded;
+        context.push('/game/mySquad?userId=${user.userId}');
+      },
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.1,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: glow ? 45 : 40,
+              height: glow ? 45 : 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                  boxShadow: glow ? [
+                    BoxShadow(
+                      color: Colors.yellow,
+                      blurRadius: 15,
+                      spreadRadius: 6,
+                    ),
+                  ] : null,
+                  image: DecorationImage(
+                  fit: BoxFit.fill,
+                    image: AssetImage(
+                        imagePath,
+                    ),
+                )
 
+              ),
             ),
-          ),
-          Text(userName, style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)))
-        ],
+            Text(user.userName, style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)))
+          ],
+        ),
       ),
     );
   }
