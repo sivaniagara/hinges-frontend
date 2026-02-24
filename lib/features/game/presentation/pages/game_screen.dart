@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
+import 'package:hinges_frontend/core/utils/constant.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_name_widget.dart';
@@ -555,7 +556,7 @@ class _GameScreenState extends State<GameScreen> {
                             fit: BoxFit.fill
                         )
                     ),
-                    child: GradientText(title: '25 CR', colors: textColorForRedTag, fontSize: 25),
+                    child: GradientText(title: '${getRemainingAmount()} CR', colors: textColorForRedTag, fontSize: 25),
                   )
                 ],
               ),
@@ -564,10 +565,14 @@ class _GameScreenState extends State<GameScreen> {
           BlocBuilder<GameBloc, GameState>(
               builder: (context, gameState){
                 if(gameState is GameLoaded){
+                  GameDataEntity gameData = gameState.gameData;
+                  final playerData = gameState.gameData
+                      .auctionPlayersStatusList[gameState.gameData.currentAuctionPlayerIndex];
                   return BlocBuilder<HomeBloc, HomeState>(
                       builder: (context, homeState){
                         final gameBloc = context.read<GameBloc>();
-                        if(gameState.gameData.matchStatus != MatchStatusEnum.started){
+                        final currentState = context.read<HomeBloc>().state as HomeLoaded;
+                        if(gameData.matchStatus != MatchStatusEnum.started || controlBid(playerData, gameBloc.getMySquad(currentState.userData.userId))){
                           return SizedBox(
                             width: MediaQuery.of(context).size.width * 0.1,
                             height: MediaQuery.of(context).size.width * 0.1,
@@ -576,7 +581,6 @@ class _GameScreenState extends State<GameScreen> {
                         return GestureDetector(
                           onTap: (){
                             if(!gameBloc.enableBidButton((homeState).userData.userId)){
-                              final currentState = context.read<HomeBloc>().state as HomeLoaded;
                               context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
                             }
 
@@ -610,10 +614,35 @@ class _GameScreenState extends State<GameScreen> {
                 return Container();
               }
           )
-
         ],
       ),
     );
+  }
+
+  String getRemainingAmount(){
+    if(context.read<GameBloc>().state is! GameLoaded){
+      return '';
+    }else{
+      UserStatusEntity user = (context.read<GameBloc>().state as GameLoaded).gameData.usersStatusList.firstWhere((e) => e.userId == (context.read<HomeBloc>() as HomeLoaded).userData.userId);
+      return (user.balanceAmount/10000000).toStringAsFixed(2);
+    }
+
+
+  }
+
+  bool controlBid(AuctionPlayerStatusEntity currentPlayer, Map<int, AuctionPlayerStatusEntity?> mySquad){
+    bool roleCount(String roleId, int limit){
+      return mySquad.values.where((e) => e != null && e.playerRoleId == roleId).toList().length >= limit;
+    }
+    if(currentPlayer.playerRoleId == AppIds.batsmanId){
+      return roleCount(AppIds.batsmanId, AppConstant.batsmanLimit);
+    }else if(currentPlayer.playerRoleId == AppIds.wicketKeeperId){
+      return roleCount(AppIds.wicketKeeperId, AppConstant.wicketKeeperLimit);
+    }else if(currentPlayer.playerRoleId == AppIds.allRounderId){
+      return roleCount(AppIds.allRounderId, AppConstant.allRounderLimit);
+    }else{
+      return roleCount(AppIds.bowlerId, AppConstant.bowlerLimit);
+    }
   }
 
   Widget getTag({
