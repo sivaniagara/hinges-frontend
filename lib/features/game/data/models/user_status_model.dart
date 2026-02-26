@@ -8,6 +8,9 @@ class UserStatusModel extends UserStatusEntity {
     required super.isActive,
     required super.lastSeen,
     required super.balanceAmount,
+    required super.matchWinStatusEnum,
+    required super.rank,
+    required super.totalRatings,
   });
 
   factory UserStatusModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +21,9 @@ class UserStatusModel extends UserStatusEntity {
       isActive: json['is_active'] ?? false,
       lastSeen: json['last_seen'] ?? '',
       balanceAmount: json['balance_amount'] ?? 0,
+      matchWinStatusEnum: json['match_win_status'] == 'qualified' ? MatchWinStatusEnum.qualified : MatchWinStatusEnum.disqualified,
+      rank: json['rank'] ?? 0,
+      totalRatings: json['totalRatings'] ?? 0.0,
     );
   }
 
@@ -28,7 +34,10 @@ class UserStatusModel extends UserStatusEntity {
         teamId: entity.teamId,
         isActive: entity.isActive,
         lastSeen: entity.lastSeen,
-        balanceAmount: entity.balanceAmount
+        balanceAmount: entity.balanceAmount,
+        matchWinStatusEnum: entity.matchWinStatusEnum,
+        rank: entity.rank,
+        totalRatings: entity.totalRatings,
     );
   }
 
@@ -39,7 +48,10 @@ class UserStatusModel extends UserStatusEntity {
         teamId: teamId,
         isActive: isActive,
         lastSeen: lastSeen,
-        balanceAmount: balanceAmount
+        balanceAmount: balanceAmount,
+        matchWinStatusEnum: matchWinStatusEnum,
+        rank: rank,
+        totalRatings: totalRatings,
     );
   }
 }

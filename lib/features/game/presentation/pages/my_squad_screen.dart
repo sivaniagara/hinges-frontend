@@ -87,22 +87,27 @@ class MySquadScreen extends StatelessWidget {
                                         children: [
                                           for(var key = 1;key < 13;key++)
                                             if(mySquad[key] != null)
-                                              Column(
-                                                children: [
-                                                  _buildTableRow(
-                                                      '$key',
-                                                      context.read<GameBloc>().getRole(key),
-                                                      mySquad[key]!.playerName,
-                                                      getRoleStyle(key, mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      getPlayerCategory(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      getPlayerCategoryImage(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      getPlayerCountryShortForm(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      getPlayerCountryFlag(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      '${(mySquad[key]!.currentPrice/10000000).toStringAsFixed(2)} CR',
-                                                      mySquad[key]!.baseRating.toString()
-                                                  ),
-                                                  const Divider(height: 1, color: Colors.brown, thickness: 1),
-                                                ],
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color:mySquad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy ?  Colors.blueGrey.shade50 : null
+                                                ),
+                                                child: Column(
+                                                  children: [
+                                                    _buildTableRow(
+                                                        '$key',
+                                                        context.read<GameBloc>().getRole(key),
+                                                        mySquad[key]!.playerName,
+                                                        getRoleStyle(key, mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                        getPlayerCategory(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                        context.read<GameBloc>().getPlayerRoleImage(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                        getPlayerCountryShortForm(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                        context.read<GameBloc>().getPlayerCountryFlag(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                        '${(mySquad[key]!.currentPrice/10000000).toStringAsFixed(2)} CR',
+                                                        mySquad[key]!.baseRating.toString()
+                                                    ),
+                                                    const Divider(height: 1, color: Colors.brown, thickness: 1),
+                                                  ],
+                                                ),
                                               )
                                             else
                                               Column(
@@ -284,30 +289,6 @@ class MySquadScreen extends StatelessWidget {
     
   }
 
-  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerCountryId = '';
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerCountryId = categoryAndItemsEntity.countryCategoryId.firstWhere((e) => e.id == playerEntity.countryId).id;
-    Map<String, String> flagMap = {
-      '6880d715f960074f0cf61be7': '\u{1F1EE}\u{1F1F3}', // India 🇮🇳
-      '6880d71ef960074f0cf61be8': '\u{1F1E6}\u{1F1FA}', // Australia 🇦🇺
-      '6880d725f960074f0cf61be9': '\u{1F1EC}\u{1F1E7}', // England 🇬🇧
-      '6880d72bf960074f0cf61bea': '\u{1F1F5}\u{1F1F0}', // Pakistan 🇵🇰
-      '6880d734f960074f0cf61beb': '\u{1F1F3}\u{1F1FF}', // New Zealand 🇳🇿
-      '6880d73ff960074f0cf61bec': '\u{1F1FF}\u{1F1E6}', // South Africa 🇿🇦
-      '6880d748f960074f0cf61bed': '\u{1F1F1}\u{1F1F0}', // Sri Lanka 🇱🇰
-      '6880d751f960074f0cf61bee': '\u{1F1F2}\u{1F1FC}', // West Indies (Montserrat 🇲🇸 often used)
-      '6880d759f960074f0cf61bef': '\u{1F1E7}\u{1F1E9}', // Bangladesh 🇧🇩
-      '6880d760f960074f0cf61bf0': '\u{1F1E6}\u{1F1EB}', // Afghanistan 🇦🇫
-      '6880d766f960074f0cf61bf1': '\u{1F1EE}\u{1F1EA}', // Ireland 🇮🇪
-      '6880d76df960074f0cf61bf2': '\u{1F1FF}\u{1F1FC}', // Zimbabwe 🇿🇼
-    };
-    if(flagMap.containsKey(playerCountryId)){
-      return flagMap[playerCountryId]!;
-    }else{
-      return 'N/A';
-    }
-  }
 
   String getPlayerCountryShortForm(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
     String playerCountryId = '';
@@ -371,23 +352,6 @@ class MySquadScreen extends StatelessWidget {
       }
       return false;
     });
-  }
-  String getPlayerCategoryImage(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerRoleId = '';
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
-    Map<String, String> roleCategory = {
-      '6881ba0f36213beb0017be9c': AppImages.batsmanIcon,
-      '6881ba3936213beb0017be9d': AppImages.wicketKeeperIcon,
-      '6881bba636213beb0017be9e': AppImages.allRounderIcon,
-      '6881e28cc8d219cd96a5c4b2': AppImages.bowlerIcon,
-    };
-
-    if(roleCategory.containsKey(playerRoleId)){
-      return roleCategory[playerRoleId]!;
-    }else{
-      return 'N/A';
-    }
   }
   String getRoleStyle(int position, AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
     String playerRoleStyle = '';

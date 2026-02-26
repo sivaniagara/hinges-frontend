@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/network/websocket_service.dart';
 import '../../../../core/utils/app_ids.dart';
+import '../../../../core/utils/app_images.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
+import '../../../home/domain/entities/player_entity.dart';
 import '../../data/models/game_data_model.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/game_data_entity.dart';
@@ -337,6 +339,50 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
     return mySquad;
   }
+
+  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
+    String playerCountryId = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    playerCountryId = categoryAndItemsEntity.countryCategoryId.firstWhere((e) => e.id == playerEntity.countryId).id;
+    Map<String, String> flagMap = {
+      '6880d715f960074f0cf61be7': '\u{1F1EE}\u{1F1F3}', // India 🇮🇳
+      '6880d71ef960074f0cf61be8': '\u{1F1E6}\u{1F1FA}', // Australia 🇦🇺
+      '6880d725f960074f0cf61be9': '\u{1F1EC}\u{1F1E7}', // England 🇬🇧
+      '6880d72bf960074f0cf61bea': '\u{1F1F5}\u{1F1F0}', // Pakistan 🇵🇰
+      '6880d734f960074f0cf61beb': '\u{1F1F3}\u{1F1FF}', // New Zealand 🇳🇿
+      '6880d73ff960074f0cf61bec': '\u{1F1FF}\u{1F1E6}', // South Africa 🇿🇦
+      '6880d748f960074f0cf61bed': '\u{1F1F1}\u{1F1F0}', // Sri Lanka 🇱🇰
+      '6880d751f960074f0cf61bee': '\u{1F1F2}\u{1F1FC}', // West Indies (Montserrat 🇲🇸 often used)
+      '6880d759f960074f0cf61bef': '\u{1F1E7}\u{1F1E9}', // Bangladesh 🇧🇩
+      '6880d760f960074f0cf61bf0': '\u{1F1E6}\u{1F1EB}', // Afghanistan 🇦🇫
+      '6880d766f960074f0cf61bf1': '\u{1F1EE}\u{1F1EA}', // Ireland 🇮🇪
+      '6880d76df960074f0cf61bf2': '\u{1F1FF}\u{1F1FC}', // Zimbabwe 🇿🇼
+    };
+    if(flagMap.containsKey(playerCountryId)){
+      return flagMap[playerCountryId]!;
+    }else{
+      return 'N/A';
+    }
+  }
+
+  String getPlayerRoleImage(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
+    String playerRoleId = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
+    Map<String, String> roleCategory = {
+      '6881ba0f36213beb0017be9c': AppImages.batsmanIcon,
+      '6881ba3936213beb0017be9d': AppImages.wicketKeeperIcon,
+      '6881bba636213beb0017be9e': AppImages.allRounderIcon,
+      '6881e28cc8d219cd96a5c4b2': AppImages.bowlerIcon,
+    };
+
+    if(roleCategory.containsKey(playerRoleId)){
+      return roleCategory[playerRoleId]!;
+    }else{
+      return 'N/A';
+    }
+  }
+
 
   List<AuctionPlayerStatusEntity> sortPlayerByStatus(List<AuctionPlayerStatusEntity> listOfPlayer){
     listOfPlayer.sort((a, b) {

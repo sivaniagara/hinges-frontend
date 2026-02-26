@@ -84,7 +84,12 @@ class PointsTableScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           children: List.generate(listOfUser.length, (index){
                             MiniAuctionFranchiseEnum miniAuctionFranchiseEnum = getFranchiseEnum(listOfUser[index].teamId);
-                            return _buildTeamRow('${index+1}', miniAuctionFranchiseEnum.fullName(), miniAuctionFranchiseEnum.image());
+                            return _buildTeamRow(
+                              '${index+1}',
+                              miniAuctionFranchiseEnum.fullName(), 
+                              miniAuctionFranchiseEnum.image(),
+                                getRating(context, listOfUser[index].userId)
+                            );
                           }),
                         ),
                       );
@@ -108,6 +113,17 @@ class PointsTableScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  double getRating(BuildContext context, String userId){
+    double totalRating = 0.0;
+    Map<int, AuctionPlayerStatusEntity?> squad = context.read<GameBloc>().getMySquad(userId);
+    for(var player in squad.values){
+      if(player != null){
+        totalRating += player.baseRating;
+      }
+    }
+    return totalRating;
   }
 
   MiniAuctionFranchiseEnum getFranchiseEnum(String teamId){
@@ -136,7 +152,7 @@ class PointsTableScreen extends StatelessWidget {
       }
     }
     var sortedEntries = usersSquad.entries.toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
+      ..sort((a, b) => b.value.compareTo(a.value)); // descending
     return sortedEntries.map((e) {
       return listOfUser.firstWhere((user) => user.userId == e.key);
     }).toList();
@@ -157,7 +173,7 @@ class PointsTableScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamRow(String slNo, String name, String logo) {
+  Widget _buildTeamRow(String slNo, String name, String logo, double rating) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -167,52 +183,51 @@ class PointsTableScreen extends StatelessWidget {
         border: Border.all(color: Colors.brown, width: 1),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            flex: 1,
-            child: Text(
-              slNo,
-              style: GoogleFonts.oxanium(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+          Text(
+            slNo,
+            style: GoogleFonts.oxanium(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.orange, width: 1.5),
+                ),
+                child: ClipOval(
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Image.asset(logo, fit: BoxFit.contain),
+                  ),
+                ),
               ),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  name,
-                  style: GoogleFonts.oxanium(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+              const SizedBox(width: 12),
+              Text(
+                name,
+                style: GoogleFonts.oxanium(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.orange, width: 1.5),
-                  ),
-                  child: ClipOval(
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Image.asset(logo, fit: BoxFit.contain),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const Expanded(
-            flex: 3,
-            child: SizedBox(),
+          Text(
+            '$rating',
+            style: GoogleFonts.oxanium(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ],
       ),

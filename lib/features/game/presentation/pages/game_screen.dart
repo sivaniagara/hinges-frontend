@@ -15,6 +15,8 @@ import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/network/http_service_impl.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/presentation/widgets/gradient_text.dart';
+import '../../../home/domain/entities/category_and_items_entity.dart';
+import '../../../home/domain/entities/player_entity.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
 import '../../../home/presentation/pages/profile_dialog.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
@@ -90,6 +92,7 @@ class _GameScreenState extends State<GameScreen> {
                           if(state is! GameLoaded){
                             return Container();
                           }
+                          final userState = context.read<HomeBloc>().state as HomeLoaded;
                           GameDataEntity gameData = state.gameData;
                           final playerData = state.gameData
                               .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
@@ -163,21 +166,31 @@ class _GameScreenState extends State<GameScreen> {
                                                   spacing: 10,
                                                   children: [
                                                     PlayerNameWidget(gameData: gameData),
+                                                    // Image.asset(
+                                                    //     width: 30,
+                                                    //     height: 30,
+                                                    //     AppImages.bat
+                                                    // ),
                                                     Image.asset(
-                                                        width: 30,
-                                                        height: 30,
-                                                        AppImages.bat
+                                                        width: 25,
+                                                        height: 25,
+                                                        context.read<GameBloc>().getPlayerRoleImage(playerData, userState.userData.categoryAndItsItem, userState.userData.players)
                                                     ),
-                                                    Image.asset(
-                                                        width: 30,
-                                                        height: 30,
-                                                        AppImages.cap
-                                                    ),
-                                                    Image.asset(
-                                                        width: 30,
-                                                        height: 30,
-                                                        AppImages.indiaFlag
-                                                    ),
+                                                    if(isCappedPlayer(playerData, userState.userData.players))
+                                                      Image.asset(
+                                                          width: 25,
+                                                          height: 25,
+                                                          AppImages.cap
+                                                      ),
+                                                    Text(
+                                                      context.read<GameBloc>().getPlayerCountryFlag(playerData, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                      style: TextStyle(fontSize: 20),
+                                                    )
+                                                    // Image.asset(
+                                                    //     width: 30,
+                                                    //     height: 30,
+                                                    //     AppImages.indiaFlag
+                                                    // ),
                                                   ],
                                                 ),
                                                 PlayerStyleWidget(gameData: gameData),
@@ -340,15 +353,20 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  bool isCappedPlayer(AuctionPlayerStatusEntity player, List<PlayerEntity> playerList){
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    return playerEntity.playerCategory == AppIds.cappedPlayerId;
+  }
+
   UserStatusEntity getUser(List<UserStatusEntity> userList, String teamId){
-    UserStatusEntity? user;
+    UserStatusEntity? userStatusEntity;
     for(var user in userList){
       if(user.teamId == teamId){
-        user = user;
+        userStatusEntity = user;
         break;
       }
     }
-    return user!;
+    return userStatusEntity!;
   }
 
   bool findOutWhoCurrentlyBuy(AuctionPlayerStatusEntity playerData, List<UserStatusEntity> userList, String teamId){
@@ -387,7 +405,6 @@ class _GameScreenState extends State<GameScreen> {
   }){
     return GestureDetector(
       onTap: (){
-        final homeLoadedState = context.read<HomeBloc>().state as HomeLoaded;
         context.push('/game/mySquad?userId=${user.userId}');
       },
       child: SizedBox(
@@ -486,7 +503,12 @@ class _GameScreenState extends State<GameScreen> {
                 context.push('/game/mySquad?userId=${homeLoadedState.userData.userId}');
               }
             ),
-            getTag(title: 'POINTS TABLE', tagImage: AppImages.redTag, colors: textColorForRedTag, ),
+            getTag(
+              onTap: (){
+                context.push('/game/pointsTable');
+              },
+              title: 'POINTS TABLE', tagImage: AppImages.redTag, colors: textColorForRedTag,
+            ),
           ],
         ),
         SizedBox(height: 1,)
@@ -623,7 +645,8 @@ class _GameScreenState extends State<GameScreen> {
     if(context.read<GameBloc>().state is! GameLoaded){
       return '';
     }else{
-      UserStatusEntity user = (context.read<GameBloc>().state as GameLoaded).gameData.usersStatusList.firstWhere((e) => e.userId == (context.read<HomeBloc>() as HomeLoaded).userData.userId);
+      UserStatusEntity user = (context.read<GameBloc>().state as GameLoaded).gameData.usersStatusList.firstWhere((e) => e.userId == (context.read<HomeBloc>().state as HomeLoaded).userData.userId);
+
       return (user.balanceAmount/10000000).toStringAsFixed(2);
     }
 
@@ -632,7 +655,7 @@ class _GameScreenState extends State<GameScreen> {
 
   bool controlBid(AuctionPlayerStatusEntity currentPlayer, Map<int, AuctionPlayerStatusEntity?> mySquad){
     bool roleCount(String roleId, int limit){
-      return mySquad.values.where((e) => e != null && e.playerRoleId == roleId).toList().length >= limit;
+      return mySquad.values.where((e) => e != null && e.playerRoleId == roleId && e.playerAuctionStatus == PlayerAuctionStatusEnum.buy).toList().length >= limit;
     }
     if(currentPlayer.playerRoleId == AppIds.batsmanId){
       return roleCount(AppIds.batsmanId, AppConstant.batsmanLimit);
