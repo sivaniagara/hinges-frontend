@@ -51,4 +51,10 @@ class AppImages {
   static const String playerBase = '${gameBase}players';
   static const String virat = '${playerBase}virat.png';
 
+
+  /// medals
+  static const String medal1 = '${gameBase}1st_medal.png';
+  static const String medal2 = '${gameBase}2nd_medal.png';
+  static const String medal3 = '${gameBase}3rd_medal.png';
+
 }

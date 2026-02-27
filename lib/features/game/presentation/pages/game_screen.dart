@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/core/utils/constant.dart';
+import 'package:hinges_frontend/features/game/presentation/pages/result_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_name_widget.dart';
@@ -51,306 +52,316 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveStatusBar(
-      color: Theme.of(context).colorScheme.surface,
-      child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              colors: [
-                Color(0xFF800000), // Center deep red
-                Color(0xFFA7100E), // Outer darker red
-              ],
-              radius: 1.0,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20, right: 8),
-            child: Row(
-              spacing: 10,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                firstColumn(),
-                Expanded(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                      gradient: const RadialGradient(
-                        colors: [
-                          Color(0xFFBB1311), // Outer darker red
-                          Color(0xFF670201)
-                        ],
-                        radius: 0.7,
-                      ),
-                      // borderRadius: BorderRadius.circular(90),
-                    ),
-                    child: BlocBuilder<GameBloc, GameState>(
-                        builder: (context, state){
-                          if(state is! GameLoaded){
-                            return Container();
-                          }
-                          final userState = context.read<HomeBloc>().state as HomeLoaded;
-                          GameDataEntity gameData = state.gameData;
-                          final playerData = state.gameData
-                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    if(state.gameData.matchStatus == MatchStatusEnum.notStarted)
-                                      gameExpireLoadingWidget(state)
-                                    else if(state.gameData.matchStatus == MatchStatusEnum.initialMatch)
-                                      GameStartDuration()
-                                    else
-                                      ...[
-                                        getTag(title: '${getPlayerRole(gameData).toUpperCase()} SET', tagImage: AppImages.redTag, colors: textColorForRedTag, imageSize: 200),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          spacing: 10,
-                                          children: [
-                                            if(state.remainingSecondsToExpireAuctionPlayer!= null)
-                                              TweenAnimationBuilder<double>(
-                                              tween: Tween(
-                                                begin: 1,
-                                                end: state.remainingSecondsToExpireAuctionPlayer! / 10,
-                                              ),
-                                              duration: Duration(seconds: state.remainingSecondsToExpireAuctionPlayer! > 9 ? 0 : 1),
-                                              curve: Curves.linear,
-                                              builder: (context, animatedValue, child) {
-                                                return SquareProgressIndicator(
-                                                  value: animatedValue,
-                                                  width: 90,
-                                                  height: 90,
-                                                  borderRadius: 8,
-                                                  startPosition: StartPosition.topCenter,
-                                                  strokeCap: StrokeCap.square,
-                                                  clockwise: false,
-                                                  color: state.remainingSecondsToExpireAuctionPlayer! < 4 ? Colors.red : Colors.yellow,
-                                                  emptyStrokeColor: Colors.yellow.withValues(alpha: 0.1),
-                                                  strokeWidth: 4,
-                                                  emptyStrokeWidth: 4,
-                                                  strokeAlign: SquareStrokeAlign.outside,
-                                                  child: child,
-                                                );
-                                              },
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(6),
-                                                child: BlocSelector<GameBloc, GameState, String>(
-                                                    selector: (state){
-                                                      if (state is! GameLoaded) return '';
-                                                      return state.gameData
-                                                          .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
-                                                          .playerId;
-                                                    },
-                                                    builder: (context, value){
-                                                      return Image.network(
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (context, state) {
+        if (state is GameLoaded &&
+            state.gameData.matchStatus == MatchStatusEnum.finished) {
+          return ResultScreen();
+        }
+
+        return AdaptiveStatusBar(
+          color: Theme.of(context).colorScheme.surface,
+          child: Scaffold(
+            body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [
+                    Color(0xFF800000), // Center deep red
+                    Color(0xFFA7100E), // Outer darker red
+                  ],
+                  radius: 1.0,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 8),
+                child: Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    firstColumn(),
+                    Expanded(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                          gradient: const RadialGradient(
+                            colors: [
+                              Color(0xFFBB1311), // Outer darker red
+                              Color(0xFF670201)
+                            ],
+                            radius: 0.7,
+                          ),
+                          // borderRadius: BorderRadius.circular(90),
+                        ),
+                        child: BlocBuilder<GameBloc, GameState>(
+                            builder: (context, state){
+                              if(state is! GameLoaded){
+                                return Container();
+                              }
+                              final userState = context.read<HomeBloc>().state as HomeLoaded;
+                              GameDataEntity gameData = state.gameData;
+                              final playerData = state.gameData
+                                  .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        if(state.gameData.matchStatus == MatchStatusEnum.notStarted)
+                                          gameExpireLoadingWidget(state)
+                                        else if(state.gameData.matchStatus == MatchStatusEnum.initialMatch)
+                                          GameStartDuration()
+                                        else
+                                          ...[
+                                            getTag(title: '${getPlayerRole(gameData).toUpperCase()} SET', tagImage: AppImages.redTag, colors: textColorForRedTag, imageSize: 200),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                              spacing: 10,
+                                              children: [
+                                                if(state.remainingSecondsToExpireAuctionPlayer!= null)
+                                                  TweenAnimationBuilder<double>(
+                                                    tween: Tween(
+                                                      begin: 1,
+                                                      end: state.remainingSecondsToExpireAuctionPlayer! / 10,
+                                                    ),
+                                                    duration: Duration(seconds: state.remainingSecondsToExpireAuctionPlayer! > 9 ? 0 : 1),
+                                                    curve: Curves.linear,
+                                                    builder: (context, animatedValue, child) {
+                                                      return SquareProgressIndicator(
+                                                        value: animatedValue,
                                                         width: 90,
                                                         height: 90,
-                                                        "${HttpServiceImpl.ipAddress}images/players/$value.png",
+                                                        borderRadius: 8,
+                                                        startPosition: StartPosition.topCenter,
+                                                        strokeCap: StrokeCap.square,
+                                                        clockwise: false,
+                                                        color: state.remainingSecondsToExpireAuctionPlayer! < 4 ? Colors.red : Colors.yellow,
+                                                        emptyStrokeColor: Colors.yellow.withValues(alpha: 0.1),
+                                                        strokeWidth: 4,
+                                                        emptyStrokeWidth: 4,
+                                                        strokeAlign: SquareStrokeAlign.outside,
+                                                        child: child,
                                                       );
-                                                    }
-                                                ),
-                                              ),
-                                            ),
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              spacing: 8,
-                                              children: [
-                                                Row(
-                                                  spacing: 10,
-                                                  children: [
-                                                    PlayerNameWidget(gameData: gameData),
-                                                    // Image.asset(
-                                                    //     width: 30,
-                                                    //     height: 30,
-                                                    //     AppImages.bat
-                                                    // ),
-                                                    Image.asset(
-                                                        width: 25,
-                                                        height: 25,
-                                                        context.read<GameBloc>().getPlayerRoleImage(playerData, userState.userData.categoryAndItsItem, userState.userData.players)
-                                                    ),
-                                                    if(isCappedPlayer(playerData, userState.userData.players))
-                                                      Image.asset(
-                                                          width: 25,
-                                                          height: 25,
-                                                          AppImages.cap
+                                                    },
+                                                    child: ClipRRect(
+                                                      borderRadius: BorderRadius.circular(6),
+                                                      child: BlocSelector<GameBloc, GameState, String>(
+                                                          selector: (state){
+                                                            if (state is! GameLoaded) return '';
+                                                            return state.gameData
+                                                                .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+                                                                .playerId;
+                                                          },
+                                                          builder: (context, value){
+                                                            return Image.network(
+                                                              width: 90,
+                                                              height: 90,
+                                                              "${HttpServiceImpl.ipAddress}images/players/$value.png",
+                                                            );
+                                                          }
                                                       ),
-                                                    Text(
-                                                      context.read<GameBloc>().getPlayerCountryFlag(playerData, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                      style: TextStyle(fontSize: 20),
-                                                    )
-                                                    // Image.asset(
-                                                    //     width: 30,
-                                                    //     height: 30,
-                                                    //     AppImages.indiaFlag
-                                                    // ),
-                                                  ],
-                                                ),
-                                                PlayerStyleWidget(gameData: gameData),
-                                                Row(
-                                                  spacing: 10,
+                                                    ),
+                                                  ),
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  spacing: 2,
                                                   children: [
-                                                    Column(
+                                                    Row(
+                                                      spacing: 10,
                                                       children: [
-                                                        Text('BASE PRICE', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
-                                                        Text(
-                                                          '${state.gameData
-                                                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
-                                                              .basePrice} L',
-                                                          style: TextStyle(
-                                                            fontFamily: 'Zuume',
-                                                            fontWeight: FontWeight.w700,
-                                                            fontStyle: FontStyle.italic,
-                                                            fontSize: 20,
-                                                          ),
+                                                        PlayerNameWidget(gameData: gameData),
+                                                        // Image.asset(
+                                                        //     width: 30,
+                                                        //     height: 30,
+                                                        //     AppImages.bat
+                                                        // ),
+                                                        Image.asset(
+                                                            width: 25,
+                                                            height: 25,
+                                                            context.read<GameBloc>().getPlayerRoleImage(playerData, userState.userData.categoryAndItsItem, userState.userData.players)
                                                         ),
+                                                        if(isCappedPlayer(playerData, userState.userData.players))
+                                                          Image.asset(
+                                                              width: 25,
+                                                              height: 25,
+                                                              AppImages.cap
+                                                          ),
+                                                        Text(
+                                                          context.read<GameBloc>().getPlayerCountryFlag(playerData, userState.userData.categoryAndItsItem, userState.userData.players),
+                                                          style: TextStyle(fontSize: 20),
+                                                        )
+                                                        // Image.asset(
+                                                        //     width: 30,
+                                                        //     height: 30,
+                                                        //     AppImages.indiaFlag
+                                                        // ),
                                                       ],
                                                     ),
-                                                    Container(
-                                                      width: 0.5,
-                                                      height: 30,
-                                                      color: Colors.white,
-                                                    ),
-                                                    Column(
+                                                    PlayerStyleWidget(gameData: gameData),
+                                                    Row(
+                                                      spacing: 10,
                                                       children: [
-                                                        Text('RATING', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
-                                                        Text(
-                                                          '${state.gameData
-                                                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
-                                                              .baseRating}',
-                                                          style: TextStyle(
-                                                            fontFamily: 'Zuume',
-                                                            fontWeight: FontWeight.w700,
-                                                            fontStyle: FontStyle.italic,
-                                                            fontSize: 20,
-                                                          ),
+                                                        Column(
+                                                          children: [
+                                                            Text('BASE PRICE', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
+                                                            Text(
+                                                              '${state.gameData
+                                                                  .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+                                                                  .basePrice} L',
+                                                              style: TextStyle(
+                                                                // fontFamily: 'Zuume',
+                                                                // fontWeight: FontWeight.w700,
+                                                                // fontStyle: FontStyle.italic,
+                                                                fontSize: 20,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Container(
+                                                          width: 0.5,
+                                                          height: 20,
+                                                          color: Colors.white,
+                                                        ),
+                                                        Column(
+                                                          children: [
+                                                            Text('RATING', style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),),
+                                                            Text(
+                                                              '${state.gameData
+                                                                  .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+                                                                  .baseRating}',
+                                                              style: TextStyle(
+                                                                // fontFamily: 'Zuume',
+                                                                // fontWeight: FontWeight.w700,
+                                                                // fontStyle: FontStyle.italic,
+                                                                fontSize: 20,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
-                                                    ),
+                                                    )
                                                   ],
                                                 )
                                               ],
-                                            )
-                                          ],
-                                        ),
-                                      ]
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: MediaQuery.of(context).size.height * 0.5,
-                                decoration: BoxDecoration(
-                                  image: const DecorationImage(
-                                    image: AssetImage(AppImages.auctionCard), // Placeholder for wood texture
-                                    fit: BoxFit.fill,
+                                            ),
+                                          ]
+                                      ],
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(40),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    ...[
-                                      Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 20),
-                                          child: RichText(
-                                            textAlign: TextAlign.center,
-                                            text: TextSpan(
-                                              style: Theme.of(context).textTheme.bodyLarge,
-                                              children: [
-                                                TextSpan(
-                                                  text: 'CURRENT BID',
-                                                  style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+                                  Container(
+                                    width: double.infinity,
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    decoration: BoxDecoration(
+                                      image: const DecorationImage(
+                                        image: AssetImage(AppImages.auctionCard), // Placeholder for wood texture
+                                        fit: BoxFit.fill,
+                                      ),
+                                      borderRadius: BorderRadius.circular(40),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        ...[
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(top: 20),
+                                              child: RichText(
+                                                textAlign: TextAlign.center,
+                                                text: TextSpan(
+                                                  style: Theme.of(context).textTheme.bodyLarge,
+                                                  children: [
+                                                    TextSpan(
+                                                      text: 'CURRENT BID',
+                                                      style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
 
+                                                    ),
+                                                    TextSpan(
+                                                      text: '  ${playerData.currentPrice/10000000 } CR',
+                                                      style: TextStyle(
+                                                        // fontFamily: 'Zuume',
+                                                        // fontWeight: FontWeight.w700,
+                                                        // fontStyle: FontStyle.italic,
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                TextSpan(
-                                                  text: '  ${playerData.currentPrice/10000000 } CR',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Zuume',
-                                                    fontWeight: FontWeight.w700,
-                                                    fontStyle: FontStyle.italic,
-                                                    fontSize: 25,
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                      if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.csk.teamId()))
-                                        Positioned(
-                                          left: 50,
-                                          top: 50,
-                                          child: getFranchiseLogo(
-                                              imagePath: AppImages.csk,
-                                              user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId()),
-                                            glow: playerData.teamId == MiniAuctionFranchiseEnum.csk.teamId()
-                                          ),
-                                        ),
-                                      if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.mi.teamId()))
-                                        Positioned(
-                                          right: 50,
-                                          top: 50,
-                                          child: getFranchiseLogo(
-                                              imagePath: AppImages.mi,
-                                              user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId()),
-                                              glow: playerData.teamId == MiniAuctionFranchiseEnum.mi.teamId()
-                                          ),
-                                        ),
-                                      if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.rcb.teamId()))
-                                        Positioned(
-                                          right: 50,
-                                          bottom: 35,
-                                          child: getFranchiseLogo(
-                                              imagePath: AppImages.rcb,
-                                              user: getUser(gameData.usersStatusList,
-                                                  MiniAuctionFranchiseEnum.rcb.teamId()),
-                                              glow: playerData.teamId == MiniAuctionFranchiseEnum.rcb.teamId()
-                                          ),
-                                        ),
-                                      if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.kkr.teamId()))
-                                        Positioned(
-                                          left: 50,
-                                          bottom: 35,
-                                          child: getFranchiseLogo(
-                                              imagePath: AppImages.kkr,
-                                              user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId()),
-                                              glow: playerData.teamId == MiniAuctionFranchiseEnum.kkr.teamId()
-                                          ),
-                                        ),
-                                      if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.srh.teamId()))
-                                        Align(
-                                            alignment: Alignment.center,
-                                            child: getFranchiseLogo(
-                                                imagePath: AppImages.srh,
-                                                user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId()),
-                                                glow: playerData.teamId == MiniAuctionFranchiseEnum.srh.teamId()
-                                            )
-                                        ),
-                                    ]
-                                  ],
-                                ),
-                              )
-                            ],
-                          );
-                    }),
-                  ),
+                                          if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.csk.teamId()))
+                                            Positioned(
+                                              left: 50,
+                                              top: 50,
+                                              child: getFranchiseLogo(
+                                                  imagePath: AppImages.csk,
+                                                  user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.csk.teamId()),
+                                                  glow: playerData.teamId == MiniAuctionFranchiseEnum.csk.teamId()
+                                              ),
+                                            ),
+                                          if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.mi.teamId()))
+                                            Positioned(
+                                              right: 50,
+                                              top: 50,
+                                              child: getFranchiseLogo(
+                                                  imagePath: AppImages.mi,
+                                                  user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.mi.teamId()),
+                                                  glow: playerData.teamId == MiniAuctionFranchiseEnum.mi.teamId()
+                                              ),
+                                            ),
+                                          if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.rcb.teamId()))
+                                            Positioned(
+                                              right: 50,
+                                              bottom: 35,
+                                              child: getFranchiseLogo(
+                                                  imagePath: AppImages.rcb,
+                                                  user: getUser(gameData.usersStatusList,
+                                                      MiniAuctionFranchiseEnum.rcb.teamId()),
+                                                  glow: playerData.teamId == MiniAuctionFranchiseEnum.rcb.teamId()
+                                              ),
+                                            ),
+                                          if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.kkr.teamId()))
+                                            Positioned(
+                                              left: 50,
+                                              bottom: 35,
+                                              child: getFranchiseLogo(
+                                                  imagePath: AppImages.kkr,
+                                                  user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.kkr.teamId()),
+                                                  glow: playerData.teamId == MiniAuctionFranchiseEnum.kkr.teamId()
+                                              ),
+                                            ),
+                                          if(gameData.usersStatusList.any((user) => user.teamId == MiniAuctionFranchiseEnum.srh.teamId()))
+                                            Align(
+                                                alignment: Alignment.center,
+                                                child: getFranchiseLogo(
+                                                    imagePath: AppImages.srh,
+                                                    user: getUser(gameData.usersStatusList, MiniAuctionFranchiseEnum.srh.teamId()),
+                                                    glow: playerData.teamId == MiniAuctionFranchiseEnum.srh.teamId()
+                                                )
+                                            ),
+                                        ]
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              );
+                            }),
+                      ),
+                    ),
+                    thirdColumn(),
+                  ],
                 ),
-                thirdColumn(),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
+
   }
 
   bool isCappedPlayer(AuctionPlayerStatusEntity player, List<PlayerEntity> playerList){

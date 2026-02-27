@@ -435,4 +435,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return ((end + 1) - start) - (end - position);
     }
   }
+
+  double getRating(String userId){
+    double totalRating = 0.0;
+    Map<int, AuctionPlayerStatusEntity?> squad = getMySquad(userId);
+    for(var player in squad.values){
+      if(player != null){
+        totalRating += player.baseRating;
+      }
+    }
+    return totalRating;
+  }
 }
