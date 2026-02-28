@@ -8,9 +8,11 @@ import '../../../../core/utils/app_ids.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
+import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../data/models/game_data_model.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/game_data_entity.dart';
+import '../../domain/entities/user_status_entity.dart';
 import '../../utils/game_urls.dart';
 import '../../domain/usecase/get_game_data_usecase.dart';
 
@@ -24,6 +26,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _gameDataSubscription;
   Timer? _timerForExpireMatchDuration;
   Timer? _timerForAuctionPlayer;
+  Timer? _timerForBreak;
 
   int _reconnectAttempts = 0;
   final int _maxReconnectAttempts = 5;
@@ -73,6 +76,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
                         ? null
                         : _calculateRemainingForPlayerAuction(
                         gameData.auctionExpiresAt!, gameData.serverTime!, 10),
+                    remainingSecondsToExpireBreak:
+                    gameData.breakExpiresAt == null
+                        ? null
+                        : _calculateRemainingForBreak(
+                        gameData.breakExpiresAt!, gameData.serverTime!, 10),
                     isReconnecting: false,
                   ),
                 );
@@ -166,11 +174,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             ? _calculateRemainingForPlayerAuction(
             game.auctionExpiresAt!, game.serverTime!, 10)
             : null,
+        remainingSecondsToExpireBreak:
+        (game.breakExpiresAt != null && game.serverTime != null)
+            ? _calculateRemainingForBreak(
+            game.breakExpiresAt!, game.serverTime!, 5)
+            : null,
       ));
 
       if (game.matchStatus == MatchStatusEnum.started) {
         _startAuctionTimer();
+        _startBreakTimer();
       }
+
     });
 
     // ================= MATCH COUNTDOWN =================
@@ -203,6 +218,22 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if (remaining != null && remaining > 0) {
         emit(currentState.copyWith(
           remainingSecondsToExpireAuctionPlayer: remaining - 1,
+        ));
+      }
+    });
+
+    on<BreakTick>((event, emit) {
+      if (state is! GameLoaded) return;
+
+      final currentState = state as GameLoaded;
+
+      final remaining =
+          currentState.remainingSecondsToExpireBreak;
+      print("break remaining :: ${currentState.remainingSecondsToExpireBreak}");
+
+      if (remaining != null && remaining > 0) {
+        emit(currentState.copyWith(
+          remainingSecondsToExpireBreak: remaining - 1,
         ));
       }
     });
@@ -255,6 +286,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     );
   }
 
+  void _startBreakTimer() {
+    _timerForBreak?.cancel();
+
+    _timerForBreak = Timer.periodic(
+      const Duration(seconds: 1),
+          (_) => add(BreakTick()),
+    );
+  }
+
   @override
   Future<void> close() {
     _gameDataSubscription?.cancel();
@@ -272,6 +312,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   double _calculateRemainingForPlayerAuction(
+      double expireAt,
+      double serverTime,
+      secondsLimit
+      ) {
+    final remaining = expireAt - serverTime - 1;
+    return remaining > 0 ? remaining.toDouble() : 0.0;
+  }
+
+  double _calculateRemainingForBreak(
       double expireAt,
       double serverTime,
       secondsLimit
@@ -446,4 +495,59 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
     return totalRating;
   }
-}
+
+  MiniAuctionFranchiseEnum getFranchise(List<UserStatusEntity> userList, List<String> teamList, String userId ){
+    int indexOfUser = userList.indexWhere((e) => e.userId == userId);
+    String teamId = teamList[indexOfUser];
+    if(MiniAuctionFranchiseEnum.csk.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.csk;
+    }else if(MiniAuctionFranchiseEnum.mi.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.mi;
+    }else if(MiniAuctionFranchiseEnum.kkr.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.kkr;
+    }else if(MiniAuctionFranchiseEnum.srh.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.srh;
+    }else{
+      return MiniAuctionFranchiseEnum.rcb;
+    }
+  }
+
+  UserStatusEntity findTheUserWhoBuyThePlayer(List<UserStatusEntity> userList, List<String> teamList, String teamId){
+    int indexOfUser = userList.indexWhere((e) => e.teamId == teamId);
+    return userList[indexOfUser];
+  }
+
+  String formatPriceShort(
+      num rupees, {
+        int maxDecimalsForCr = 1,   // most common choice
+        int maxDecimalsForLakh = 1,
+        bool removeTrailingZeros = true,
+      }) {
+    if (rupees <= 0) return "0";
+
+    rupees = double.parse(rupees.toStringAsFixed(6)); // prevent floating point weirdness
+
+    String format(double value, int maxDec) {
+      if (removeTrailingZeros) {
+        final fixed = value.toStringAsFixed(maxDec);
+        return fixed.replaceAll(RegExp(r'\.?0+$'), '');
+      }
+      return value.toStringAsFixed(maxDec);
+    }
+
+    if (rupees >= 10000000) {
+      final cr = rupees / 10000000;
+      return "${format(cr, maxDecimalsForCr)} Cr";
+    }
+    else if (rupees >= 100000) {
+      final lakh = rupees / 100000;
+      return "${format(lakh, maxDecimalsForLakh)} L";
+    }
+    else {
+      final intValue = rupees.toInt();
+      return intValue.toString().replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (Match m) => '${m[1]},',
+      );
+    }
+  }}

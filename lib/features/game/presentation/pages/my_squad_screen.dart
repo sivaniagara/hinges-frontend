@@ -102,7 +102,7 @@ class MySquadScreen extends StatelessWidget {
                                                         context.read<GameBloc>().getPlayerRoleImage(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
                                                         getPlayerCountryShortForm(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
                                                         context.read<GameBloc>().getPlayerCountryFlag(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                        '${(mySquad[key]!.currentPrice/10000000).toStringAsFixed(2)} CR',
+                                                        context.read<GameBloc>().formatPriceShort(mySquad[key]!.currentPrice),
                                                         mySquad[key]!.baseRating.toString()
                                                     ),
                                                     const Divider(height: 1, color: Colors.brown, thickness: 1),
@@ -210,12 +210,12 @@ class MySquadScreen extends StatelessWidget {
                                     Row(
                                       children: [
                                         Image.asset(
-                                            getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).image(),                                        height: 50
+                                            context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).image(),                                        height: 50
                                         ),
                                         const SizedBox(width: 10),
                                         Expanded(
                                           child: Text(
-                                            getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).fullName(),
+                                              context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).fullName(),
                                             style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -227,7 +227,7 @@ class MySquadScreen extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         _buildStatBox('MY PURSE', '60 CR', AppImages.yellowTag, textColorForYellowTag),
-                                        _buildStatBox('PURSE REM', '${((state.gameData.usersStatusList.firstWhere((e) => e.userId == userId).balanceAmount)/10000000).toStringAsFixed(2)} CR', AppImages.redTag, textColorForRedTag),
+                                        _buildStatBox('PURSE REM', context.read<GameBloc>().formatPriceShort((state.gameData.usersStatusList.firstWhere((e) => e.userId == userId).balanceAmount)), AppImages.redTag, textColorForRedTag),
                                         _buildStatBox('TOTAL RATING', getSquadRating(mySquad).toStringAsFixed(2), AppImages.redTag, textColorForRedTag),
                                       ],
                                     )
@@ -269,24 +269,6 @@ class MySquadScreen extends StatelessWidget {
       }
     }
     return rating;
-  }
-  
-  
-  MiniAuctionFranchiseEnum getFranchise(List<UserStatusEntity> userList, List<String> teamList, String userId ){
-    int indexOfUser = userList.indexWhere((e) => e.userId == userId);
-    String teamId = teamList[indexOfUser];
-    if(MiniAuctionFranchiseEnum.csk.teamId() == teamId){
-      return MiniAuctionFranchiseEnum.csk;
-    }else if(MiniAuctionFranchiseEnum.mi.teamId() == teamId){
-      return MiniAuctionFranchiseEnum.mi;
-    }else if(MiniAuctionFranchiseEnum.kkr.teamId() == teamId) {
-      return MiniAuctionFranchiseEnum.kkr;
-    }else if(MiniAuctionFranchiseEnum.srh.teamId() == teamId) {
-      return MiniAuctionFranchiseEnum.srh;
-    }else{
-      return MiniAuctionFranchiseEnum.rcb;
-    }
-    
   }
 
 

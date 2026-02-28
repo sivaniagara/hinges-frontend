@@ -50,6 +50,7 @@ class BidAuctionPlayer extends GameEvent {
 
 class GameCountdownTick extends GameEvent {}
 class AuctionPlayerTick extends GameEvent {}
+class BreakTick extends GameEvent {}
 
 class GameSocketDisconnected extends GameEvent {}
 

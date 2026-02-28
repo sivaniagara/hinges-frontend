@@ -11,7 +11,7 @@ class HttpServiceImpl implements HttpService {
   final Duration timeout;
 
   static final String ipAddress = 'https://api.hingesgames.com/';
-  // static final String ipAddress = 'http://192.168.1.198:8000/';
+  // static final String ipAddress = 'http://192.168.1.127:8000/';
 
   HttpServiceImpl({
     required this.client,

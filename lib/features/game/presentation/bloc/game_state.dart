@@ -13,12 +13,14 @@ class GameLoaded extends GameState {
   final GameDataEntity gameData;
   final double remainingSecondsToStart;
   final double? remainingSecondsToExpireAuctionPlayer;
+  final double? remainingSecondsToExpireBreak;
   final bool isReconnecting;
 
   GameLoaded({
     required this.gameData,
     required this.remainingSecondsToStart,
     required this.remainingSecondsToExpireAuctionPlayer,
+    required this.remainingSecondsToExpireBreak,
     this.isReconnecting = false,   // ✅ default false
   });
 
@@ -26,6 +28,7 @@ class GameLoaded extends GameState {
     GameDataEntity? gameData,
     double? remainingSecondsToStart,
     double? remainingSecondsToExpireAuctionPlayer,
+    double? remainingSecondsToExpireBreak,
     bool? isReconnecting,
   }) {
     return GameLoaded(
@@ -35,6 +38,9 @@ class GameLoaded extends GameState {
       remainingSecondsToExpireAuctionPlayer:
       remainingSecondsToExpireAuctionPlayer ??
           this.remainingSecondsToExpireAuctionPlayer,
+      remainingSecondsToExpireBreak:
+      remainingSecondsToExpireBreak ??
+          this.remainingSecondsToExpireBreak,
       isReconnecting: isReconnecting ?? this.isReconnecting,
     );
   }
@@ -44,6 +50,7 @@ class GameLoaded extends GameState {
     gameData,
     remainingSecondsToStart,
     remainingSecondsToExpireAuctionPlayer,
+    remainingSecondsToExpireBreak,
     isReconnecting,   // ✅ important
   ];
 }

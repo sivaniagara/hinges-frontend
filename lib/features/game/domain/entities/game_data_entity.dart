@@ -13,17 +13,26 @@ enum MatchStatusEnum {
   paused,
 }
 
+enum BreakStatusEnum {
+  playerSetBreak,
+  auctionPlayerBreak,
+  triggerNextPlayer,
+  pause
+}
+
 
 
 class GameDataEntity extends Equatable {
   final String matchId;
   final String auctionCategoryId;
   final MatchStatusEnum matchStatus;
+  final BreakStatusEnum breakStatus;
   final double gameCreatedAt;
   final int gameStartDuration;
   final double? gameStartAt;
   final int currentAuctionPlayerIndex;
   final double? auctionExpiresAt;
+  final double? breakExpiresAt;
   final double? serverTime;
   final int highestBid;
   final String? highestBidUserId;
@@ -35,11 +44,13 @@ class GameDataEntity extends Equatable {
     required this.matchId,
     required this.auctionCategoryId,
     required this.matchStatus,
+    required this.breakStatus,
     required this.gameCreatedAt,
     required this.gameStartDuration,
     required this.gameStartAt,
     required this.currentAuctionPlayerIndex,
     required this.auctionExpiresAt,
+    required this.breakExpiresAt,
     required this.serverTime,
     required this.highestBid,
     this.highestBidUserId,
@@ -54,11 +65,13 @@ class GameDataEntity extends Equatable {
         matchId,
         auctionCategoryId,
         matchStatus,
+        breakStatus,
         gameCreatedAt,
         gameStartDuration,
         gameStartAt,
         currentAuctionPlayerIndex,
         auctionExpiresAt,
+        breakExpiresAt,
         serverTime,
         highestBid,
         highestBidUserId,

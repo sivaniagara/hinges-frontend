@@ -100,7 +100,7 @@ class PlayersScreen extends StatelessWidget {
                                                     getPlayerCategoryImage(playersList[player], userState.userData.categoryAndItsItem, userState.userData.players),
                                                     getPlayerCountryShortForm(playersList[player], userState.userData.categoryAndItsItem, userState.userData.players),
                                                     getPlayerCountryFlag(playersList[player], userState.userData.categoryAndItsItem, userState.userData.players),
-                                                    '${(playersList[player].currentPrice/10000000).toStringAsFixed(2)} CR',
+                                                    context.read<GameBloc>().formatPriceShort(playersList[player].currentPrice),
                                                     playersList[player].baseRating.toString()
                                                 ),
                                                 const Divider(height: 1, color: Colors.brown, thickness: 1),

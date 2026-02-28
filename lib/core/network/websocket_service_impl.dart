@@ -9,7 +9,7 @@ import 'websocket_service.dart';
 class WebSocketServiceImpl implements WebSocketService {
   WebSocket? _socket;
   final String ipAddress = 'wss://api.hingesgames.com/';
-  // static final String ipAddress = 'ws://192.168.1.198:8000/';
+  // static final String ipAddress = 'ws://192.168.1.127:8000/';
   @override
   Stream<dynamic> get stream =>
       _socket?.map((event) => jsonDecode(event)) ??
