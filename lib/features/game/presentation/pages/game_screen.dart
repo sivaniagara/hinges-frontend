@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/core/utils/constant.dart';
+import 'package:hinges_frontend/core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import 'package:hinges_frontend/features/game/data/models/auction_player_status_model.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/result_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
@@ -764,9 +765,14 @@ class _GameScreenState extends State<GameScreen> {
                         // }
                         return GestureDetector(
                           onTap: (){
-                            if(!gameBloc.enableBidButton(currentState.userData.userId)){
-                              context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
+                            if(isThereAmountToBid(currentState.userData.userId)){
+                              if(!gameBloc.enableBidButton(currentState.userData.userId)){
+                                context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
+                              }
+                            }else{
+                              showGameInfoDialog(context, message: "You haven't enough amount to bid the player! ");
                             }
+
                           },
                           child: Opacity(
                             opacity: (
@@ -805,19 +811,23 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  bool controlBid(
-      AuctionPlayerStatusEntity currentPlayer,
-      Map<int, AuctionPlayerStatusEntity?> mySquad,
-      String userId,
-      ){
+  bool isThereAmountToBid(String userId,){
     // check is there a 25L to bid\
     final gameBloc = context.read<GameBloc>();
     if(gameBloc.state is GameLoaded){
       final gameLoadedState = gameBloc.state as GameLoaded;
       UserStatusEntity userStatusEntity = gameLoadedState.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
       AuctionPlayerStatusEntity auctionPlayerStatusEntity = gameLoadedState.gameData.auctionPlayersStatusList[gameLoadedState.gameData.currentAuctionPlayerIndex];
-      if((userStatusEntity.balanceAmount - auctionPlayerStatusEntity.currentPrice) >= 2500000) return true;
+      if((userStatusEntity.balanceAmount - auctionPlayerStatusEntity.currentPrice) < 2500000) return false;
     }
+    return true;
+  }
+
+  bool controlBid(
+      AuctionPlayerStatusEntity currentPlayer,
+      Map<int, AuctionPlayerStatusEntity?> mySquad,
+      String userId,
+      ){
 
     bool roleCount(String roleId, int limit){
       return mySquad.values.where((e) => e != null && e.playerRoleId == roleId && e.playerAuctionStatus == PlayerAuctionStatusEnum.buy).toList().length >= limit;
