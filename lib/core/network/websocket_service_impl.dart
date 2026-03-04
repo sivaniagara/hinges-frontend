@@ -24,7 +24,6 @@ class WebSocketServiceImpl implements WebSocketService {
       _socket!.done.then((_) {
         print("Socket closed from server");
       });
-
       return const Right(null);
     } catch (e) {
       return Left(WebSocketFailure(e.toString()));

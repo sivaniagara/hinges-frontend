@@ -33,9 +33,6 @@ String? validatePassword(String? value) {
   if (!RegExp(r'[!@#\$&*~]').hasMatch(value)) {
     return 'Include at least one special character (!@#\$&*~)';
   }
-  if(value.endsWith('@gmail.com')){
-    return 'EmailId not valid';
-  }
 
   return null; // valid
 }

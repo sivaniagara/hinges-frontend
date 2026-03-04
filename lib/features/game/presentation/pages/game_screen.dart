@@ -756,12 +756,12 @@ class _GameScreenState extends State<GameScreen> {
                       builder: (context, homeState){
                         final gameBloc = context.read<GameBloc>();
                         final currentState = homeState as HomeLoaded;
-                        if(gameData.matchStatus != MatchStatusEnum.started || controlBid(playerData, gameBloc.getMySquad(currentState.userData.userId))){
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.1,
-                            height: MediaQuery.of(context).size.width * 0.1,
-                          );
-                        }
+                        // if(gameData.matchStatus != MatchStatusEnum.started || controlBid(playerData, gameBloc.getMySquad(currentState.userData.userId))){
+                        //   return SizedBox(
+                        //     width: MediaQuery.of(context).size.width * 0.1,
+                        //     height: MediaQuery.of(context).size.width * 0.1,
+                        //   );
+                        // }
                         return GestureDetector(
                           onTap: (){
                             if(!gameBloc.enableBidButton(currentState.userData.userId)){
@@ -769,7 +769,11 @@ class _GameScreenState extends State<GameScreen> {
                             }
                           },
                           child: Opacity(
-                            opacity: gameBloc.enableBidButton(currentState.userData.userId) ?  0.2 : 1,
+                            opacity: (
+                                controlBid(playerData, gameBloc.getMySquad(currentState.userData.userId), currentState.userData.userId)
+                                ||
+                                gameBloc.enableBidButton(currentState.userData.userId)
+                            ) ?  0.2 : 1,
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.1,
                               height: MediaQuery.of(context).size.width * 0.1,
@@ -801,7 +805,20 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  bool controlBid(AuctionPlayerStatusEntity currentPlayer, Map<int, AuctionPlayerStatusEntity?> mySquad){
+  bool controlBid(
+      AuctionPlayerStatusEntity currentPlayer,
+      Map<int, AuctionPlayerStatusEntity?> mySquad,
+      String userId,
+      ){
+    // check is there a 25L to bid\
+    final gameBloc = context.read<GameBloc>();
+    if(gameBloc.state is GameLoaded){
+      final gameLoadedState = gameBloc.state as GameLoaded;
+      UserStatusEntity userStatusEntity = gameLoadedState.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
+      AuctionPlayerStatusEntity auctionPlayerStatusEntity = gameLoadedState.gameData.auctionPlayersStatusList[gameLoadedState.gameData.currentAuctionPlayerIndex];
+      if((userStatusEntity.balanceAmount - auctionPlayerStatusEntity.currentPrice) >= 2500000) return true;
+    }
+
     bool roleCount(String roleId, int limit){
       return mySquad.values.where((e) => e != null && e.playerRoleId == roleId && e.playerAuctionStatus == PlayerAuctionStatusEnum.buy).toList().length >= limit;
     }
