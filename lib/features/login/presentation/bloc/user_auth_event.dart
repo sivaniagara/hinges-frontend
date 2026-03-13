@@ -24,6 +24,8 @@ class SignInRequested extends UserAuthEvent {
   SignInRequested(this.email, this.password, {this.rememberMe = false});
 }
 
+class GoogleSignInRequested extends UserAuthEvent {}
+
 class ForgotPasswordRequested extends UserAuthEvent {
   final String email;
   ForgotPasswordRequested(this.email);

@@ -31,6 +31,20 @@ class AuctionPlayerStatusEntity extends Equatable {
     required this.playerAuctionStatus,
   });
 
+  Map<String, dynamic> toJson(){
+    return {
+      "playerId" : playerId,
+      "playerName" : playerName,
+      "playerRoleId" : playerRoleId,
+      "teamId" : teamId,
+      "basePrice" : basePrice,
+      "currentPrice" : currentPrice,
+      "baseRating" : baseRating,
+      "priceIncrement" : priceIncrement,
+      "playerAuctionStatus" : playerAuctionStatus,
+    };
+  }
+
   @override
   List<Object?> get props => [
         playerId,

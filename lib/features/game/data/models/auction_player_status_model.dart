@@ -14,6 +14,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
   });
 
   factory AuctionPlayerStatusModel.fromJson(Map<String, dynamic> json) {
+    print("last updated player ===> ${json}");
     return AuctionPlayerStatusModel(
       playerId: json['player_id'] ?? '',
       playerName: json['player_name'] ?? '',

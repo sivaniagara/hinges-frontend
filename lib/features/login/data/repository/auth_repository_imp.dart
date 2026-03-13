@@ -27,14 +27,30 @@ class AuthRepositoryImp extends AuthRepository {
         );
       }
 
-      /// 1️⃣ Create user in Firebase Auth
-      final UserCredential userCredential =
-      await firebaseAuthDataSource.registerEmailIdAndPasswordInFirebaseAuth(
-        userName: '',
-        phoneNumber: '',
-        emailId: params.emailId,
-        password: params.password,
-      );
+      UserCredential userCredential;
+
+      try {
+        /// 1️⃣ Try creating Firebase user
+        userCredential =
+        await firebaseAuthDataSource.registerEmailIdAndPasswordInFirebaseAuth(
+          userName: '',
+          phoneNumber: '',
+          emailId: params.emailId,
+          password: params.password,
+        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+
+          /// 2️⃣ If user already exists → sign in instead
+          userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: params.emailId,
+            password: params.password,
+          );
+        } else {
+          return Left(ServerFailure(e.message ?? 'Signup failed'));
+        }
+      }
 
       final user = userCredential.user;
 
@@ -42,7 +58,7 @@ class AuthRepositoryImp extends AuthRepository {
         return Left(ServerFailure('User creation failed'));
       }
 
-      /// 2️⃣ Store user in your backend DB
+      /// 3️⃣ Store user in backend DB
       final response = await remoteAuthDataSource.storeUserInDb(
         uid: user.uid,
         email: params.emailId,
@@ -50,27 +66,37 @@ class AuthRepositoryImp extends AuthRepository {
         phoneNumber: params.phoneNumber,
       );
 
-      /// 3️⃣ If DB success → return success
       if (response['status'] == 200) {
         return Right(userCredential);
       }
 
-      /// 4️⃣ If DB fails → delete Firebase user (rollback)
-      await _deleteFirebaseUser(user);
-
       return Left(
-        ServerFailure(response['message'] ?? 'User already exists'),
+        ServerFailure(response['message'] ?? 'Failed to store user'),
       );
+
     } catch (e) {
       return Left(ServerFailure('Signup failed: $e'));
     }
   }
 
-  Future<void> _deleteFirebaseUser(User user) async {
+
+  Future<void> _deleteFirebaseUser(
+      User user,
+      String email,
+      String password,
+      ) async {
     try {
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+
+      // Reauthenticate
+      await user.reauthenticateWithCredential(credential);
+
+      // Delete user
       await user.delete();
     } catch (e) {
-      // optional: log to crashlytics
       debugPrint('Failed to delete Firebase user: $e');
     }
   }
@@ -80,6 +106,46 @@ class AuthRepositoryImp extends AuthRepository {
     try {
       await firebaseAuthDataSource.forgotPassword(email);
       return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserCredential>> signInWithGoogle() async {
+    try {
+      final userCredential = await firebaseAuthDataSource.signInWithGoogle();
+      return Right(userCredential);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateUserDetailsInDb({
+    required String userId,
+    required String userName,
+    String? userEmailId,
+    required String userMobileNumber,
+    required int authProvider,
+    String? profilePath,
+    required DateTime createdAt,
+  }) async {
+    try {
+      final response = await remoteAuthDataSource.updateUserDetails(
+        userId: userId,
+        userName: userName,
+        userEmailId: userEmailId,
+        userMobileNumber: userMobileNumber,
+        authProvider: authProvider,
+        profilePath: profilePath,
+        createdAt: createdAt,
+      );
+      if (response['status'] == 200) {
+        return const Right(null);
+      } else {
+        return Left(ServerFailure(response['message'] ?? 'Failed to update user details'));
+      }
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

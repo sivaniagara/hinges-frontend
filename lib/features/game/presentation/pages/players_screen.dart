@@ -84,6 +84,13 @@ class PlayersScreen extends StatelessWidget {
                                   // final mySquad = context.read<GameBloc>().getMySquad(userId);
                                   if(state is GameLoaded){
                                     List<AuctionPlayerStatusEntity> playersList = state.gameData.auctionPlayersStatusList.where((e) => e.playerRoleId == playerRole).toList();
+                                    playersList = [
+                                      ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.available),
+                                      ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notSold),
+                                      ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notShown),
+                                      ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.buy),
+                                      ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.sold),
+                                    ];
                                     return Expanded(
                                       child: ListView(
                                         padding: EdgeInsets.zero,
@@ -101,7 +108,9 @@ class PlayersScreen extends StatelessWidget {
                                                     getPlayerCountryShortForm(playersList[player], userState.userData.categoryAndItsItem, userState.userData.players),
                                                     getPlayerCountryFlag(playersList[player], userState.userData.categoryAndItsItem, userState.userData.players),
                                                     context.read<GameBloc>().formatPriceShort(playersList[player].currentPrice),
-                                                    playersList[player].baseRating.toString()
+                                                    playersList[player].baseRating.toString(),
+                                                    getPlayerStatus(playersList[player]).$1,
+                                                    getPlayerStatus(playersList[player]).$2,
                                                 ),
                                                 const Divider(height: 1, color: Colors.brown, thickness: 1),
                                               ],
@@ -138,6 +147,18 @@ class PlayersScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  (String, Color) getPlayerStatus(AuctionPlayerStatusEntity player){
+    if(player.playerAuctionStatus == PlayerAuctionStatusEnum.sold){
+      return ('SOLD', Colors.green);
+    }else if(player.playerAuctionStatus == PlayerAuctionStatusEnum.notSold){
+      return ('UNSOLD', Colors.red);
+    }else if(player.playerAuctionStatus == PlayerAuctionStatusEnum.buy){
+      return ('SOLD', Colors.green);
+    }else{
+      return ('AUCTION', Colors.blue);
+    }
   }
 
   double getSquadRating(Map<int, AuctionPlayerStatusEntity?> squad){
@@ -308,39 +329,43 @@ class PlayersScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildCell('SLOT NO', flex: 1, isHeader: true),
-          _buildCell('FRANCHISE', flex: 1, isHeader: true),
+          // _buildCell('SLOT NO', flex: 1, isHeader: true),
           _buildCell('PLAYER NAME', flex: 3, isHeader: true),
           _buildCell('DESCRIPTION', flex: 2, isHeader: true),
           _buildCell('CATERGORY', flex: 1, isHeader: true), // Preserve "CATERGORY" typo from image
-          _buildCell('COUNTRY', flex: 1, isHeader: true),
-          _buildCell('SOLD PRICE', flex: 1, isHeader: true),
+          // _buildCell('COUNTRY', flex: 1, isHeader: true),
+          _buildCell('BASE PRICE', flex: 1, isHeader: true),
           _buildCell('RATING', flex: 1, isHeader: true),
+          _buildCell('STATUS', flex: 1, isHeader: true),
+          _buildCell('SOLD PRICE', flex: 1, isHeader: true),
+          _buildCell('FRANCHISE', flex: 1, isHeader: true),
         ],
       ),
     );
   }
 
-  Widget _buildTableRow(String slotNo, String franchise, String name, String desc, String category, String roleImage, String country, String flag, String price, String rating) {
+  Widget _buildTableRow(String slotNo, String franchise, String name, String desc, String category, String roleImage, String country, String flag, String price, String rating, String status, Color textColor) {
     print('roleImage => ${roleImage}');
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          _buildCell(slotNo, flex: 1),
-          _buildCell(franchise, flex: 1),
-          _buildCell(name, flex: 3, isBold: true),
+          // _buildCell(slotNo, flex: 1),
+          _buildCell('$slotNo. $name', flex: 3, isBold: true, flag: flag),
           _buildCell(desc, flex: 2),
           _buildCell(category, flex: 1, image: roleImage),
-          _buildCell(country, flex: 1, flag: flag),
+          // _buildCell(country, flex: 1, flag: flag),
           _buildCell(price, flex: 1, isBold: true,),
           _buildCell(rating, flex: 1, isBold: true),
+          _buildCell(status, flex: 1, isBold: true, textColor: textColor),
+          _buildCell(price, flex: 1, isBold: true,),
+          _buildCell('$franchise', flex: 1),
         ],
       ),
     );
   }
 
-  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, bool useZuume = false , String image = '', String flag = ''}) {
+  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, bool useZuume = false , String image = '', String flag = '', Color textColor = Colors.black}) {
     return Expanded(
       flex: flex,
       child: Center(
@@ -360,7 +385,7 @@ class PlayersScreen extends StatelessWidget {
                   : GoogleFonts.oxanium(
                 fontSize: isHeader ? 9 : 11,
                 fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
-                color: Colors.black,
+                color: textColor,
               ),
             ),
             if (flag.isNotEmpty) ...[

@@ -98,59 +98,57 @@ class GameDataModel extends GameDataEntity {
 
 
   GameDataModel dataFromWebSocket(Map<String, dynamic> json) {
-    try{
-      // Update auction players
-      if(json.containsKey('auction_players_status_list')){
-        for (int i = 0; i < auctionPlayersStatusList.length; i++) {
-          for (var player in json['auction_players_status_list']) {
-            if (auctionPlayersStatusList[i].playerId == player["player_id"]) {
-              auctionPlayersStatusList[i] = AuctionPlayerStatusModel.fromJson(player);
-            }
-          }
+
+    List<AuctionPlayerStatusModel> updatedPlayers =
+    List.from(auctionPlayersStatusList);
+
+    if (json.containsKey('auction_players_status_list')) {
+      for (var player in json['auction_players_status_list']) {
+        int index = updatedPlayers.indexWhere(
+                (e) => e.playerId == player["player_id"]);
+
+        if (index != -1) {
+          updatedPlayers[index] = AuctionPlayerStatusModel.fromJson(player);
         }
       }
-
-
-      // Update users
-      if(json.containsKey('users_status_list')){
-        for (int i = 0; i < usersStatusList.length; i++) {
-          for (var user in json['users_status_list']) {
-            if (usersStatusList[i].userId == user["user_id"]) {
-              usersStatusList[i] = UserStatusModel.fromJson(user);
-            }
-          }
-        }
-      }
-      if(json.containsKey('users_status_list')){
-        for(var user = 0;user < json['users_status_list'].length;user++){
-          if(usersStatusList.length < user + 1){
-            usersStatusList.add(UserStatusModel.fromJson(json['users_status_list'][user]));
-          }
-        }
-      }
-
-
-      return GameDataModel(
-        matchId: json['match_id'] ?? matchId,
-        auctionCategoryId: json['auction_category_id'] ?? auctionCategoryId,
-        matchStatus: json['match_status'] != null ? getMatchStatus(json['match_status']) : matchStatus,
-        breakStatus: json['break_status'] != null ? getBreakStatus(json['break_status']) : breakStatus,
-        gameCreatedAt: json['match_created_at'] ?? gameCreatedAt,
-        gameStartDuration: json['game_start_duration'] ?? gameStartDuration,
-        currentAuctionPlayerIndex: json['current_auction_player_index'] ?? currentAuctionPlayerIndex,
-        auctionExpiresAt: json['auction_expires_at'] ?? auctionExpiresAt,
-        breakExpiresAt: json['break_expires_at'] ?? breakExpiresAt,
-        serverTime: json['server_time'] ?? serverTime,
-        highestBid: json['highest_bid'] ?? highestBid,
-        teamList: json['team_list'] != null ? List<String>.from(json['team_list']) : teamList,
-        usersStatusList: usersStatusList.map((e) => UserStatusModel.fromEntity(e)).toList(),
-        auctionPlayersStatusList: auctionPlayersStatusList.map((e) => AuctionPlayerStatusModel.fromEntity(e)).toList(),
-      );
-    }catch(e, stackTrace){
-      print('dataFromWebSocket error : ${e.toString()}');
-      print('dataFromWebSocket stackTrace : ${stackTrace}');
-      rethrow;
     }
 
-  }
-}
+    List<UserStatusModel> updatedUsers =
+    List.from(usersStatusList);
+
+    if (json.containsKey('users_status_list')) {
+      for (var user in json['users_status_list']) {
+        int index = updatedUsers.indexWhere(
+                (e) => e.userId == user["user_id"]);
+
+        if (index != -1) {
+          updatedUsers[index] = UserStatusModel.fromJson(user);
+        } else {
+          updatedUsers.add(UserStatusModel.fromJson(user));
+        }
+      }
+    }
+
+    return GameDataModel(
+      matchId: json['match_id'] ?? matchId,
+      auctionCategoryId: json['auction_category_id'] ?? auctionCategoryId,
+      matchStatus: json['match_status'] != null
+          ? getMatchStatus(json['match_status'])
+          : matchStatus,
+      breakStatus: json['break_status'] != null
+          ? getBreakStatus(json['break_status'])
+          : breakStatus,
+      gameCreatedAt: json['match_created_at'] ?? gameCreatedAt,
+      gameStartDuration: json['game_start_duration'] ?? gameStartDuration,
+      currentAuctionPlayerIndex:
+      json['current_auction_player_index'] ?? currentAuctionPlayerIndex,
+      auctionExpiresAt: json['auction_expires_at'] ?? auctionExpiresAt,
+      breakExpiresAt: json['break_expires_at'] ?? breakExpiresAt,
+      serverTime: json['server_time'] ?? serverTime,
+      highestBid: json['highest_bid'] ?? highestBid,
+      teamList:
+      json['team_list'] != null ? List<String>.from(json['team_list']) : teamList,
+      usersStatusList: updatedUsers,
+      auctionPlayersStatusList: updatedPlayers,
+    );
+  }}

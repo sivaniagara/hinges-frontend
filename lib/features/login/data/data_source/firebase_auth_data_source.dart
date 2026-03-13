@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hinges_frontend/features/login/utils/login_urls.dart';
-
-import '../../../../core/network/http_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthDataSource{
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   FirebaseAuthDataSource();
 
   Future<UserCredential> registerEmailIdAndPasswordInFirebaseAuth({
@@ -26,5 +26,18 @@ class FirebaseAuthDataSource{
 
   Future<void> forgotPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) throw Exception('Google Sign In cancelled by user');
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    return await _auth.signInWithCredential(credential);
   }
 }

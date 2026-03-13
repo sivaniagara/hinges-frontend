@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../domain/usecase/forgot_password_usecase.dart';
+import '../../domain/usecase/google_sign_in_usecase.dart';
 import '../../domain/usecase/sign_up_usecase.dart';
+import '../../domain/usecase/update_user_details_usecase.dart';
+import '../../../../core/usecase/usecase.dart';
+
 part 'user_auth_event.dart';
 part 'user_auth_state.dart';
 
@@ -12,15 +16,21 @@ part 'user_auth_state.dart';
 class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
   final SignUpUseCase signUpUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
+  final GoogleSignInUseCase googleSignInUseCase;
+  final UpdateUserDetailsUseCase updateUserDetailsUseCase;
+  
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   UserAuthBloc({
     required this.signUpUseCase,
     required this.forgotPasswordUseCase,
+    required this.googleSignInUseCase,
+    required this.updateUserDetailsUseCase,
   }) : super(AuthInitial()){
     on<AppStarted>((event, emit) async {
       final user = _auth.currentUser;
       if (user != null) {
-        if(user.emailVerified){
+        if(user.emailVerified || user.providerData.any((p) => p.providerId == 'google.com')){
           emit(EmailAuthenticated(user: user, isEmailVerified: user.emailVerified));
         } else {
           emit(EmailSignInState());
@@ -91,6 +101,34 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
       } catch (e) {
         emit(EmailAuthError(e.toString()));
       }
+    });
+
+    on<GoogleSignInRequested>((event, emit) async {
+      emit(AuthLoading(loading: 'signIn'));
+      final result = await googleSignInUseCase(NoParams());
+      await result.fold(
+        (failure) async => emit(EmailAuthError(failure.message)),
+        (userCredential) async {
+          final user = userCredential.user;
+          if (user != null) {
+            // Update backend with user details
+            final updateResult = await updateUserDetailsUseCase(UpdateUserDetailsParams(
+              userId: user.uid,
+              userName: user.displayName ?? "User",
+              userEmailId: user.email,
+              userMobileNumber: user.phoneNumber ?? "",
+              authProvider: 2, // Assuming 2 for Google
+              profilePath: user.photoURL,
+              createdAt: DateTime.now(),
+            ));
+
+            await updateResult.fold(
+              (failure) async => emit(EmailAuthError(failure.message)),
+              (_) async => emit(EmailAuthenticated(user: user, isEmailVerified: true)),
+            );
+          }
+        },
+      );
     });
     
     on<ForgotPasswordRequested>((event, emit) async {

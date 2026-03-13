@@ -142,13 +142,13 @@ class _GameScreenState extends State<GameScreen> {
                                                           _miniStat(
                                                             title: 'BASE',
                                                             value:
-                                                            '${state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].basePrice}L',
+                                                            context.read<GameBloc>().formatPriceShort(playerData.basePrice),
                                                           ),
                                                           const SizedBox(width: 8),
                                                           _miniStat(
                                                             title: 'RTG',
                                                             value:
-                                                            '${state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].baseRating}',
+                                                            '${playerData.baseRating}',
                                                           ),
                                                         ],
                                                       ),
@@ -208,7 +208,7 @@ class _GameScreenState extends State<GameScreen> {
                                                       if(playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy)
                                                         Text('Sold', style: TextStyle(fontSize: 25, color: Colors.lightGreenAccent, fontWeight: FontWeight.bold),)
                                                       else
-                                                        Text('Un Sold', style: TextStyle(fontSize: 25, color: Colors.red.withValues(alpha: 1), fontWeight: FontWeight.bold),)
+                                                        Text('Un Sold', style: TextStyle(fontSize: 25, color: Colors.red.withValues(alpha: 1), fontWeight: FontWeight.bold),),
 
                                                     ],
                                                   ),
@@ -766,7 +766,12 @@ class _GameScreenState extends State<GameScreen> {
                         return GestureDetector(
                           onTap: (){
                             if(isThereAmountToBid(currentState.userData.userId)){
-                              if(!gameBloc.enableBidButton(currentState.userData.userId)){
+                              if(
+                              gameBloc.enableBidButton(currentState.userData.userId)
+                              ||
+                              controlBid(playerData, gameBloc.getMySquad(currentState.userData.userId), currentState.userData.userId)
+                              ){
+                              }else{
                                 context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
                               }
                             }else{

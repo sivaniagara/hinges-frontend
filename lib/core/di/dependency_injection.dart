@@ -7,7 +7,9 @@ import '../../features/login/data/data_source/remote_auth_data_source.dart';
 import '../../features/login/data/repository/auth_repository_imp.dart';
 import '../../features/login/domain/repository/auth_repository.dart';
 import '../../features/login/domain/usecase/forgot_password_usecase.dart';
+import '../../features/login/domain/usecase/google_sign_in_usecase.dart';
 import '../../features/login/domain/usecase/sign_up_usecase.dart';
+import '../../features/login/domain/usecase/update_user_details_usecase.dart';
 import '../../features/login/presentation/bloc/user_auth_bloc.dart';
 import '../network/http_service.dart';
 import '../network/http_service_impl.dart';
@@ -30,9 +32,14 @@ Future<void> init() async {
   sl.registerFactory(() => UserAuthBloc(
     signUpUseCase: sl(),
     forgotPasswordUseCase: sl(),
+    googleSignInUseCase: sl(),
+    updateUserDetailsUseCase: sl(),
   ));
   sl.registerLazySingleton(() => SignUpUseCase(authRepository: sl()));
   sl.registerLazySingleton(() => ForgotPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => GoogleSignInUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateUserDetailsUseCase(sl()));
+
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImp(
       firebaseAuthDataSource: sl(),
       remoteAuthDataSource: sl()

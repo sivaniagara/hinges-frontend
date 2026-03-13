@@ -6,57 +6,121 @@ import 'package:hinges_frontend/core/utils/app_images.dart';
 class RuleInstructionDialog extends StatelessWidget {
   final String title;
   final String description;
-  const RuleInstructionDialog({super.key, required this.title, required this.description});
+
+  const RuleInstructionDialog({
+    super.key,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Categorizing rules based on the content provided
+    final sections = [
+      _RuleSection(
+        title: 'GENERAL ALLOCATION',
+        icon: Icons.group_work_rounded,
+        rules: [
+          'Users will be allocated with a random franchise while entering the auction room.',
+          'The cumulative purse spent & ratings of pre-picked players will be same for all users.',
+        ],
+      ),
+      _RuleSection(
+        title: 'PURSE & BIDDING',
+        icon: Icons.account_balance_wallet_rounded,
+        rules: [
+          'Each user will be allocated with a purse of 25 Crores for the entire auction.',
+          'Each bid or padel raised will be considered as 0.25 Crores.',
+          "The auctioneer's decision is final.",
+          'Users cannot bid beyond their remaining purse amount.',
+        ],
+      ),
+      _RuleSection(
+        title: 'SQUAD BUILDING (5 EMPTY SLOTS)',
+        icon: Icons.groups_rounded,
+        rules: [
+          '1 Batsman, 1 Wicket-Keeper, 2 All-Rounders, 1 Bowler.',
+          'Player Types: 2 Indian Capped (ICP), 2 Foreign (FP), 1 Indian Uncapped (IUP).',
+          'Bowler Criteria: 1 Right Arm Spin and 1 Left Arm Fast (among the 2 AR & 1 BWL).',
+          'Users cannot bid for players when respective slots are already filled.',
+        ],
+      ),
+      _RuleSection(
+        title: 'ROUNDS & STRATEGY',
+        icon: Icons.layers_rounded,
+        rules: [
+          'Total 4 Rounds: Batsmen Set, Wicket-Keepers Set, All-Rounders Set, Bowlers Set.',
+          'Upcoming players can be seen in the "PLAYERS SET" to plan strategies.',
+          'Franchise squads can be seen by clicking their logo in the auction room.',
+        ],
+      ),
+      _RuleSection(
+        title: 'QUALIFICATION & WINNING',
+        icon: Icons.emoji_events_rounded,
+        rules: [
+          'Users must satisfy ALL criteria to qualify for rankings.',
+          'Winners declared by highest rating order from qualified users.',
+          'Tie-breaker: Remaining purse amount will be compared.',
+        ],
+      ),
+    ];
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.zero,
       child: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: const Color(0xFF800000), // Maroon Background
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 2),
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            colors: [Color(0xFF800000), Color(0xFF4A0000)],
+            radius: 1.0,
+          ),
         ),
         child: Column(
           children: [
-            // Header Row
-            SizedBox(height: 10),
-            CancelHeader(),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IntrinsicWidth(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.fitWidth,
-                              image: AssetImage(
-                                  AppImages.redTag,
-                              ),
-                          ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            Image.asset(AppImages.ruleBookIcon, width: 25,),
-                            Text(title, style: GoogleFonts.oxanium(textStyle: TextStyle(color: Colors.white,fontSize: 16)),)
-                          ],
-                        ),
-                      ),
-                    ),
+            const SizedBox(height: 10),
+            const CancelHeader(),
+            // Header Tag
+            IntrinsicWidth(
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: AssetImage(AppImages.redTag),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(description, style: GoogleFonts.instrumentSans(textStyle: TextStyle(color: Colors.white,fontSize: 16,)),),
-                  )
-                ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(AppImages.ruleBookIcon, width: 22),
+                      const SizedBox(width: 10),
+                      Text(
+                        title,
+                        style: GoogleFonts.oxanium(
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Rules List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                itemCount: sections.length,
+                itemBuilder: (context, index) {
+                  return _buildSectionCard(sections[index]);
+                },
               ),
             ),
           ],
@@ -64,120 +128,88 @@ class RuleInstructionDialog extends StatelessWidget {
       ),
     );
   }
-}
 
-class _AuctionCardForRuleBook extends StatelessWidget {
-  final String title;
-  final bool isLocked;
-
-  const _AuctionCardForRuleBook({required this.title, required this.isLocked});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            // Wood Frame Background
-            Container(
-              margin: const EdgeInsets.only(top: 20),
-              width: 250,
-              height: 150,
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                  image: AssetImage(AppImages.auctionCard), // Placeholder for wood texture
-                  fit: BoxFit.fitHeight,
-                ),
-                borderRadius: BorderRadius.circular(40),
-                // border: Border.all(color: const Color(0xFF5D3A1A), width: 8),
-              ),
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                // decoration: BoxDecoration(
-                //   gradient: const RadialGradient(
-                //     colors: [Color(0xFF800000), Color(0xFF4A0000)],
-                //   ),
-                //   borderRadius: BorderRadius.circular(30),
-                // ),
-                child: isLocked
-
-                    ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.lock, color: Color(0xFFFFD700), size: 50),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        color: const Color(0xFFFFD700),
-                        child: const Text(
-                          "LOCKED",
-                          style: TextStyle(color: Color(0xFF4A0000), fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-                    : null,
+  Widget _buildSectionCard(_RuleSection section) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
               ),
             ),
-            // Header Tag
-            if(!isLocked)
-              Positioned(
-                  top: 65,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.red
-                    ),
-                    child: Center(
-                      child: Text('Read', style:
-                      GoogleFonts.oxanium(
-                        textStyle: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white// border color
-                        ),
-                      )),
-                    ),
-                  )
-              ),
-            Positioned(
-              top: 10,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isLocked ? const Color(0xFFFFD700) : const Color(0xFFD32F2F),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4)],
-                ),
-                child: Text(
-                  title,
-                  style: GoogleFonts.oxanium(textStyle: TextStyle(
-                    color: isLocked ? const Color(0xFF4A0000) : Colors.white,
+            child: Row(
+              children: [
+                Icon(section.icon, color: Colors.amber, size: 18),
+                const SizedBox(width: 10),
+                Text(
+                  section.title,
+                  style: GoogleFonts.oxanium(
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  )),
+                    color: Colors.amber,
+                  ),
                 ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: section.rules.map((rule) => _buildRuleItem(rule)).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRuleItem(String rule) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 6),
+            child: Icon(Icons.circle, color: Colors.white70, size: 6),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              rule,
+              style: GoogleFonts.instrumentSans(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 13,
+                height: 1.4,
               ),
             ),
-            if(!isLocked)
-              Positioned(
-                bottom: -10,
-                child: Image.asset(
-                  AppImages.biddingPeople,
-                  height: 100,
-                  width: 140,
-                ),
-              )
-
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
 
+class _RuleSection {
+  final String title;
+  final IconData icon;
+  final List<String> rules;
+
+  _RuleSection({
+    required this.title,
+    required this.icon,
+    required this.rules,
+  });
+}

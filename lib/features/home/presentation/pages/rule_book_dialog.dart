@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/rule_instruction_dialog.dart';
 
+import '../../../../core/utils/app_content.dart';
 import 'buy_coins_dialog.dart';
 
 class RuleBookDialog extends StatelessWidget {
@@ -91,9 +92,9 @@ class _AuctionCardForRuleBook extends StatelessWidget {
       onTap: !isLocked ? (){
         showDialog(
           context: context,
-          builder: (context) => const RuleInstructionDialog(
+          builder: (context) => RuleInstructionDialog(
               title: 'MINI AUCTION RULES',
-              description: 'Mini Auction Mode Is the Fastest Mode of Indian Bidding League (IBL). In This League Only Four Users Can Be Played as Franchise Owners Such As TKS, MI, RCK, BGR.  There are 4 Round of Auctions Will Be Conducted in This Game Which Includes Batsmen, Wicket Keepers, All Rounders, Bowlers. Each Category Will Be Arranged as Three Sets Such as Indian Capped Players, Foreign Players & Indian Uncapped Players. The Player List to Be Auctioned in The Entire Game Will Be Available in The Game Panel and It Contains All the Details, Specification and Description of The Players.'
+              description: AppContent.rule
           ),
         );
       } : null,

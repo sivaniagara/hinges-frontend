@@ -148,14 +148,40 @@ class MySquadScreen extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            // Purchase Criteria
                             Expanded(
-                              flex: 3,
+                              flex: 1,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
                                 child: Column(
                                   children: [
-                                    Text('PURCHASE CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
+                                    Text('PRIMARY CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black)),
+                                    const SizedBox(height: 4),
+                                    const Divider(color: Colors.brown, height: 1),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          _buildPrimaryCriteriaRow('BAT', Colors.blue, getPlayerPrimaryCriteria(mySquad, AppIds.batsmanId, userState.userData.players, 3), AppImages.batsmanIcon),
+                                          _buildPrimaryCriteriaRow('WK', Colors.orange, getPlayerPrimaryCriteria(mySquad, AppIds.wicketKeeperId, userState.userData.players, 2), AppImages.wicketKeeperIcon),
+                                          _buildPrimaryCriteriaRow('AL', Colors.grey, getPlayerPrimaryCriteria(mySquad, AppIds.allRounderId, userState.userData.players, 4), AppImages.allRounderIcon),
+                                          _buildPrimaryCriteriaRow('BWL', Colors.grey, getPlayerPrimaryCriteria(mySquad, AppIds.bowlerId, userState.userData.players, 3), AppImages.bowlerIcon),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
+
+                            // Purchase Criteria
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                                child: Column(
+                                  children: [
+                                    Text('PURCHASE CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black)),
                                     const SizedBox(height: 4),
                                     const Divider(color: Colors.brown, height: 1),
                                     Expanded(
@@ -175,12 +201,12 @@ class MySquadScreen extends StatelessWidget {
                             const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
                             // Bowler Criteria
                             Expanded(
-                              flex: 3,
+                              flex: 1,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
                                 child: Column(
                                   children: [
-                                    Text('BOWLER CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
+                                    Text('BOWLER CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black)),
                                     const SizedBox(height: 4),
                                     const Divider(color: Colors.brown, height: 1),
                                     Expanded(
@@ -200,39 +226,40 @@ class MySquadScreen extends StatelessWidget {
                             ),
                             const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
                             // Team Info
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                            context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).image(),                                        height: 50
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                              context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).fullName(),
+                            Container(
+                              width: 220,
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Image.asset(
+                                              context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).image(),                                        height: 50
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).shortName(),
                                             style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
                                             overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        _buildStatBox('MY PURSE', '60 CR', AppImages.yellowTag, textColorForYellowTag),
-                                        _buildStatBox('PURSE REM', context.read<GameBloc>().formatPriceShort((state.gameData.usersStatusList.firstWhere((e) => e.userId == userId).balanceAmount)), AppImages.redTag, textColorForRedTag),
-                                        _buildStatBox('TOTAL RATING', getSquadRating(mySquad).toStringAsFixed(2), AppImages.redTag, textColorForRedTag),
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                          )
+                                        ],
+                                      ),
+                                      _buildStatBox('TOTAL RATING', getSquadRating(mySquad).toStringAsFixed(2), AppImages.redTag, textColorForRedTag),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      _buildStatBox('MY PURSE', '60 CR', AppImages.yellowTag, textColorForYellowTag),
+                                      _buildStatBox('PURSE REM', context.read<GameBloc>().formatPriceShort((state.gameData.usersStatusList.firstWhere((e) => e.userId == userId).balanceAmount)), AppImages.redTag, textColorForRedTag),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
                           ],
@@ -317,6 +344,24 @@ class MySquadScreen extends StatelessWidget {
       }
     }
     return available;
+  }
+
+  List<bool> getPlayerPrimaryCriteria(Map<int, AuctionPlayerStatusEntity?> squad, String playerRoleId, List<PlayerEntity> playerList, totalCount){
+    int total = 0;
+    for(var key in squad.keys) {
+      if(squad[key] != null){
+        PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
+        if(playerEntity.playerRole == playerRoleId){
+          total++;
+        }
+      }
+    }
+    return List.generate(totalCount, (index) {
+      if(index < total){
+        return true;
+      }
+      return false;
+    });
   }
   List<bool> getPlayerCategoryStatusList(Map<int, AuctionPlayerStatusEntity?> squad, String playerCategoryId, List<PlayerEntity> playerList, totalCount){
     int total = 0;
@@ -445,6 +490,21 @@ class MySquadScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildPrimaryCriteriaRow(String label, Color iconColor, List<bool> dots, String image) {
+    return Row(
+      children: [
+        Image.asset(image, width: 14, height: 14),
+        const SizedBox(width: 6),
+        SizedBox(width: 25, child: Text(label, style: GoogleFonts.oxanium(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black))),
+        const SizedBox(width: 6),
+        ...dots.map((isGreen) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 1.5),
+          child: Icon(Icons.circle, color: isGreen ? Colors.green : Colors.red, size: 12),
+        )),
+      ],
+    );
+  }
+
   Widget _buildCriteriaRow(String label, Color iconColor, List<bool> dots) {
     return Row(
       children: [
@@ -454,7 +514,7 @@ class MySquadScreen extends StatelessWidget {
         const SizedBox(width: 6),
         ...dots.map((isGreen) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 1.5),
-          child: Icon(Icons.circle, color: isGreen ? Colors.green : Colors.red, size: 14),
+          child: Icon(Icons.circle, color: isGreen ? Colors.green : Colors.red, size: 12),
         )),
       ],
     );
