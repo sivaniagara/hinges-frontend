@@ -40,7 +40,9 @@ class GameDataModel extends GameDataEntity {
   }
 
   static BreakStatusEnum getBreakStatus(String breakStatus) {
-    if(breakStatus == 'player_set_break'){
+    if(breakStatus == 'accelerated_break'){
+      return BreakStatusEnum.acceleratedBreak;
+    }else if(breakStatus == 'player_set_break'){
       return BreakStatusEnum.playerSetBreak;
     }else if(breakStatus == 'auction_player_break'){
       return BreakStatusEnum.auctionPlayerBreak;

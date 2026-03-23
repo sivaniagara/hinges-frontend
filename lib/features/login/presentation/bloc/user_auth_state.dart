@@ -4,7 +4,6 @@ abstract class UserAuthState extends Equatable{}
 
 class AuthInitial extends UserAuthState {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -17,17 +16,16 @@ class EmailSignInState extends UserAuthState {
   });
 
   @override
-  // TODO: implement props
   List<Object?> get props => [showPassword, rememberMe];
 }
 
 enum SignUpStatus { initial, loading, success, error }
 class SignUpState extends UserAuthState {
-  bool showPassword;
-  bool showConfirmPassword;
-  bool agreeTermsAndCondition;
-  SignUpStatus status;
-  String message;
+  final bool showPassword;
+  final bool showConfirmPassword;
+  final bool agreeTermsAndCondition;
+  final SignUpStatus status;
+  final String message;
   SignUpState({
     this.showPassword = false,
     this.showConfirmPassword = false,
@@ -37,7 +35,6 @@ class SignUpState extends UserAuthState {
   });
 
   @override
-  // TODO: implement props
   List<Object?> get props => [showPassword, showConfirmPassword, agreeTermsAndCondition, status, message];
 
   SignUpState copyWith({
@@ -55,14 +52,12 @@ class SignUpState extends UserAuthState {
       message: message ?? this.message,
     );
   }
-
 }
 
 class AuthLoading extends UserAuthState {
   final String loading;
   AuthLoading({required this.loading});
   @override
-  // TODO: implement props
   List<Object?> get props => [loading];
 }
 
@@ -71,18 +66,32 @@ class ForgotPasswordSuccess extends UserAuthState {
   List<Object?> get props => [];
 }
 
-class EmailAuthenticated extends UserAuthState {
+abstract class AuthenticatedState extends UserAuthState {
   final User user;
+  AuthenticatedState({required this.user});
+  
+  @override
+  List<Object?> get props => [user];
+}
+
+class EmailAuthenticated extends AuthenticatedState {
   final bool isEmailVerified;
-  EmailAuthenticated({required this.user, required this.isEmailVerified});
+  EmailAuthenticated({required super.user, required this.isEmailVerified});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [user, isEmailVerified];
 }
+
+class GoogleAuthenticated extends AuthenticatedState {
+  GoogleAuthenticated({required super.user});
+}
+
+class GuestAuthenticated extends AuthenticatedState {
+  GuestAuthenticated({required super.user});
+}
+
 class EmailUnauthenticated extends UserAuthState {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -91,7 +100,5 @@ class EmailAuthError extends UserAuthState {
   EmailAuthError(this.message);
 
   @override
-  // TODO: implement props
   List<Object?> get props => [message];
 }
-

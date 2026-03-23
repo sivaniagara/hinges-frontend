@@ -50,7 +50,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
           body: BlocListener<UserAuthBloc, UserAuthState>(
             listener: (context, state){
               print('auth screen ::: $state');
-              if(state is EmailAuthenticated && state.isEmailVerified && !_emailSignInSheetOpened){
+              if((state is EmailAuthenticated && state.isEmailVerified && !_emailSignInSheetOpened) || state is GuestAuthenticated || state is GoogleAuthenticated){
                 context.go('/loading');
               }else if ((state is EmailSignInState && !_emailSignInSheetOpened) || state is SignOutRequested) {
                 _emailSignInSheetOpened = true;

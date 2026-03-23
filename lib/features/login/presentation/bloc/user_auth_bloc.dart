@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../domain/usecase/forgot_password_usecase.dart';
 import '../../domain/usecase/google_sign_in_usecase.dart';
+import '../../domain/usecase/guest_sign_in_usecase.dart';
+import '../../domain/usecase/register_guest_user.dart';
 import '../../domain/usecase/sign_up_usecase.dart';
 import '../../domain/usecase/update_user_details_usecase.dart';
 import '../../../../core/usecase/usecase.dart';
@@ -18,20 +22,30 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final GoogleSignInUseCase googleSignInUseCase;
   final UpdateUserDetailsUseCase updateUserDetailsUseCase;
+  final GuestSignInUseCase guestSignInUseCase;
+  final RegisterGuestUserUseCase registerGuestUserUseCase;
+  final GoogleSignIn googleSignIn;
   
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   UserAuthBloc({
+    required this.googleSignIn,
     required this.signUpUseCase,
     required this.forgotPasswordUseCase,
     required this.googleSignInUseCase,
     required this.updateUserDetailsUseCase,
+    required this.guestSignInUseCase,
+    required this.registerGuestUserUseCase,
   }) : super(AuthInitial()){
     on<AppStarted>((event, emit) async {
       final user = _auth.currentUser;
       if (user != null) {
-        if(user.emailVerified || user.providerData.any((p) => p.providerId == 'google.com')){
-          emit(EmailAuthenticated(user: user, isEmailVerified: user.emailVerified));
+        if (user.providerData.any((p) => p.providerId == 'google.com')) {
+          emit(GoogleAuthenticated(user: user));
+        } else if (user.isAnonymous) {
+          emit(GuestAuthenticated(user: user));
+        } else if (user.emailVerified) {
+          emit(EmailAuthenticated(user: user, isEmailVerified: true));
         } else {
           emit(EmailSignInState());
         }
@@ -104,33 +118,97 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
     });
 
     on<GoogleSignInRequested>((event, emit) async {
-      emit(AuthLoading(loading: 'signIn'));
-      final result = await googleSignInUseCase(NoParams());
+      emit(AuthLoading(loading: 'google-signIn'));
+
+      try {
+        // No signOut() here anymore — trust the logout flow did disconnect()
+        final result = await googleSignInUseCase(NoParams());
+
+        if (result.isLeft()) {
+          final failure = result.swap().getOrElse(() => throw Exception('No failure'));
+          emit(EmailAuthError(failure.message));
+          return;
+        }
+
+        final userCredential = result.getOrElse(() => throw Exception('No credential'));
+        final user = userCredential.user;
+
+        if (user == null) {
+          emit(EmailAuthError("Google sign-in failed – no user"));
+          return;
+        }
+
+        // Your update logic looks fine
+        final updateResult = await updateUserDetailsUseCase(
+          UpdateUserDetailsParams(
+            userId: user.uid,
+            userName: user.displayName ?? "User",
+            userEmailId: user.email ?? "",
+            userMobileNumber: user.phoneNumber ?? "",
+            authProvider: 2,
+            profilePath: user.photoURL ?? "",
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        if (updateResult.isLeft()) {
+          final failure = updateResult.swap().getOrElse(() => throw Exception('No failure'));
+          emit(EmailAuthError(failure.message));
+          return;
+        }
+
+        emit(GoogleAuthenticated(user: user));
+      } catch (e, stack) {
+        debugPrint("Google sign-in error: $e\n$stack");
+        emit(EmailAuthError("Sign-in failed: ${e.toString()}"));
+      }
+    });
+    on<SignOutRequested>((event, emit) async {
+      try {
+        final user = _auth.currentUser;
+        if (user != null) {
+          final isGoogle = user.providerData.any((info) => info.providerId == 'google.com');
+
+          if (isGoogle) {
+            try {
+              // This is the key line most people miss or put in the wrong place
+              await googleSignIn.disconnect();   // Revokes app access → forces picker next time
+            } catch (e) {
+              debugPrint("Google disconnect failed (often harmless): $e");
+            }
+            await googleSignIn.signOut();       // Clears current session
+          }
+
+          await _auth.signOut();
+        }
+        emit(EmailUnauthenticated());
+      } catch (e) {
+        debugPrint("Sign out error: $e");
+      }
+    });
+
+    on<GuestSignInRequested>((event, emit) async {
+      emit(AuthLoading(loading: 'guest-signIn'));
+      final result = await guestSignInUseCase(NoParams());
       await result.fold(
         (failure) async => emit(EmailAuthError(failure.message)),
         (userCredential) async {
           final user = userCredential.user;
           if (user != null) {
-            // Update backend with user details
-            final updateResult = await updateUserDetailsUseCase(UpdateUserDetailsParams(
+            final updateResult = await registerGuestUserUseCase(RegisterGuestUserParams(
               userId: user.uid,
-              userName: user.displayName ?? "User",
-              userEmailId: user.email,
-              userMobileNumber: user.phoneNumber ?? "",
-              authProvider: 2, // Assuming 2 for Google
-              profilePath: user.photoURL,
-              createdAt: DateTime.now(),
+              userName: event.userName,
             ));
 
             await updateResult.fold(
               (failure) async => emit(EmailAuthError(failure.message)),
-              (_) async => emit(EmailAuthenticated(user: user, isEmailVerified: true)),
+              (_) async => emit(GuestAuthenticated(user: user)),
             );
           }
         },
       );
     });
-    
+
     on<ForgotPasswordRequested>((event, emit) async {
       emit(AuthLoading(loading: 'forgotPassword'));
       final result = await forgotPasswordUseCase(event.email);
@@ -200,11 +278,6 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
       }
     });
 
-    on<SignOutRequested>((_, emit) async {
-      await _auth.signOut();
-      emit(EmailUnauthenticated());
-      emit(EmailSignInState());
-    });
 
     on<ResendEmailVerification>((_, emit) async {
       await _auth.currentUser?.sendEmailVerification();

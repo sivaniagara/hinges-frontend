@@ -8,6 +8,8 @@ import 'package:hinges_frontend/features/game/presentation/pages/my_squad_screen
 import 'package:hinges_frontend/features/game/presentation/pages/players_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/points_table_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/forgot_password_screen.dart';
+import 'package:hinges_frontend/features/login/presentation/pages/guest_name_screen.dart';
+import 'package:hinges_frontend/features/login/presentation/pages/login_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_lite_mode.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_mode.dart';
@@ -62,7 +64,8 @@ final router = GoRouter(
       pageBuilder: (context, state) {
         return CustomTransitionPage(
           key: state.pageKey,
-          child: const EmailAuthScreen(),
+          child: const LoginScreen(),
+          // child: const EmailAuthScreen(),
           transitionsBuilder: pageSlider,
         );
       },
@@ -83,6 +86,16 @@ final router = GoRouter(
             return CustomTransitionPage(
               key: state.pageKey,
               child: const ForgotPasswordScreen(),
+              transitionsBuilder: pageSlider,
+            );
+          },
+        ),
+        GoRoute(
+          path: 'guestName',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const GuestNameScreen(),
               transitionsBuilder: pageSlider,
             );
           },

@@ -54,4 +54,4 @@ class BreakTick extends GameEvent {}
 
 class GameSocketDisconnected extends GameEvent {}
 
-
+class ReconnectSocket extends GameEvent {}

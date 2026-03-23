@@ -9,6 +9,7 @@ import 'package:hinges_frontend/core/utils/constant.dart';
 import 'package:hinges_frontend/core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import 'package:hinges_frontend/features/game/data/models/auction_player_status_model.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/result_screen.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/player_auction_status_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_name_widget.dart';
@@ -25,6 +26,8 @@ import '../../domain/entities/game_data_entity.dart';
 import '../../domain/entities/user_status_entity.dart';
 import '../bloc/game_bloc.dart';
 import 'package:square_progress_indicator/square_progress_indicator.dart';
+
+import '../widgets/accelerated_round_intro.dart';
 
 
 
@@ -95,9 +98,26 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                         child: BlocBuilder<GameBloc, GameState>(
                             builder: (context, state){
+                              if (state is GameError) {
+                                return _buildRetryWidget(context, state.message);
+                              }
+
+                              if (state is GameInitial || state is GameLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.amber,
+                                  ),
+                                );
+                              }
+
                               if(state is! GameLoaded){
                                 return Container();
                               }
+
+                              if (state.isReconnecting) {
+                                return _buildRetryWidget(context, "Connection unstable. Trying to reconnect...");
+                              }
+
                               final userState = context.read<HomeBloc>().state as HomeLoaded;
                               GameDataEntity gameData = state.gameData;
                               final playerData = state.gameData
@@ -109,148 +129,15 @@ class _GameScreenState extends State<GameScreen> {
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
+
                                         if(state.gameData.matchStatus == MatchStatusEnum.notStarted)
                                           gameExpireLoadingWidget(state)
                                         else if(state.gameData.matchStatus == MatchStatusEnum.initialMatch)
                                           const GameStartDuration()
                                         else if(state.gameData.breakStatus == BreakStatusEnum.auctionPlayerBreak)
-                                            ...[
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                children: [
-                                                  Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      /// 🔹 Top Row (Name + icons)
-                                                      Row(
-                                                        children: [
-                                                          PlayerNameWidget(gameData: gameData),
-                                                        ],
-                                                      ),
-
-                                                      const SizedBox(height: 2),
-
-                                                      /// 🔹 Style
-                                                      PlayerStyleWidget(gameData: gameData),
-
-                                                      const SizedBox(height: 4),
-
-                                                      /// 🔹 Price + Rating (ultra compact)
-                                                      Row(
-                                                        children: [
-                                                          _miniStat(
-                                                            title: 'BASE',
-                                                            value:
-                                                            context.read<GameBloc>().formatPriceShort(playerData.basePrice),
-                                                          ),
-                                                          const SizedBox(width: 8),
-                                                          _miniStat(
-                                                            title: 'RTG',
-                                                            value:
-                                                            '${playerData.baseRating}',
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    spacing: 10,
-                                                    children: [
-                                                      Row(children: [
-                                                        Image.asset(
-                                                          context.read<GameBloc>().getPlayerRoleImage(
-                                                              playerData,
-                                                              userState.userData.categoryAndItsItem,
-                                                              userState.userData.players),
-                                                          width: 18,
-                                                          height: 18,
-                                                        ),
-
-                                                        if (isCappedPlayer(playerData, userState.userData.players))
-                                                          Padding(
-                                                            padding: const EdgeInsets.only(left: 4),
-                                                            child: Image.asset(
-                                                              AppImages.cap,
-                                                              width: 16,
-                                                              height: 16,
-                                                            ),
-                                                          ),
-
-                                                        const SizedBox(width: 4),
-
-                                                        Text(
-                                                          context.read<GameBloc>().getPlayerCountryFlag(
-                                                              playerData,
-                                                              userState.userData.categoryAndItsItem,
-                                                              userState.userData.players),
-                                                          style: const TextStyle(fontSize: 14),
-                                                        ),
-                                                      ],),
-                                                      BlocSelector<GameBloc, GameState, String>(
-                                                        selector: (state) {
-                                                          if (state is! GameLoaded) return '';
-                                                          return state.gameData
-                                                              .auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
-                                                              .playerId;
-                                                        },
-                                                        builder: (context, playerId) {
-                                                          return Image.network(
-                                                            "${HttpServiceImpl.ipAddress}images/players/$playerId.png",
-                                                            width: 70,
-                                                            height: 70,
-                                                            fit: BoxFit.cover,
-                                                            errorBuilder: (_, __, ___) =>
-                                                            const Icon(Icons.person, size: 70),
-                                                          );
-                                                        },
-                                                      ),
-                                                      if(playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy)
-                                                        Text('Sold', style: TextStyle(fontSize: 25, color: Colors.lightGreenAccent, fontWeight: FontWeight.bold),)
-                                                      else
-                                                        Text('Un Sold', style: TextStyle(fontSize: 25, color: Colors.red.withValues(alpha: 1), fontWeight: FontWeight.bold),),
-
-                                                    ],
-                                                  ),
-                                                  if(playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy)
-                                                    Column(
-                                                      spacing: 10,
-                                                      children: [
-                                                        Text(
-                                                          context.read<GameBloc>().findTheUserWhoBuyThePlayer(
-                                                              state.gameData.usersStatusList,
-                                                              state.gameData.teamList,
-                                                              playerData.teamId
-                                                          ).userName,
-                                                          style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                        Image.asset(
-                                                          context.read<GameBloc>().getFranchise(
-                                                              state.gameData.usersStatusList,
-                                                              state.gameData.teamList,
-                                                              context.read<GameBloc>().findTheUserWhoBuyThePlayer(
-                                                                  state.gameData.usersStatusList,
-                                                                  state.gameData.teamList,
-                                                                  playerData.teamId
-                                                              ).userId
-                                                          ).image(),
-                                                          width: 60,
-                                                          height: 60,
-                                                        ),
-                                                        Text(context.read<GameBloc>().getFranchise(
-                                                            state.gameData.usersStatusList,
-                                                            state.gameData.teamList,
-                                                            context.read<GameBloc>().findTheUserWhoBuyThePlayer(
-                                                                state.gameData.usersStatusList,
-                                                                state.gameData.teamList,
-                                                                playerData.teamId
-                                                            ).userId
-                                                        ).name,
-                                                          style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),)
-                                                      ],
-                                                    ),
-                                                ],
-                                              )
-                                            ]
+                                            PlayerAuctionStatusWidget(gameData: gameData, playerData: playerData, state: state)
+                                        else if(state.gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
+                                              AcceleratedRoundIntro()
                                         else
                                           ...[
                                             getTag(title: '${getPlayerRole(gameData).toUpperCase()} SET', tagImage: AppImages.redTag, colors: textColorForRedTag, imageSize: 200),
@@ -467,13 +354,14 @@ class _GameScreenState extends State<GameScreen> {
                     thirdColumn(),
                   ],
                 ),
-              ),
             ),
           ),
+        )
         );
       },
     );
   }
+
   Widget _miniStat({
     required String title,
     required String value,
@@ -528,6 +416,67 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
     return userStatusEntity!;
+  }
+
+  Widget _buildRetryWidget(BuildContext context, String message) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.amber.withOpacity(0.5), width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.wifi_off_rounded, color: Colors.amber, size: 60),
+            const SizedBox(height: 16),
+            Text(
+              "CONNECTION LOST",
+              style: GoogleFonts.oxanium(
+                textStyle: const TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.jost(
+                textStyle: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            getTag(
+              title: 'TRY AGAIN',
+              tagImage: AppImages.yellowTag,
+              colors: textColorForYellowTag,
+              onTap: () {
+                final homeState = context.read<HomeBloc>().state;
+                if (homeState is HomeLoaded) {
+                  context.read<GameBloc>().add(
+                    FetchGameData(
+                      userId: homeState.userData.userId,
+                      userName: homeState.userData.userName,
+                      auctionCategoryId: homeState.userData.auctionCategoryItem.first.id,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget gameExpireLoadingWidget(GameLoaded loadedState){

@@ -18,6 +18,11 @@ abstract class RemoteAuthDataSource{
     String? profilePath,
     required DateTime createdAt,
   });
+
+  Future<Map<String, dynamic>> syncGuestUser({
+    required String userId,
+    required String userName,
+  });
 }
 
 class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
@@ -57,15 +62,35 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
     required DateTime createdAt,
   }) async {
     final response = await httpService.post(
-      LoginUrls.signUp, // Reusing signUp endpoint if it handles both or use a specific update endpoint if available. Based on prompt, sending data to backend.
+      LoginUrls.signUp,
       body: {
-        "user_id": userId,
+        "fire_base_id": userId,
         "user_name": userName,
         "user_email_id": userEmailId,
         "user_mobile_number": userMobileNumber,
         "auth_provider": authProvider,
         "profile_path": profilePath,
         "created_at": createdAt.toUtc().toIso8601String(),
+      },
+    );
+    return response;
+  }
+
+  @override
+  Future<Map<String, dynamic>> syncGuestUser({
+    required String userId,
+    required String userName,
+  }) async {
+    final response = await httpService.post(
+      LoginUrls.signUp,
+      body: {
+        "fire_base_id": userId,
+        "user_name": userName,
+        "user_email_id": '$userId@gmail.com',
+        "user_mobile_number": '',
+        "auth_provider": 3, // Assuming 3 for Guest
+        "profile_path": '',
+        "created_at": DateTime.now().toUtc().toIso8601String(),
       },
     );
     return response;

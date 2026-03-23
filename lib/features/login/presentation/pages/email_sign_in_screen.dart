@@ -9,6 +9,7 @@ import '../../../../core/utils/text_field_requirements.dart';
 import '../bloc/user_auth_bloc.dart';
 import '../widgets/custom_text_field.dart';
 import 'email_verification_screen.dart';
+
 class EmailSignInScreen extends StatefulWidget {
   const EmailSignInScreen({super.key});
 
@@ -22,17 +23,6 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
   final _passwordController = TextEditingController();
 
 
-  @override
-  void initState() {
-    super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
-
-
-
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final state = context.read<UserAuthBloc>().state;
@@ -41,10 +31,10 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
         rememberMe = state.rememberMe;
       }
       context.read<UserAuthBloc>().add(SignInRequested(
-        _emailController.text,
-        _passwordController.text,
-        rememberMe: rememberMe,
-      ));
+            _emailController.text,
+            _passwordController.text,
+            rememberMe: rememberMe,
+          ));
     }
   }
 
@@ -58,14 +48,22 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: screenHeight * 0.05,),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
               Column(
                 children: [
-                  Text('Sign In', style: Theme.of(context).textTheme.headlineSmall,),
-                  Text('Sign in to my account', style: Theme.of(context).textTheme.labelLarge),
+                  Text(
+                    'Sign In',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text('Sign in to my account',
+                      style: Theme.of(context).textTheme.labelLarge),
                 ],
               ),
-              SizedBox(height: screenHeight * 0.05,),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
               Form(
                 key: _formKey,
                 child: Column(
@@ -82,7 +80,9 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                         keyboardType: TextInputType.emailAddress,
                       ),
                     ),
-                    SizedBox(height: screenHeight * 0.05,),
+                    SizedBox(
+                      height: screenHeight * 0.05,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: CustomTextFormField(
@@ -102,20 +102,20 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                               constraints: const BoxConstraints(maxHeight: 30),
                               iconSize: 20,
                               onPressed: () {
-                                context.read<UserAuthBloc>().add(UpdatePasswordVisibilityForEmailSignIn());
+                                context.read<UserAuthBloc>().add(
+                                    UpdatePasswordVisibilityForEmailSignIn());
                               },
                               icon: Icon(
-                                showPassword ? Icons.visibility : Icons.visibility_off,
-                                color: Theme.of(context).colorScheme.primaryContainer,
+                                showPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
                               ),
                             );
                           },
                         ),
-                        // obscureText: context.select((UserAuthBloc bloc) {
-                        //   final state = bloc.state;
-                        //   if (state is EmailSignInState) return !state.showPassword;
-                        //   return true;
-                        // }),
                         validator: validatePassword,
                       ),
                     ),
@@ -135,106 +135,138 @@ class _EmailSignInScreenState extends State<EmailSignInScreen> {
                                   return Checkbox(
                                     value: rememberMe,
                                     onChanged: (_) {
-                                      context.read<UserAuthBloc>().add(UpdateRememberMe());
+                                      context
+                                          .read<UserAuthBloc>()
+                                          .add(UpdateRememberMe());
                                     },
                                   );
                                 },
                               ),
-                              Text('Remember Me', style: Theme.of(context).textTheme.labelLarge,)
+                              Text(
+                                'Remember Me',
+                                style: Theme.of(context).textTheme.labelLarge,
+                              )
                             ],
                           ),
                           TextButton(
-                              onPressed: (){
+                              onPressed: () {
                                 context.push('/login/forgotPassword');
                               },
-                              child: const Text('Forget Password')
-                          ),
+                              child: const Text('Forget Password')),
                         ],
                       ),
                     ),
                     BlocListener<UserAuthBloc, UserAuthState>(
-                        listener: (context, state){
-                          if(state is AuthLoading && state.loading == 'signIn'){
-                            showLoadingDialog(context);
-                          }else if(state is EmailAuthenticated && state.isEmailVerified){
-                            context.pop();
-                            context.go('/loading');
-                          }else if(state is EmailAuthenticated && !state.isEmailVerified){
-                            context.pop();
-                            emailVerificationBottomSheet(context, EmailVerificationScreen(email: _emailController.text));
-                          }else if(state is EmailAuthError){
-                            context.pop();
-                            showMessageDialog(
-                                context: context,
-                                icon: const Icon(Icons.error_outline, color: Colors.red),
-                                title: 'Error on Sign In',
-                                message: state.message,
-                                actionButtons: [
-                                  ElevatedButton(
-                                      onPressed: (){
-                                        context.pop();
-                                      },
-                                      child: const Text('Ok')
-                                  ),
-                                ]
-                            );
+                      listener: (context, state) {
+                        if (state is AuthLoading) {
+                          if (state.loading == 'signIn') {
+                            showLoadingDialog(context, message: "Signing in...");
+                          } else if (state.loading == 'google-signIn') {
+                            showLoadingDialog(context, message: "Connecting Google...");
+                          } else if (state.loading == 'guest-signIn') {
+                            showLoadingDialog(context, message: "Logging in as Guest...");
                           }
-                        },
+                        } else if (state is EmailAuthenticated) {
+                          context.pop(); // Close loading dialog
+                          if (state.isEmailVerified) {
+                            context.go('/loading');
+                          } else {
+                            emailVerificationBottomSheet(
+                                context,
+                                EmailVerificationScreen(
+                                    email: _emailController.text));
+                          }
+                        } else if (state is GoogleAuthenticated) {
+                          context.pop(); // Close loading dialog
+                          context.go('/loading');
+                        } else if (state is GuestAuthenticated) {
+                          context.pop(); // Close loading dialog
+                          context.go('/loading');
+                        } else if (state is EmailAuthError) {
+                          context.pop(); // Close loading dialog
+                          showMessageDialog(
+                              context: context,
+                              icon: const Icon(Icons.error_outline,
+                                  color: Colors.red),
+                              title: 'Error',
+                              message: state.message,
+                              actionButtons: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      context.pop();
+                                    },
+                                    child: const Text('Ok')),
+                              ]);
+                        }
+                      },
                       child: LongButton(
                           title: 'Sign In',
                           onPressed: _submitForm,
-                          outlined: false
-                      ),
+                          outlined: false),
                     ),
                   ],
                 ),
               ),
-
-              SizedBox(height: screenHeight * 0.05,),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
                   children: [
                     const Expanded(child: Divider()),
-                    Text('  OR  ', style: Theme.of(context).textTheme.bodyMedium,),
+                    Text(
+                      '  OR  ',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     const Expanded(child: Divider())
                   ],
                 ),
               ),
-              SizedBox(height: screenHeight * 0.05,),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
               LongButton(
                   title: 'Sign in With Google',
                   prefixIcon: FontAwesomeIcons.google,
-                  onPressed: (){
-
+                  onPressed: () {
+                    context.read<UserAuthBloc>().add(GoogleSignInRequested());
                   },
-                  outlined: true
+                  outlined: true),
+              SizedBox(
+                height: screenHeight * 0.05,
               ),
-              SizedBox(height: screenHeight * 0.05,),
               LongButton(
-                  title: 'Sign in With Phone',
-                  prefixIcon: FontAwesomeIcons.phone,
-                  onPressed: (){
-
+                  title: 'Sign in as Guest',
+                  prefixIcon: Icons.person_outline,
+                  onPressed: () {
+                    showGuestNameBottomSheet(context, onContinue: (name) {
+                      context
+                          .read<UserAuthBloc>()
+                          .add(GuestSignInRequested(name));
+                    });
                   },
-                  outlined: true
+                  outlined: true),
+              SizedBox(
+                height: screenHeight * 0.05,
               ),
-              SizedBox(height: screenHeight * 0.05,),
               SizedBox(
                 width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Don’t have an account?', style: Theme.of(context).textTheme.labelMedium,),
+                    Text(
+                      'Don’t have an account?',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
                     TextButton(
-                        onPressed: (){
+                        onPressed: () {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             context.go('/login/signUp');
                           });
-                          context.read<UserAuthBloc>().add(SignUpPage()) ;
+                          context.read<UserAuthBloc>().add(SignUpPage());
                         },
-                        child: const Text('Sign Up Here')
-                    )
+                        child: const Text('Sign Up Here'))
                   ],
                 ),
               )

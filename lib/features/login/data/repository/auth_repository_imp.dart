@@ -122,6 +122,16 @@ class AuthRepositoryImp extends AuthRepository {
   }
 
   @override
+  Future<Either<Failure, UserCredential>> signInAnonymously() async {
+    try {
+      final userCredential = await firebaseAuthDataSource.signInAnonymously();
+      return Right(userCredential);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> updateUserDetailsInDb({
     required String userId,
     required String userName,
@@ -145,6 +155,20 @@ class AuthRepositoryImp extends AuthRepository {
         return const Right(null);
       } else {
         return Left(ServerFailure(response['message'] ?? 'Failed to update user details'));
+      }
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> syncGuestUser({required String userId, required String userName}) async {
+    try {
+      final response = await remoteAuthDataSource.syncGuestUser(userId: userId, userName: userName);
+      if (response['status'] == 200) {
+        return const Right(null);
+      } else {
+        return Left(ServerFailure(response['message'] ?? 'Failed to sync guest user'));
       }
     } catch (e) {
       return Left(ServerFailure(e.toString()));

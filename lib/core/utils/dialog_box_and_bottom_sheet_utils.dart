@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void showLoadingDialog(BuildContext context, {String message = "Loading..."}) {
   showDialog(
@@ -115,6 +116,97 @@ void emailVerificationBottomSheet(BuildContext context, Widget widget){
     enableDrag: false,
     builder: (context) {
       return widget;
+    },
+  );
+}
+
+void showGuestNameBottomSheet(BuildContext context, {required Function(String) onContinue}) {
+  final TextEditingController nameController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFFFF4D2),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Welcome, Guest!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Please enter your name to continue.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54),
+                ),
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: nameController,
+                  style: GoogleFonts.oxanium(
+                    color: Colors.black, // <-- text color inside the field
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'YOUR NAME',
+                    hintStyle: GoogleFonts.oxanium(color: Colors.white38),
+                    prefixIcon: const Icon(Icons.person_outline, color: Colors.black),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+
+                    // Border styles
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color(0xFF800000), width: 2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        Navigator.pop(context);
+                        onContinue(nameController.text);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF800000),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     },
   );
 }

@@ -3,9 +3,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthDataSource{
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn googleSignIn;
 
-  FirebaseAuthDataSource();
+  FirebaseAuthDataSource({required this.googleSignIn});
 
   Future<UserCredential> registerEmailIdAndPasswordInFirebaseAuth({
         required String userName,
@@ -29,7 +29,7 @@ class FirebaseAuthDataSource{
   }
 
   Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     if (googleUser == null) throw Exception('Google Sign In cancelled by user');
 
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -39,5 +39,9 @@ class FirebaseAuthDataSource{
     );
 
     return await _auth.signInWithCredential(credential);
+  }
+
+  Future<UserCredential> signInAnonymously() async {
+    return await _auth.signInAnonymously();
   }
 }

@@ -32,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
     String uid = '';
     if (authState is EmailAuthenticated) {
       uid = authState.user.uid;
+    }else if (authState is GoogleAuthenticated) {
+      uid = authState.user.uid;
+    }else if (authState is GuestAuthenticated) {
+      uid = authState.user.uid;
     }
     context.read<HomeBloc>().add(FetchUserData(uid));
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);

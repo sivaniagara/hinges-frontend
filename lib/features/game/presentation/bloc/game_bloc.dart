@@ -31,6 +31,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   int _reconnectAttempts = 0;
   final int _maxReconnectAttempts = 5;
   bool _isReconnecting = false;
+  String? _matchId;
 
   GameBloc({
     required this.getGameDataUseCase,
@@ -54,6 +55,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         await result.fold(
               (failure) async => emit(GameError(failure.message)),
               (gameData) async {
+            _matchId = gameData.matchId;
             final wsUrl = GameUrls.connectMatch
                 .replaceFirst(':matchId', gameData.matchId);
 
@@ -80,7 +82,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
                     gameData.breakExpiresAt == null
                         ? null
                         : _calculateRemainingForBreak(
-                        gameData.breakExpiresAt!, gameData.serverTime!, 10),
+                        gameData.breakExpiresAt!, gameData.serverTime!, 5),
                     isReconnecting: false,
                   ),
                 );
@@ -97,6 +99,35 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
     });
 
+    // ================= RECONNECT SOCKET =================
+    on<ReconnectSocket>((event, emit) async {
+      if (_matchId == null) return;
+      
+      if (state is GameLoaded) {
+        emit((state as GameLoaded).copyWith(isReconnecting: true));
+      } else {
+        emit(GameLoading());
+      }
+
+      final wsUrl = GameUrls.connectMatch.replaceFirst(':matchId', _matchId!);
+      final result = await webSocketService.connect(wsUrl);
+
+      result.fold(
+        (failure) => emit(GameError("Reconnect failed: ${failure.message}")),
+        (_) {
+          _reconnectAttempts = 0;
+          _isReconnecting = false;
+          
+          if (state is GameLoaded) {
+            emit((state as GameLoaded).copyWith(isReconnecting: false));
+          }
+          
+          add(SendGameMessage({'payload_code': 100}));
+          _listenToSocket();
+        },
+      );
+    });
+
     // ================= SOCKET DISCONNECT =================
     on<GameSocketDisconnected>((event, emit) async {
       if (_isReconnecting) return;
@@ -105,7 +136,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _isReconnecting = true;
 
       if (_reconnectAttempts >= _maxReconnectAttempts) {
-        emit(GameError("Connection lost. Please restart the match."));
+        emit(GameError("Connection lost. Please try again."));
         return;
       }
 
@@ -137,6 +168,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           _isReconnecting = false;
 
           emit(currentState.copyWith(isReconnecting: false));
+          
+          add(SendGameMessage({'payload_code': 100}));
 
           _listenToSocket();
         },
@@ -261,7 +294,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         print("Socket closed");
         add(GameSocketDisconnected());
       },
-      onError: (error) {
+      onError: (error, stackTrace) {
         print("Socket error: $error");
         add(GameSocketDisconnected());
       },
