@@ -337,7 +337,7 @@ class MySquadScreen extends StatelessWidget {
     for(var key in squad.keys) {
       if(squad[key] != null){
         PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
-        if(playerEntity.bowlingStyle == playerBowlingStyleId){
+        if(playerEntity.bowlingStyle == playerBowlingStyleId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           available = true;
           break;
         }
@@ -351,7 +351,7 @@ class MySquadScreen extends StatelessWidget {
     for(var key in squad.keys) {
       if(squad[key] != null){
         PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
-        if(playerEntity.playerRole == playerRoleId){
+        if(playerEntity.playerRole == playerRoleId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           total++;
         }
       }
@@ -368,7 +368,7 @@ class MySquadScreen extends StatelessWidget {
     for(var key in squad.keys) {
       if(squad[key] != null){
         PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
-        if(playerEntity.playerCategory == playerCategoryId){
+        if(playerEntity.playerCategory == playerCategoryId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           total++;
         }
       }
@@ -380,6 +380,7 @@ class MySquadScreen extends StatelessWidget {
       return false;
     });
   }
+
   String getRoleStyle(int position, AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
     String playerRoleStyle = '';
     if(position >= 1 && position <= 3){

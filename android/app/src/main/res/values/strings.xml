@@ -2,11 +2,11 @@
 <resources>
     <string name="app_name">Hinges</string>
 
-    <!-- ✅ USE THE CONSUMER APP ID (1463388908876257) -->
-    <string name="facebook_app_id">1463388908876257</string>
+    <!-- ✅ USE THE CONSUMER APP ID (132045576598892) -->
+    <string name="facebook_app_id">1503898344766011</string>
 
     <!-- ⚠️ You need to get the Client Token for this app from Facebook -->
-    <string name="facebook_client_token">3eaa3192274639e9ab46abb38bd54cfc</string>
+    <string name="facebook_client_token">3059a358c8d679e81f0d9d19fc82d757</string>
 
-    <string name="fb_login_protocol_scheme">fb1463388908876257</string>
+    <string name="fb_login_protocol_scheme">fb1503898344766011</string>
 </resources>

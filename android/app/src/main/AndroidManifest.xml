@@ -69,5 +69,6 @@
 
         <!-- Facebook app detection -->
         <package android:name="com.facebook.katana" />
+        <package android:name="com.facebook.wakizashi" />
     </queries>
 </manifest>

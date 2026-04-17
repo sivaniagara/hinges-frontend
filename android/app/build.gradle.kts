@@ -6,8 +6,8 @@ plugins {
 }
 
 // ✅ Your Facebook credentials (PUT REAL VALUES HERE)
-val facebookAppId = "1463388908876257"
-val facebookClientToken = "3eaa3192274639e9ab46abb38bd54cfc"
+val facebookAppId = "1503898344766011"
+val facebookClientToken = "3059a358c8d679e81f0d9d19fc82d757"
 val facebookLoginProtocolScheme = "fb$facebookAppId"
 
 android {
