@@ -8,6 +8,7 @@ abstract class AuthRepository{
   Future<Either<Failure, UserCredential>> signUp(SignUpParams params);
   Future<Either<Failure, void>> forgotPassword(String email);
   Future<Either<Failure, UserCredential>> signInWithGoogle();
+  Future<Either<Failure, UserCredential>> signInWithFacebook();
   Future<Either<Failure, UserCredential>> signInAnonymously();
   Future<Either<Failure, void>> updateUserDetailsInDb({
     required String userId,

@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../domain/usecase/facebook_sign_in_usecase.dart';
 import '../../domain/usecase/forgot_password_usecase.dart';
 import '../../domain/usecase/google_sign_in_usecase.dart';
 import '../../domain/usecase/guest_sign_in_usecase.dart';
@@ -15,17 +17,16 @@ import '../../../../core/usecase/usecase.dart';
 part 'user_auth_event.dart';
 part 'user_auth_state.dart';
 
-
-
-class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
+class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
   final SignUpUseCase signUpUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final GoogleSignInUseCase googleSignInUseCase;
+  final FacebookSignInUseCase facebookSignInUseCase;
   final UpdateUserDetailsUseCase updateUserDetailsUseCase;
   final GuestSignInUseCase guestSignInUseCase;
   final RegisterGuestUserUseCase registerGuestUserUseCase;
   final GoogleSignIn googleSignIn;
-  
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   UserAuthBloc({
@@ -33,15 +34,20 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
     required this.signUpUseCase,
     required this.forgotPasswordUseCase,
     required this.googleSignInUseCase,
+    required this.facebookSignInUseCase,
     required this.updateUserDetailsUseCase,
     required this.guestSignInUseCase,
     required this.registerGuestUserUseCase,
-  }) : super(AuthInitial()){
+  }) : super(AuthInitial()) {
     on<AppStarted>((event, emit) async {
       final user = _auth.currentUser;
       if (user != null) {
         if (user.providerData.any((p) => p.providerId == 'google.com')) {
           emit(GoogleAuthenticated(user: user));
+        } else if (user.providerData.any(
+          (p) => p.providerId == 'facebook.com',
+        )) {
+          emit(FacebookAuthenticated(user: user));
         } else if (user.isAnonymous) {
           emit(GuestAuthenticated(user: user));
         } else if (user.emailVerified) {
@@ -54,42 +60,50 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
       }
     });
 
-    on<EmailSignInPage>((event, emit){
+    on<EmailSignInPage>((event, emit) {
       emit(EmailSignInState());
     });
 
-    on<SignUpPage>((event, emit){
+    on<SignUpPage>((event, emit) {
       emit(SignUpState());
     });
 
-    on<UpdatePasswordVisibilityForEmailSignIn>((event, emit){
+    on<UpdatePasswordVisibilityForEmailSignIn>((event, emit) {
       final currentState = state as EmailSignInState;
-      emit(EmailSignInState(showPassword: !currentState.showPassword, rememberMe: currentState.rememberMe));
+      emit(
+        EmailSignInState(
+          showPassword: !currentState.showPassword,
+          rememberMe: currentState.rememberMe,
+        ),
+      );
     });
 
     on<UpdateRememberMe>((event, emit) async {
       final currentState = state as EmailSignInState;
-      emit(EmailSignInState(rememberMe: !currentState.rememberMe, showPassword: currentState.showPassword));
-    });
-
-    on<UpdatePasswordVisibilityForEmailSignOut>((event, emit){
-      final currentState = state as SignUpState;
       emit(
-          SignUpState(showPassword: !currentState.showPassword)
+        EmailSignInState(
+          rememberMe: !currentState.rememberMe,
+          showPassword: currentState.showPassword,
+        ),
       );
     });
 
-    on<UpdateConfirmPasswordVisibilityForEmailSignOut>((event, emit){
+    on<UpdatePasswordVisibilityForEmailSignOut>((event, emit) {
       final currentState = state as SignUpState;
-      emit(
-          SignUpState(showConfirmPassword: !currentState.showConfirmPassword)
-      );
+      emit(SignUpState(showPassword: !currentState.showPassword));
     });
 
-    on<UpdateAgreeTermsAndCondition>((event, emit){
+    on<UpdateConfirmPasswordVisibilityForEmailSignOut>((event, emit) {
+      final currentState = state as SignUpState;
+      emit(SignUpState(showConfirmPassword: !currentState.showConfirmPassword));
+    });
+
+    on<UpdateAgreeTermsAndCondition>((event, emit) {
       final currentState = state as SignUpState;
       emit(
-          SignUpState(agreeTermsAndCondition: !currentState.agreeTermsAndCondition)
+        SignUpState(
+          agreeTermsAndCondition: !currentState.agreeTermsAndCondition,
+        ),
       );
     });
 
@@ -108,10 +122,9 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
           await user.sendEmailVerification();
         }
 
-        emit(EmailAuthenticated(
-          user: user,
-          isEmailVerified: user.emailVerified,
-        ));
+        emit(
+          EmailAuthenticated(user: user, isEmailVerified: user.emailVerified),
+        );
       } catch (e) {
         emit(EmailAuthError(e.toString()));
       }
@@ -125,12 +138,16 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
         final result = await googleSignInUseCase(NoParams());
 
         if (result.isLeft()) {
-          final failure = result.swap().getOrElse(() => throw Exception('No failure'));
+          final failure = result.swap().getOrElse(
+            () => throw Exception('No failure'),
+          );
           emit(EmailAuthError(failure.message));
           return;
         }
 
-        final userCredential = result.getOrElse(() => throw Exception('No credential'));
+        final userCredential = result.getOrElse(
+          () => throw Exception('No credential'),
+        );
         final user = userCredential.user;
 
         if (user == null) {
@@ -152,7 +169,9 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
         );
 
         if (updateResult.isLeft()) {
-          final failure = updateResult.swap().getOrElse(() => throw Exception('No failure'));
+          final failure = updateResult.swap().getOrElse(
+            () => throw Exception('No failure'),
+          );
           emit(EmailAuthError(failure.message));
           return;
         }
@@ -163,20 +182,81 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
         emit(EmailAuthError("Sign-in failed: ${e.toString()}"));
       }
     });
+
+    on<FacebookSignInRequested>((event, emit) async {
+      emit(AuthLoading(loading: 'facebook-signIn'));
+
+      try {
+        final result = await facebookSignInUseCase(NoParams());
+
+        if (result.isLeft()) {
+          final failure = result.swap().getOrElse(
+            () => throw Exception('No failure'),
+          );
+          emit(EmailAuthError(failure.message));
+          return;
+        }
+
+        final userCredential = result.getOrElse(
+          () => throw Exception('No credential'),
+        );
+        final user = userCredential.user;
+
+        if (user == null) {
+          emit(EmailAuthError("Facebook sign-in failed – no user"));
+          return;
+        }
+
+        final updateResult = await updateUserDetailsUseCase(
+          UpdateUserDetailsParams(
+            userId: user.uid,
+            userName: user.displayName ?? "User",
+            userEmailId: user.email ?? "",
+            userMobileNumber: user.phoneNumber ?? "",
+            authProvider: 4, // Assuming 4 for Facebook
+            profilePath: user.photoURL ?? "",
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        if (updateResult.isLeft()) {
+          final failure = updateResult.swap().getOrElse(
+            () => throw Exception('No failure'),
+          );
+          emit(EmailAuthError(failure.message));
+          return;
+        }
+
+        emit(FacebookAuthenticated(user: user));
+      } catch (e, stack) {
+        debugPrint("Facebook sign-in error: $e\n$stack");
+        emit(EmailAuthError("Sign-in failed: ${e.toString()}"));
+      }
+    });
+
     on<SignOutRequested>((event, emit) async {
       try {
         final user = _auth.currentUser;
         if (user != null) {
-          final isGoogle = user.providerData.any((info) => info.providerId == 'google.com');
+          final isGoogle = user.providerData.any(
+            (info) => info.providerId == 'google.com',
+          );
+          final isFacebook = user.providerData.any(
+            (info) => info.providerId == 'facebook.com',
+          );
 
           if (isGoogle) {
             try {
               // This is the key line most people miss or put in the wrong place
-              await googleSignIn.disconnect();   // Revokes app access → forces picker next time
+              await googleSignIn
+                  .disconnect(); // Revokes app access → forces picker next time
             } catch (e) {
               debugPrint("Google disconnect failed (often harmless): $e");
             }
-            await googleSignIn.signOut();       // Clears current session
+            await googleSignIn.signOut(); // Clears current session
+          }
+          if (isFacebook) {
+            await FacebookAuth.instance.logOut();
           }
 
           await _auth.signOut();
@@ -195,10 +275,12 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
         (userCredential) async {
           final user = userCredential.user;
           if (user != null) {
-            final updateResult = await registerGuestUserUseCase(RegisterGuestUserParams(
-              userId: user.uid,
-              userName: event.userName,
-            ));
+            final updateResult = await registerGuestUserUseCase(
+              RegisterGuestUserParams(
+                userId: user.uid,
+                userName: event.userName,
+              ),
+            );
 
             await updateResult.fold(
               (failure) async => emit(EmailAuthError(failure.message)),
@@ -218,7 +300,6 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
       );
     });
 
-
     on<SignUpRequested>((event, emit) async {
       final currentState = state;
       if (currentState is! SignUpState) return;
@@ -237,57 +318,77 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState>{
         final result = await signUpUseCase(signUpParams);
 
         await result.fold(
-              (failure) async {
-            emit(currentState.copyWith(
-              status: SignUpStatus.error,
-              message: failure.message.contains('email-already-in-use')
-                  ? "This email is already registered."
-                  : failure.message,
-            ));
+          (failure) async {
+            emit(
+              currentState.copyWith(
+                status: SignUpStatus.error,
+                message: failure.message.contains('email-already-in-use')
+                    ? "This email is already registered."
+                    : failure.message,
+              ),
+            );
           },
-              (userCredential) async {
+          (userCredential) async {
             final user = userCredential.user;
             if (user != null) {
               try {
-                emit(currentState.copyWith(
-                  status: SignUpStatus.success,
-                  message: "Account Created Successfully! Verification email sent.",
-                ));
+                emit(
+                  currentState.copyWith(
+                    status: SignUpStatus.success,
+                    message:
+                        "Account Created Successfully! Verification email sent.",
+                  ),
+                );
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'too-many-requests') {
-                  emit(currentState.copyWith(
-                    status: SignUpStatus.error,
-                    message:
-                    "Too many verification requests. Please wait a few minutes before trying again.",
-                  ));
+                  emit(
+                    currentState.copyWith(
+                      status: SignUpStatus.error,
+                      message:
+                          "Too many verification requests. Please wait a few minutes before trying again.",
+                    ),
+                  );
                 } else {
-                  emit(currentState.copyWith(
-                    status: SignUpStatus.error,
-                    message: e.message ?? "Error sending verification email.",
-                  ));
+                  emit(
+                    currentState.copyWith(
+                      status: SignUpStatus.error,
+                      message: e.message ?? "Error sending verification email.",
+                    ),
+                  );
                 }
               }
             }
           },
         );
       } catch (e) {
-        emit(currentState.copyWith(
-          status: SignUpStatus.error,
-          message: "Unexpected error occurred during sign up.",
-        ));
+        emit(
+          currentState.copyWith(
+            status: SignUpStatus.error,
+            message: "Unexpected error occurred during sign up.",
+          ),
+        );
       }
     });
 
-
     on<ResendEmailVerification>((_, emit) async {
       await _auth.currentUser?.sendEmailVerification();
-      emit(EmailAuthenticated(user: _auth.currentUser!, isEmailVerified: _auth.currentUser!.emailVerified));
+      emit(
+        EmailAuthenticated(
+          user: _auth.currentUser!,
+          isEmailVerified: _auth.currentUser!.emailVerified,
+        ),
+      );
     });
 
     on<RefreshUser>((_, emit) async {
       emit(AuthLoading(loading: 'verification'));
       await _auth.currentUser?.reload();
-      emit(EmailAuthenticated(user: _auth.currentUser!, isEmailVerified: _auth.currentUser!.emailVerified));
+      emit(
+        EmailAuthenticated(
+          user: _auth.currentUser!,
+          isEmailVerified: _auth.currentUser!.emailVerified,
+        ),
+      );
     });
   }
 }

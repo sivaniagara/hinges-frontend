@@ -86,6 +86,10 @@ class GoogleAuthenticated extends AuthenticatedState {
   GoogleAuthenticated({required super.user});
 }
 
+class FacebookAuthenticated extends AuthenticatedState {
+  FacebookAuthenticated({required super.user});
+}
+
 class GuestAuthenticated extends AuthenticatedState {
   GuestAuthenticated({required super.user});
 }

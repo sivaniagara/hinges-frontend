@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hinges</string>
+
+    <!-- ✅ USE THE CONSUMER APP ID (1463388908876257) -->
+    <string name="facebook_app_id">1463388908876257</string>
+
+    <!-- ⚠️ You need to get the Client Token for this app from Facebook -->
+    <string name="facebook_client_token">3eaa3192274639e9ab46abb38bd54cfc</string>
+
+    <string name="fb_login_protocol_scheme">fb1463388908876257</string>
+</resources>

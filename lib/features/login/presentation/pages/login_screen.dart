@@ -28,17 +28,18 @@ class LoginScreen extends StatelessWidget {
           if (state is AuthLoading) {
             if (state.loading == 'google-signIn') {
               showLoadingDialog(context, message: "Connecting Google...");
+            } else if (state.loading == 'facebook-signIn') {
+              showLoadingDialog(context, message: "Connecting Facebook...");
             } else if (state.loading == 'guest-signIn') {
               showLoadingDialog(context, message: "Logging in as Guest...");
             }
           }
-
-          else if (state is GoogleAuthenticated || state is GuestAuthenticated) {
+          else if (state is GoogleAuthenticated || state is FacebookAuthenticated || state is GuestAuthenticated) {
             context.pop();
             context.go('/loading');
           }
-
           else if (state is EmailAuthError) {
+            debugPrint("state.message => ${state.message}");
             context.pop();
             showMessageDialog(
               context: context,
@@ -219,9 +220,8 @@ class LoginScreen extends StatelessWidget {
                             title: 'Sign in With Facebook',
                             prefixIcon: FontAwesomeIcons.facebook,
                             onPressed: () {
-                              showGameInfoDialog(
-                                  context,
-                                  message: "Facebook login coming soon!");
+                              context.read<UserAuthBloc>().add(
+                                  FacebookSignInRequested());
                             },
                             outlined: true,
                           )
@@ -243,7 +243,6 @@ class LoginScreen extends StatelessWidget {
 
                                   context.read<UserAuthBloc>().add(
                                       GuestSignInRequested(name));
-
                                 },
                               );
 

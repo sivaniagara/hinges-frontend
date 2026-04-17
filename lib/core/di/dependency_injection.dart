@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hinges_frontend/features/login/domain/usecase/facebook_sign_in_usecase.dart';
 import 'package:hinges_frontend/features/login/domain/usecase/register_guest_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
@@ -39,6 +40,7 @@ Future<void> init() async {
     signUpUseCase: sl(),
     forgotPasswordUseCase: sl(),
     googleSignInUseCase: sl(),
+    facebookSignInUseCase: sl(),
     updateUserDetailsUseCase: sl(),
     guestSignInUseCase: sl(), registerGuestUserUseCase: sl(),
   ));
@@ -46,6 +48,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignUpUseCase(authRepository: sl()));
   sl.registerLazySingleton(() => ForgotPasswordUseCase(sl()));
   sl.registerLazySingleton(() => GoogleSignInUseCase(sl()));
+  sl.registerLazySingleton(() => FacebookSignInUseCase(sl()));
   sl.registerLazySingleton(() => UpdateUserDetailsUseCase(sl()));
   sl.registerLazySingleton(() => GuestSignInUseCase(sl()));
   

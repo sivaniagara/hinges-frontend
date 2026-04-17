@@ -26,6 +26,8 @@ class SignInRequested extends UserAuthEvent {
 
 class GoogleSignInRequested extends UserAuthEvent {}
 
+class FacebookSignInRequested extends UserAuthEvent {}
+
 class GuestSignInRequested extends UserAuthEvent {
   final String userName;
   GuestSignInRequested(this.userName);
