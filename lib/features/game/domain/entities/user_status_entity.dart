@@ -1,12 +1,13 @@
 import 'package:equatable/equatable.dart';
 
 enum MatchWinStatusEnum {qualified, disqualified}
+enum UserActiveStatusEnum {exitMatch, joinMatch, connectionLoss}
 
 class UserStatusEntity extends Equatable {
   final String userId;
   final String userName;
   final String teamId;
-  final bool isActive;
+  final UserActiveStatusEnum activeStatus;
   final String lastSeen;
   final int balanceAmount;
   final MatchWinStatusEnum matchWinStatusEnum;
@@ -17,7 +18,7 @@ class UserStatusEntity extends Equatable {
     required this.userId,
     required this.userName,
     required this.teamId,
-    required this.isActive,
+    required this.activeStatus,
     required this.lastSeen,
     required this.balanceAmount,
     required this.matchWinStatusEnum,
@@ -26,5 +27,5 @@ class UserStatusEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [userId, teamId, isActive, lastSeen, balanceAmount, matchWinStatusEnum, rank, totalRatings];
+  List<Object?> get props => [userId, teamId, activeStatus, lastSeen, balanceAmount, matchWinStatusEnum, rank, totalRatings];
 }

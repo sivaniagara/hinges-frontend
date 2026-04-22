@@ -9,11 +9,13 @@ class FetchGameData extends GameEvent {
   final String userId;
   final String userName;
   final String auctionCategoryId;
+  final String matchType;
 
   FetchGameData({
     required this.userId,
     required this.userName,
-    required this.auctionCategoryId
+    required this.auctionCategoryId,
+    required this.matchType,
   });
 
   @override
@@ -55,3 +57,15 @@ class BreakTick extends GameEvent {}
 class GameSocketDisconnected extends GameEvent {}
 
 class ReconnectSocket extends GameEvent {}
+
+class ExitMatch extends GameEvent {
+  final String userId;
+  final String matchId;
+
+  ExitMatch({required this.userId, required this.matchId});
+
+  @override
+  List<Object?> get props => [userId, matchId];
+}
+
+class RefreshGameData extends GameEvent {}

@@ -15,12 +15,14 @@ import '../../domain/entities/game_data_entity.dart';
 import '../../domain/entities/user_status_entity.dart';
 import '../../utils/game_urls.dart';
 import '../../domain/usecase/get_game_data_usecase.dart';
+import '../../domain/usecase/exit_match_usecase.dart';
 
 part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GetGameDataUseCase getGameDataUseCase;
+  final ExitMatchUseCase exitMatchUseCase;
   final WebSocketService webSocketService;
 
   StreamSubscription? _gameDataSubscription;
@@ -35,6 +37,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   GameBloc({
     required this.getGameDataUseCase,
+    required this.exitMatchUseCase,
     required this.webSocketService,
   }) : super(GameInitial()) {
 
@@ -49,6 +52,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             userId: event.userId,
             userName: event.userName,
             auctionCategoryId: event.auctionCategoryId,
+            matchType: event.matchType,
           ),
         );
 
@@ -98,6 +102,20 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         emit(GameError(e.toString()));
       }
     });
+
+    // ================= REFRESH GAME DATA =================
+    on<RefreshGameData>((event, emit) {
+      if (state is! GameLoaded) return;
+
+      final currentState = state as GameLoaded;
+
+      // Don't send refresh if already reconnecting
+      if (currentState.isReconnecting) return;
+
+      // Send the refresh payload code 100 via websocket
+      add(SendGameMessage({'payload_code': 100}));
+    });
+
 
     // ================= RECONNECT SOCKET =================
     on<ReconnectSocket>((event, emit) async {
@@ -270,6 +288,25 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           remainingSecondsToExpireBreak: remaining - 1,
         ));
       }
+    });
+
+    on<ExitMatch>((event, emit) async {
+      final result = await exitMatchUseCase(
+        ExitMatchParams(userId: event.userId, matchId: event.matchId),
+      );
+      
+      result.fold(
+        (failure) {
+          emit(GameExitError(failure.message));
+          // Restore previous state after emitting error to allow subsequent actions
+          if (state is GameLoaded) {
+            emit(state as GameLoaded); 
+          }
+        },
+        (_) {
+          emit(GameExitSuccess());
+        },
+      );
     });
   }
 

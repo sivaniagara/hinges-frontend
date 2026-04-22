@@ -172,6 +172,7 @@ final router = GoRouter(
                 userName: homeData.userData.userName,
                 auctionCategoryId:
                 homeData.userData.auctionCategoryItem.first.id,
+                matchType: MatchTypeEnum.normalMatch.value,
               ),
             ),
           child: child,

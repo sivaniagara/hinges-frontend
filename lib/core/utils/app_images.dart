@@ -1,6 +1,7 @@
 class AppImages {
   static const String base = 'assets/images/png/';
 
+  static const String bgEffect = '${base}bg_effect.png';
   static const String adsFree = '${base}ads_free.png';
   static const String auctionCard = '${base}auction_card.png';
   static const String auctionerBox = '${base}auctioner_box.png';
@@ -46,6 +47,16 @@ class AppImages {
   static const String kkr = '${base}kkr.png';
   static const String srh = '${base}srh.png';
   static const String rcb = '${base}rcb.png';
+  static const String cskLogo = '${base}csk_logo.png';
+  static const String miLogo = '${base}mi_logo.png';
+  static const String rcbLogo = '${base}rcb_logo.png';
+  static const String kkrLogo = '${base}kkr_logo.png';
+  static const String srhLogo = '${base}srh_logo.png';
+  static const String gtLogo = '${base}gt_logo.png';
+  static const String dcLogo = '${base}dc_logo.png';
+  static const String lsgLogo = '${base}lsg_logo.png';
+  static const String pkLogo = '${base}pk_logo.png';
+  static const String rrLogo = '${base}rr_logo.png';
 
   /// players
   static const String playerBase = '${gameBase}players';

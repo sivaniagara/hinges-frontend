@@ -5,7 +5,7 @@ class UserStatusModel extends UserStatusEntity {
     required super.userId,
     required super.userName,
     required super.teamId,
-    required super.isActive,
+    required super.activeStatus,
     required super.lastSeen,
     required super.balanceAmount,
     required super.matchWinStatusEnum,
@@ -14,11 +14,21 @@ class UserStatusModel extends UserStatusEntity {
   });
 
   factory UserStatusModel.fromJson(Map<String, dynamic> json) {
+
+    UserActiveStatusEnum getActiveStatus(String activeStatus){
+      if(activeStatus == 'exit_match'){
+        return UserActiveStatusEnum.exitMatch;
+      }else if(activeStatus == 'join_match'){
+        return UserActiveStatusEnum.joinMatch;
+      }else{
+        return UserActiveStatusEnum.connectionLoss;
+      }
+    }
     return UserStatusModel(
       userId: json['user_id'] ?? '',
       userName: json['user_name'] ?? '',
       teamId: json['team_id'] ?? '',
-      isActive: json['is_active'] ?? false,
+      activeStatus: getActiveStatus(json['active_status']),
       lastSeen: json['last_seen'] ?? '',
       balanceAmount: json['balance_amount'] ?? 0,
       matchWinStatusEnum: json['match_win_status'] == 'qualified' ? MatchWinStatusEnum.qualified : MatchWinStatusEnum.disqualified,
@@ -32,7 +42,7 @@ class UserStatusModel extends UserStatusEntity {
         userId: entity.userId,
         userName: entity.userName,
         teamId: entity.teamId,
-        isActive: entity.isActive,
+        activeStatus: entity.activeStatus,
         lastSeen: entity.lastSeen,
         balanceAmount: entity.balanceAmount,
         matchWinStatusEnum: entity.matchWinStatusEnum,
@@ -46,7 +56,7 @@ class UserStatusModel extends UserStatusEntity {
         userId: userId,
         userName: userName,
         teamId: teamId,
-        isActive: isActive,
+        activeStatus: activeStatus,
         lastSeen: lastSeen,
         balanceAmount: balanceAmount,
         matchWinStatusEnum: matchWinStatusEnum,

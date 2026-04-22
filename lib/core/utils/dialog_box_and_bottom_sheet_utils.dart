@@ -1,60 +1,190 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'dart:math' as Math;
+import 'package:flutter/material.dart';
+
+import 'app_images.dart';
+
 void showLoadingDialog(BuildContext context, {String message = "Loading..."}) {
   showDialog(
     context: context,
-    barrierDismissible: false, // prevent closing by tapping outside
+    barrierDismissible: false,
+    barrierColor: Colors.black.withOpacity(0.7), // 🔥 dark overlay
     builder: (BuildContext context) {
       return PopScope(
         canPop: false,
         child: Dialog(
-          elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  )
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(
-                    strokeWidth: 4,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    message,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          elevation: 0,
+          child: _GamingLoader(message),
         ),
       );
     },
   );
+}
+
+/// 🔥 MAIN LOADER WIDGET
+class _GamingLoader extends StatefulWidget {
+  final String? message;
+  const _GamingLoader(this.message);
+
+  @override
+  State<_GamingLoader> createState() => _GamingLoaderState();
+}
+
+class _GamingLoaderState extends State<_GamingLoader>
+    with TickerProviderStateMixin {
+
+  late AnimationController _rotation;
+  late AnimationController _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _rotation = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _rotation.dispose();
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 35),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.black.withOpacity(0.6),
+
+          border: Border.all(
+            color: Colors.amber.withOpacity(0.6),
+            width: 1.5,
+          ),
+
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.8),
+              blurRadius: 40,
+            )
+          ],
+        ),
+
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            /// 🔄 ROTATING RING + LOGO
+            SizedBox(
+              height: 90,
+              width: 90,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+
+                  /// ROTATING RING
+                  AnimatedBuilder(
+                    animation: _rotation,
+                    builder: (_, __) {
+                      return Transform.rotate(
+                        angle: _rotation.value * 2 * Math.pi,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.amber,
+                              width: 3,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  /// INNER PULSE GLOW
+                  AnimatedBuilder(
+                    animation: _pulse,
+                    builder: (_, __) {
+                      double scale = 0.9 + (_pulse.value * 0.2);
+
+                      return Transform.scale(
+                        scale: scale,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.amber.withOpacity(0.4),
+                                blurRadius: 25,
+                                spreadRadius: 5,
+                              )
+                            ],
+                          ),
+                          child: Image.asset(
+                            AppImages.indianBiddingLeague,
+                            height: 50,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            /// ⚡ LOADING TEXT (PULSE)
+            AnimatedBuilder(
+              animation: _pulse,
+              builder: (_, __) {
+                return Opacity(
+                  opacity: 0.6 + (_pulse.value * 0.4),
+                  child: Text(
+                    "PLEASE WAIT",
+                    style: TextStyle(
+                      color: Colors.amber.shade300,
+                      fontSize: 13,
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 10),
+
+            /// MESSAGE
+            if(widget.message != null)
+              Text(
+                widget.message!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                ),
+              ),
+
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 void showMessageDialog({
@@ -66,44 +196,191 @@ void showMessageDialog({
 }) {
   showDialog(
     context: context,
+    barrierColor: Colors.black.withOpacity(0.7),
     builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: _GamingMessageDialog(
+          icon: icon,
+          title: title,
+          message: message,
+          actionButtons: actionButtons,
         ),
-        title: Row(
-          children:[
-            Icon(icon.icon, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title, 
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          message, 
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-        ),
-        actions: actionButtons ?? [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            ),
-            child: const Text('Ok', style: TextStyle(fontWeight: FontWeight.bold)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
       );
     },
   );
+}
+
+/// 🔥 GAMING DIALOG UI
+class _GamingMessageDialog extends StatefulWidget {
+  final Icon icon;
+  final String title;
+  final String message;
+  final List<Widget>? actionButtons;
+
+  const _GamingMessageDialog({
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.actionButtons,
+  });
+
+  @override
+  State<_GamingMessageDialog> createState() => _GamingMessageDialogState();
+}
+
+class _GamingMessageDialogState extends State<_GamingMessageDialog>
+    with SingleTickerProviderStateMixin {
+
+  late AnimationController _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.black.withOpacity(0.65),
+
+          border: Border.all(
+            color: Colors.amber.withOpacity(0.6),
+            width: 1.5,
+          ),
+
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.9),
+              blurRadius: 40,
+            )
+          ],
+        ),
+
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            /// 🔥 ICON WITH GLOW
+            AnimatedBuilder(
+              animation: _pulse,
+              builder: (_, __) {
+                double scale = 1 + (_pulse.value * 0.1);
+
+                return Transform.scale(
+                  scale: scale,
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: (widget.icon.color ?? Colors.amber)
+                              .withOpacity(0.4),
+                          blurRadius: 25,
+                          spreadRadius: 5,
+                        )
+                      ],
+                    ),
+                    child: Icon(
+                      widget.icon.icon,
+                      size: 32,
+                      color: widget.icon.color ?? Colors.amber,
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            /// TITLE
+            Text(
+              widget.title.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.amber.shade300,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            /// MESSAGE
+            Text(
+              widget.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            /// ACTION BUTTONS
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: widget.actionButtons ??
+                  [
+                    _buildPrimaryButton(context),
+                  ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🔘 DEFAULT BUTTON
+  Widget _buildPrimaryButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          gradient: LinearGradient(
+            colors: [
+              Colors.amber.shade600,
+              Colors.amber.shade300,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.amber.withOpacity(0.4),
+              blurRadius: 15,
+            )
+          ],
+        ),
+        child: const Text(
+          "OK",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 

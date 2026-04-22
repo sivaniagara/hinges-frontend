@@ -146,7 +146,7 @@ class PointsTableScreen extends StatelessWidget {
       usersSquad[user.userId] = 0;
       Map<int, AuctionPlayerStatusEntity?> squad = context.read<GameBloc>().getMySquad(user.userId);
       for(var player in squad.values){
-        if(player != null){
+        if(player != null && (player.playerAuctionStatus == PlayerAuctionStatusEnum.sold || player.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           usersSquad[user.userId] = usersSquad[user.userId]! + player.baseRating;
         }
       }

@@ -1,10 +1,11 @@
+import 'dart:math' as Math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hinges_frontend/core/presentation/widgets/gradient_text.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import '../bloc/user_auth_bloc.dart';
@@ -15,12 +16,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final List<Color> textColorForYellowTag = [
-      const Color(0xff330000),
-      const Color(0xffFF1D2B)
-    ];
-
     return Scaffold(
       body: BlocListener<UserAuthBloc, UserAuthState>(
         listener: (context, state) {
@@ -39,7 +34,6 @@ class LoginScreen extends StatelessWidget {
             context.go('/loading');
           }
           else if (state is EmailAuthError) {
-            debugPrint("state.message => ${state.message}");
             context.pop();
             showMessageDialog(
               context: context,
@@ -48,238 +42,221 @@ class LoginScreen extends StatelessWidget {
               message: state.message,
             );
           }
-
         },
 
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
+        child: Stack(
+          children: [
 
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              radius: 1.2,
-              colors: [
-                Color(0xFF5A0000),
-                Color(0xFF1A0000),
-                Color(0xFF000000),
-              ],
+            /// 🌌 DARK BASE
+            Container(
+              color: const Color(0xFF020617),
             ),
-          ),
 
-          child: SafeArea(
-            child: Row(
-              children: [
+            /// 🔲 GRID BACKGROUND
+            CustomPaint(
+              painter: GridPainter(),
+              size: Size.infinite,
+            ),
 
-                /// LEFT SIDE BRANDING
-                Expanded(
-                  flex: 5,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+            /// 💡 NEON GLOW SPOTS
+            Positioned(
+              top: -100,
+              left: -100,
+              child: _glowCircle(300, Colors.blueAccent),
+            ),
+            Positioned(
+              bottom: -120,
+              right: -120,
+              child: _glowCircle(300, Colors.purpleAccent),
+            ),
 
-                        /// LOGO
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.red.withOpacity(.4),
-                                blurRadius: 40,
-                                spreadRadius: 10,
+            SafeArea(
+              child: Center(
+                child: Container(
+                  width: 900,
+                  height: 500,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.black.withOpacity(.6),
+                    // border: Border.all(color: Colors.white12),
+                  ),
+
+                  child: Row(
+                    children: [
+
+                      /// LEFT PANEL
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Build Your Dream Team",
+                                style: GoogleFonts.oxanium(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              Text(
+                                "Authenticate to continue into the bidding system.",
+                                style: GoogleFonts.instrumentSans(
+                                  color: Colors.white54,
+                                ),
+                              ),
+
+                              const SizedBox(height: 40),
+
+                              Image.asset(
+                                AppImages.indianBiddingLeague,
+                                height: 80,
                               )
                             ],
                           ),
-                          child: Image.asset(
-                            AppImages.indianBiddingLeague,
-                            height: 180,
-                          ),
-                        )
-                            .animate()
-                            .fade(duration: 700.ms)
-                            .scale(begin: const Offset(.8,.8))
-                            .shimmer(delay: 700.ms, duration: 1500.ms),
-
-                        const SizedBox(height: 20),
-
-                        Text(
-                          'THE ULTIMATE AUCTION EXPERIENCE',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.oxanium(
-                            color: Colors.amber.shade300,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 3,
-                          ),
-                        )
-                            .animate()
-                            .fade(delay: 500.ms)
-                            .slideY(begin: .3),
-
-                      ],
-                    ),
-                  ),
-                ),
-
-                /// DIVIDER
-                Container(
-                  width: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 60),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.amber.withOpacity(.7),
-                        Colors.transparent
-                      ],
-                    ),
-                  ),
-                )
-                    .animate()
-                    .fade(duration: 700.ms),
-
-                /// RIGHT SIDE LOGIN
-                Expanded(
-                  flex: 5,
-                  child: Center(
-                    child: Container(
-
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 40
-                      ),
-
-                      width: 420,
-
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Colors.black.withOpacity(.45),
-
-                        border: Border.all(
-                          color: Colors.amber.withOpacity(.4),
-                          width: 1.5,
                         ),
-
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(.8),
-                            blurRadius: 30,
-                          )
-                        ],
                       ),
 
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-
-                          /// LOGIN TAG
-                          Container(
-                            width: 220,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(AppImages.yellowTag),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-
-                            child: Center(
-                              child: GradientText(
-                                title: 'CHOOSE LOGIN',
-                                colors: textColorForYellowTag,
-                                fontSize: 20,
-                              ),
-                            ),
-                          )
-                              .animate()
-                              .fade()
-                              .slideY(begin: -.4),
-
-                          const SizedBox(height: 30),
-
-                          /// GOOGLE
-                          LongButton(
-                            title: 'Sign in With Google',
-                            prefixIcon: FontAwesomeIcons.google,
-                            onPressed: () {
-                              context.read<UserAuthBloc>().add(
-                                  GoogleSignInRequested());
-                            },
-                            outlined: true,
-                          )
-                              .animate(delay: 200.ms)
-                              .fade()
-                              .slideX(begin: .3),
-
-                          const SizedBox(height: 15),
-
-                          /// FACEBOOK
-                          LongButton(
-                            title: 'Sign in With Facebook',
-                            prefixIcon: FontAwesomeIcons.facebook,
-                            onPressed: () {
-                              context.read<UserAuthBloc>().add(
-                                  FacebookSignInRequested());
-                            },
-                            outlined: true,
-                          )
-                              .animate(delay: 350.ms)
-                              .fade()
-                              .slideX(begin: .3),
-
-                          const SizedBox(height: 15),
-
-                          /// GUEST
-                          LongButton(
-                            title: 'Sign in as Guest',
-                            prefixIcon: Icons.person_outline,
-                            onPressed: () {
-
-                              showGuestNameBottomSheet(
-                                context,
-                                onContinue: (name) {
-
-                                  context.read<UserAuthBloc>().add(
-                                      GuestSignInRequested(name));
-                                },
-                              );
-
-                            },
-                            outlined: true,
-                          )
-                              .animate(delay: 500.ms)
-                              .fade()
-                              .slideX(begin: .3),
-
-                          const SizedBox(height: 20),
-
-                          Text(
-                            'By logging in, you agree to our Terms & Conditions',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.instrumentSans(
-                              color: Colors.white38,
-                              fontSize: 10,
-                            ),
-                          )
-                              .animate(delay: 700.ms)
-                              .fade(),
-
-                        ],
+                      /// DIVIDER
+                      Container(
+                        width: 1,
+                        color: Colors.white10,
                       ),
-                    )
-                        .animate()
-                        .fade(duration: 600.ms)
-                        .slideX(begin: .4),
+
+                      /// RIGHT PANEL (LOGIN)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+
+                              _neonCard(
+                                child: Column(
+                                  children: [
+
+                                    LongButton(
+                                      title: 'Google Login',
+                                      prefixIcon: FontAwesomeIcons.google,
+                                      onPressed: () {
+                                        context.read<UserAuthBloc>().add(
+                                            GoogleSignInRequested());
+                                      },
+                                      outlined: true,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    LongButton(
+                                      title: 'Facebook Login',
+                                      prefixIcon: FontAwesomeIcons.facebook,
+                                      onPressed: () {
+                                        context.read<UserAuthBloc>().add(
+                                            FacebookSignInRequested());
+                                      },
+                                      outlined: true,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    LongButton(
+                                      title: 'Guest Login',
+                                      prefixIcon: Icons.person_outline,
+                                      onPressed: () {
+                                        showGuestNameBottomSheet(
+                                          context,
+                                          onContinue: (name) {
+                                            context.read<UserAuthBloc>().add(
+                                                GuestSignInRequested(name));
+                                          },
+                                        );
+                                      },
+                                      outlined: true,
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              Text(
+                                "By logging in, you agree to our Terms & Conditions",
+                                style: GoogleFonts.instrumentSans(
+                                  color: Colors.white38,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-
-              ],
+                ).animate().fade().scale(),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
+
+  /// 🔵 GLOW CIRCLE
+  Widget _glowCircle(double size, Color color) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            color.withOpacity(0.3),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🔷 NEON CARD
+  Widget _neonCard({required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.cyanAccent.withOpacity(.4)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.cyanAccent.withOpacity(.2),
+            blurRadius: 20,
+          )
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+/// 🔲 GRID BACKGROUND
+class GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.03)
+      ..strokeWidth = 1;
+
+    const spacing = 40.0;
+
+    for (double x = 0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+
+    for (double y = 0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

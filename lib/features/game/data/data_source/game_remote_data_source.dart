@@ -4,6 +4,7 @@ import '../models/game_data_model.dart';
 
 abstract class GameRemoteDataSource {
   Future<GameDataModel> getGameData(Map<String, dynamic> jsonData);
+  Future<void> exitMatch(Map<String, dynamic> jsonData);
 }
 
 class GameRemoteDataSourceImpl implements GameRemoteDataSource {
@@ -20,7 +21,8 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
           body: {
             "user_id" : jsonData['userId'],
             "user_name" : jsonData['userName'],
-            "auction_category_id": jsonData['auctionCategoryId']
+            "auction_category_id": jsonData['auctionCategoryId'],
+            "match_type": jsonData['matchType'],
           }
       );
 
@@ -34,5 +36,20 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
       rethrow;
     }
 
+  }
+
+  @override
+  Future<void> exitMatch(Map<String, dynamic> jsonData) async {
+    try {
+      await httpService.post(
+        GameUrls.exitMatch,
+        body: {
+          "user_id": jsonData['user_id'],
+          "match_id": jsonData['match_id'],
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }

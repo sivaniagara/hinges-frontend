@@ -70,6 +70,7 @@ class ResultScreen extends StatelessWidget {
                         _buildHeaderCell('FRANCHISE NAME', flex: 4),
                         _buildHeaderCell('ELIGIBILITY', flex: 3),
                         _buildHeaderCell('FINAL RATING', flex: 2),
+                        _buildHeaderCell('PURSE', flex: 1),
                         _buildHeaderCell('PRIZE', flex: 2),
                       ],
                     ),
@@ -93,9 +94,9 @@ class ResultScreen extends StatelessWidget {
                                         user.matchWinStatusEnum == MatchWinStatusEnum.qualified,
                                         context.read<GameBloc>().getRating(user.userId).toString(),
                                         (user.rank <= 3  && user.matchWinStatusEnum == MatchWinStatusEnum.qualified) ? getMedalImage(user.rank) : null,
-                                        getPrizeAmount(context, user.rank)
+                                        getPrizeAmount(context, user.rank),
+                                        context.read<GameBloc>().formatPriceShort(user.balanceAmount)
                                     );
-
                                   }
                               ),
                             ),
@@ -157,7 +158,7 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildResultRow(String userName, String franchiseName, String logo, bool isQualified, String rating, String? medalImage, String prize) {
+  Widget _buildResultRow(String userName, String franchiseName, String logo, bool isQualified, String rating, String? medalImage, String prize, String purse) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -252,6 +253,19 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
           ),
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: Text(
+                purse,
+                style: GoogleFonts.oxanium(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
           // PRIZE
           Expanded(
             flex: 2,
@@ -269,7 +283,7 @@ class ResultScreen extends StatelessWidget {
                       colors: [const Color(0xFF330000), const Color(0xFFB8860B)], // Golden-ish gradient
                       fontSize: 16,
                     )
-                  : const Icon(Icons.cancel, color: Colors.red, size: 20),
+                  : Expanded(child: const Icon(Icons.cancel, color: Colors.red, size: 20)),
               ],
             ),
           ),

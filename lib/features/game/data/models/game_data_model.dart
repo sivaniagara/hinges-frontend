@@ -54,7 +54,7 @@ class GameDataModel extends GameDataEntity {
   }
 
   factory GameDataModel.fromJson(Map<String, dynamic> json) {
-
+    print("json['users_status_list'] : ${json['users_status_list']}");
     return GameDataModel(
       matchId: json['match_id'] ?? '',
       auctionCategoryId: json['auction_category_id'] ?? '',
@@ -119,16 +119,11 @@ class GameDataModel extends GameDataEntity {
     List.from(usersStatusList);
 
     if (json.containsKey('users_status_list')) {
-      for (var user in json['users_status_list']) {
-        int index = updatedUsers.indexWhere(
-                (e) => e.userId == user["user_id"]);
+      final List newUsers = json['users_status_list'];
 
-        if (index != -1) {
-          updatedUsers[index] = UserStatusModel.fromJson(user);
-        } else {
-          updatedUsers.add(UserStatusModel.fromJson(user));
-        }
-      }
+      updatedUsers = newUsers
+          .map((user) => UserStatusModel.fromJson(user))
+          .toList();
     }
 
     return GameDataModel(

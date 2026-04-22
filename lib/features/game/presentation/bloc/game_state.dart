@@ -64,3 +64,14 @@ class GameError extends GameState {
   @override
   List<Object?> get props => [message];
 }
+
+class GameExitSuccess extends GameState {}
+
+class GameExitError extends GameState {
+  final String message;
+
+  GameExitError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

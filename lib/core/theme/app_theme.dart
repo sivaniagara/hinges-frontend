@@ -9,7 +9,7 @@ class AppTheme {
   static Color onPrimaryColor = Colors.black;
   static Color primaryContainerColor = const Color(0xFFFFE082); // Lighter Gold
   static Color surfaceColor = const Color(0xFF4A0000); // Dark Maroon/Red
-  static Color backgroundColor = const Color(0xFF800000); // Deep Red
+  static Color backgroundColor = const Color(0xFF060101); // Deep Red
 
   static ThemeData get lightTheme {
     return ThemeData(
