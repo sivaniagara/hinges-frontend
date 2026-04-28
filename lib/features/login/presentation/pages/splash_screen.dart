@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:hinges_frontend/core/utils/app_images.dart';
 import '../bloc/user_auth_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _mainController;
   late AnimationController _bgController;
+  late AnimationController _particlesController;
 
   late Animation<double> _fade;
   late Animation<double> _scale;
@@ -25,6 +27,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   bool _timerDone = false;
   bool _authChecked = false;
+
+  final List<Particle> _particles = [];
 
   @override
   void initState() {
@@ -34,6 +38,8 @@ class _SplashScreenState extends State<SplashScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    _initializeParticles();
 
     /// 🔹 Main Animation
     _mainController = AnimationController(
@@ -46,17 +52,25 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeIn,
     );
 
-    _scale = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _scale = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(parent: _mainController, curve: Curves.easeOutBack),
     );
 
-    /// 🔹 Background Animation
+    /// 🔹 Background Glow Animation
     _bgController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 6),
+      duration: const Duration(seconds: 4),
     )..repeat(reverse: true);
 
-    _bgAnimation = Tween<double>(begin: 0, end: 1).animate(_bgController);
+    _bgAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _bgController, curve: Curves.easeInOut),
+    );
+
+    /// 🔹 Particle Animation
+    _particlesController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
 
     _mainController.forward();
 
@@ -66,11 +80,27 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
+  void _initializeParticles() {
+    final random = math.Random();
+    for (int i = 0; i < 500; i++) {
+      _particles.add(
+        Particle(
+          x: random.nextDouble(),
+          y: random.nextDouble(),
+          size: random.nextDouble() * 3 + 1.5,
+          speedX: (random.nextDouble() - 0.5) * 0.002,
+          speedY: (random.nextDouble() - 0.5) * 0.002,
+          opacity: random.nextDouble() * 0.6 + 0.3,
+        ),
+      );
+    }
+  }
+
   void _navigateIfReady() {
-    if (!_timerDone || !_authChecked || !mounted) return;
+    if (!_timerDone || !mounted) return;
 
     final state = context.read<UserAuthBloc>().state;
-
+    print("state : ${state}");
     if (state is AuthenticatedState) {
       context.go('/loading');
     } else {
@@ -82,6 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _mainController.dispose();
     _bgController.dispose();
+    _particlesController.dispose();
     super.dispose();
   }
 
@@ -94,64 +125,272 @@ class _SplashScreenState extends State<SplashScreen>
       },
       child: Scaffold(
         body: AnimatedBuilder(
-          animation: _bgAnimation,
+          animation: Listenable.merge([_bgAnimation, _particlesController]),
           builder: (context, child) {
             return Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: RadialGradient(
                   colors: [
-                    Color.lerp(
-                        const Color(0xFF0F172A),
-                        const Color(0xFF1E293B),
-                        _bgAnimation.value)!,
-                    Color.lerp(
-                        const Color(0xFF020617),
-                        const Color(0xFF020617),
-                        _bgAnimation.value)!,
+                    const Color(0xFF023FA8),
+                    const Color(0xFF010218),
                   ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  radius: 0.8,
+                  focal: Alignment.center,
+                  focalRadius: 0.2,
                 ),
               ),
-              child: child,
-            );
-          },
-          child: Stack(
-            children: [
-              /// 🔹 Center Content
-              Center(
-                child: FadeTransition(
-                  opacity: _fade,
-                  child: ScaleTransition(
-                    scale: _scale,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+              child: Stack(
+                children: [
 
-                        const SizedBox(height: 20),
-
-                        ShimmerTitle(),
-
-                        const SizedBox(height: 10),
-
-                        /// 🔸 Subtitle
-                        Text(
-                          'Play • Bid • Win',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            letterSpacing: 1.2,
+                  /// 🔥 Center Glow - Clean and Premium
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF3B82F6).withOpacity(0.15),
+                            blurRadius: 100,
+                            spreadRadius: 50,
                           ),
-                        ),
-
-                        const SizedBox(height: 40),
-                      ],
+                          BoxShadow(
+                            color: const Color(0xFF60A5FA).withOpacity(0.08),
+                            blurRadius: 150,
+                            spreadRadius: 80,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  /// ✨ Golden Particles - Only in darker outer region
+                  ..._buildParticleLayer(),
+                  /// 🔥 MAIN UI
+                  Center(
+                    child: FadeTransition(
+                      opacity: _fade,
+                      child: ScaleTransition(
+                        scale: _scale,
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Opacity(
+                                opacity: 0.5,
+                                child: Image.asset(
+                                  AppImages.goldenRingStump,
+                                  height: MediaQuery.of(context).size.height,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  AppImages.indianBiddingLeague,
+                                  height: 170,
+                                ),
+                                /// 🔥 TITLE
+                                ShaderMask(
+                                  shaderCallback: (bounds) => LinearGradient(
+                                    colors: const [
+                                      Color(0xFFB26D01),
+                                      Color(0xFFFDFFAF),
+                                      Color(0xFFB26D01),
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ).createShader(bounds),
+                                  child: Text(
+                                    'INDIAN BIDDING LEAGUE',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.goldman(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2,
+                                      shadows: [
+                                        Shadow(
+                                          offset: const Offset(0, 6),
+                                          blurRadius: 8,
+                                          color: Colors.black.withOpacity(0.6),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                Row(
+                                  spacing: 10,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      AppImages.goldenStarLine,
+                                      width: 50,
+                                    ),
+                                    ShaderMask(
+                                      shaderCallback: (bounds) => LinearGradient(
+                                        colors: const [
+                                          Color(0xFFFDFFAF),
+                                          Color(0xFFE2A509),
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ).createShader(bounds),
+                                      child: Text(
+                                        'OWN YOUR DREAM TEAM',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.goldman(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 2,
+                                          shadows: [
+                                            Shadow(
+                                              offset: const Offset(0, 6),
+                                              blurRadius: 8,
+                                              color: Colors.black.withOpacity(0.6),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Transform(
+                                      alignment: Alignment.center,
+                                      transform: Matrix4.rotationY(math.pi),
+                                      child: Image.asset(
+                                        AppImages.goldenStarLine,
+                                        width: 50,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Image.asset(
+                                  AppImages.goldenCrownLine,
+                                  width: 200,
+                                  height: 50,
+                                ),
+                                ShaderMask(
+                                  shaderCallback: (bounds) => LinearGradient(
+                                    colors: const [
+                                      Color(0xFFFDFFAF),
+                                      Color(0xFFE2A509),
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ).createShader(bounds),
+                                  child: Text(
+                                    'POWERED BY HINGES GAMES',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.goldman(
+                                      fontSize: 13,
+                                      letterSpacing: 2,
+                                      shadows: [
+                                        Shadow(
+                                          offset: const Offset(0, 6),
+                                          blurRadius: 8,
+                                          color: Colors.black.withOpacity(0.6),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            buildMandala(alignment: Alignment.bottomLeft),
+                            buildMandala(
+                              alignment: Alignment.bottomRight,
+                              rotateY: math.pi,
+                            ),
+                            buildMandala(
+                              alignment: Alignment.topLeft,
+                              rotateX: math.pi,
+                            ),
+                            buildMandala(
+                              alignment: Alignment.topRight,
+                              rotateX: math.pi,
+                              rotateY: math.pi,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildParticleLayer() {
+    return List.generate(_particles.length, (index) {
+      final particle = _particles[index];
+
+      // Update particle position
+      particle.x += particle.speedX;
+      particle.y += particle.speedY;
+
+      // Wrap around screen
+      if (particle.x < 0) particle.x = 1;
+      if (particle.x > 1) particle.x = 0;
+      if (particle.y < 0) particle.y = 1;
+      if (particle.y > 1) particle.y = 0;
+
+      // Calculate distance from center (0.5, 0.5)
+      final dx = particle.x - 0.5;
+      final dy = particle.y - 0.5;
+      final distanceFromCenter = math.sqrt(dx * dx + dy * dy);
+
+      // Only show particles in outer region (distance > 0.35)
+      // This ensures particles are NOT inside the clean center glow
+      if (distanceFromCenter < 0.35) return const SizedBox.shrink();
+
+      // Particles closer to center fade out smoothly
+      final fadeFactor = (distanceFromCenter - 0.35) / 0.45;
+      final clampedFade = fadeFactor.clamp(0.0, 1.0);
+
+      return Positioned(
+        left: particle.x * MediaQuery.of(context).size.width,
+        top: particle.y * MediaQuery.of(context).size.height,
+        child: AnimatedBuilder(
+          animation: _particlesController,
+          builder: (context, child) {
+            // Twinkling effect
+            final twinkle = (math.sin(_particlesController.value * math.pi * 2 * particle.size * 2) + 1) / 2;
+            return Container(
+              width: particle.size,
+              height: particle.size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFFFD700).withOpacity(
+                    particle.opacity * clampedFade * (0.6 + twinkle * 0.4)
                 ),
               ),
+            );
+          },
+        ),
+      );
+    });
+  }
 
-            ],
+  Widget buildMandala({
+    required Alignment alignment,
+    double rotateX = 0,
+    double rotateY = 0,
+  }) {
+    return Positioned.fill(
+      child: Align(
+        alignment: alignment,
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.rotationX(rotateX)..rotateY(rotateY),
+          child: Opacity(
+            opacity: 0.5,
+            child: Image.asset(
+              AppImages.mandalaPattern,
+              width: MediaQuery.of(context).size.height * 0.35,
+            ),
           ),
         ),
       ),
@@ -159,70 +398,20 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-class ShimmerTitle extends StatefulWidget {
-  const ShimmerTitle({super.key});
+class Particle {
+  double x;
+  double y;
+  double size;
+  double speedX;
+  double speedY;
+  double opacity;
 
-  @override
-  State<ShimmerTitle> createState() => _ShimmerTitleState();
-}
-
-class _ShimmerTitleState extends State<ShimmerTitle>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
-
-    _animation = Tween<double>(begin: -1.5, end: 1.5).animate(_controller);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return ShaderMask(
-          shaderCallback: (bounds) {
-            return LinearGradient(
-              begin: Alignment(-1, 0),
-              end: Alignment(1, 0),
-              colors: [
-                Colors.amber,
-                Colors.white,
-                Colors.amber,
-              ],
-              stops: [
-                (_animation.value - 0.3).clamp(0.0, 1.0),
-                _animation.value.clamp(0.0, 1.0),
-                (_animation.value + 0.3).clamp(0.0, 1.0),
-              ],
-            ).createShader(bounds);
-          },
-          child: Text(
-            'INDIAN BIDDING LEAGUE',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.goldman(
-              fontSize: 34,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
-              color: Colors.white,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  Particle({
+    required this.x,
+    required this.y,
+    required this.size,
+    required this.speedX,
+    required this.speedY,
+    required this.opacity,
+  });
 }

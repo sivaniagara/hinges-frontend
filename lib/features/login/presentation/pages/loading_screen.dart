@@ -27,13 +27,11 @@ class _LoadingScreenState extends State<LoadingScreen>
   void initState() {
     super.initState();
 
-    /// Lock landscape
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
 
-    /// Fade animation
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -48,29 +46,22 @@ class _LoadingScreenState extends State<LoadingScreen>
       CurvedAnimation(parent: _fadeController, curve: Curves.easeOutBack),
     );
 
-    /// Rotation controller
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 20),
     )..repeat();
 
     _fadeController.forward();
-
     _startLoading();
   }
 
-  /// 🔥 ORIGINAL LOADING LOGIC
   void _startLoading() {
     _timer = Timer.periodic(const Duration(milliseconds: 40), (timer) {
       if (_progress < 1.0) {
-        setState(() {
-          _progress += 0.008;
-        });
+        setState(() => _progress += 0.008);
       } else {
         _timer?.cancel();
-        if (mounted) {
-          context.go('/home');
-        }
+        if (mounted) context.go('/home');
       }
     });
   }
@@ -98,10 +89,10 @@ class _LoadingScreenState extends State<LoadingScreen>
         ),
         child: Stack(
           children: [
-            /// 🌌 PARTICLES BACKGROUND
-            _buildParticles(),
+            /// 🔥 EDGE LOGOS
+            _buildEdgeLogos(),
 
-            /// 🔹 MAIN CONTENT
+            /// 🔥 CENTER CONTENT
             Center(
               child: FadeTransition(
                 opacity: _fade,
@@ -110,10 +101,9 @@ class _LoadingScreenState extends State<LoadingScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildFranchiseCircle(),
-                      const SizedBox(height: 10),
+                      _buildCenterLogo(),
 
-                      /// ⚡ SHIMMER PROGRESS BAR
+                      /// PROGRESS BAR
                       Container(
                         width: MediaQuery.of(context).size.width * 0.5,
                         height: 6,
@@ -145,48 +135,17 @@ class _LoadingScreenState extends State<LoadingScreen>
                       ),
 
                       const SizedBox(height: 12),
-
-                      /// 🔹 PERCENT
                       Text(
-                        '$percent%',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          letterSpacing: 1.5,
+                        'POWERED BY HINGES GAMES',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          letterSpacing: 2,
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
-              ),
-            ),
-
-            /// 🔹 FOOTER
-            Positioned(
-              bottom: 20,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: const [
-                  Text(
-                    'POWERED BY',
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 10,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'HINGES GAMES',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
@@ -195,21 +154,8 @@ class _LoadingScreenState extends State<LoadingScreen>
     );
   }
 
-  /// 🌌 PARTICLES
-  Widget _buildParticles() {
-    return AnimatedBuilder(
-      animation: _rotationController,
-      builder: (_, __) {
-        return CustomPaint(
-          painter: ParticlePainter(_rotationController.value),
-          size: Size.infinite,
-        );
-      },
-    );
-  }
-
-  /// 🔄 FRANCHISE CIRCLE
-  Widget _buildFranchiseCircle() {
+  /// 🔥 EDGE LOGO LAYOUT (CORNERS + SIDES)
+  Widget _buildEdgeLogos() {
     final logos = [
       AppImages.cskLogo,
       AppImages.miLogo,
@@ -223,38 +169,67 @@ class _LoadingScreenState extends State<LoadingScreen>
       AppImages.srhLogo,
     ];
 
-    const radius = 100.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        final h = constraints.maxHeight;
 
-    return SizedBox(
-      width: 250,
-      height: 250,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          /// ROTATING ORBIT
-          AnimatedBuilder(
-            animation: _rotationController,
-            builder: (_, __) {
-              return Transform.rotate(
-                angle: _rotationController.value * 2 * Math.pi,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    for (int i = 0; i < logos.length; i++)
-                      _buildCircleItem(i, radius, logos),
-                  ],
-                ),
-              );
-            },
-          ),
+        const size = 60.0;
+        const padding = 20.0;
 
-          /// 🔥 CENTER LOGO (PULSE)
-          _buildCenterLogo(),
-        ],
-      ),
+        /// 📐 Define positions clearly (3 top, 3 bottom, 2 left, 2 right)
+        final positions = [
+          /// 🔝 TOP (3)
+          Offset(w * 0.2 - size / 2, padding),
+          Offset(w * 0.5 - size / 2, padding),
+          Offset(w * 0.8 - size / 2, padding),
+
+          /// 🔻 BOTTOM (3)
+          Offset(w * 0.2 - size / 2, h - size - padding),
+          Offset(w * 0.5 - size / 2, h - size - padding),
+          Offset(w * 0.8 - size / 2, h - size - padding),
+
+          /// ◀ LEFT (2)
+          Offset(padding, h * 0.35 - size / 2),
+          Offset(padding, h * 0.7 - size / 2),
+
+          /// ▶ RIGHT (2)
+          Offset(w - size - padding, h * 0.35 - size / 2),
+          Offset(w - size - padding, h * 0.7 - size / 2),
+        ];
+
+        return Stack(
+          children: List.generate(logos.length, (index) {
+            return Positioned(
+              left: positions[index].dx,
+              top: positions[index].dy,
+              child: AnimatedBuilder(
+                animation: _rotationController,
+                builder: (_, __) {
+                  return Transform.translate(
+                    offset: Offset(
+                      Math.sin(_rotationController.value * 2 * Math.pi + index) * 3,
+                      Math.cos(_rotationController.value * 2 * Math.pi + index) * 3,
+                    ),
+                    child: Opacity(
+                      opacity: 0.8,
+                      child: Image.asset(
+                        logos[index],
+                        width: size,
+                        height: size,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 
+  /// 🔥 CENTER LOGO
   Widget _buildCenterLogo() {
     return AnimatedBuilder(
       animation: _rotationController,
@@ -285,63 +260,4 @@ class _LoadingScreenState extends State<LoadingScreen>
       },
     );
   }
-
-  Widget _buildCircleItem(int index, double radius, List<String> logos) {
-    final angle = (index * 2 * Math.pi) / logos.length;
-
-    return Transform.translate(
-      offset: Offset(
-        radius * Math.cos(angle),
-        radius * Math.sin(angle),
-      ),
-      child: Transform.rotate(
-        angle: -_rotationController.value * 2 * Math.pi,
-        child: Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-            boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 8),
-            ],
-          ),
-          child: Image.asset(
-            logos[index],
-            height: 36,
-            width: 36,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 🌌 PARTICLE PAINTER
-class ParticlePainter extends CustomPainter {
-  final double progress;
-
-  ParticlePainter(this.progress);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.08);
-
-    final random = Math.Random(1);
-
-    for (int i = 0; i < 60; i++) {
-      final x = (random.nextDouble() * size.width + progress * 50) %
-          size.width;
-      final y = random.nextDouble() * size.height;
-
-      canvas.drawCircle(
-        Offset(x, y),
-        random.nextDouble() * 2,
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
