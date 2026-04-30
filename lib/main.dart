@@ -43,8 +43,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.theme,
       // home: BlocProvider(
       //   create: (_) => di.sl<LoginBloc>(),
       //   child: const LoginPage(),

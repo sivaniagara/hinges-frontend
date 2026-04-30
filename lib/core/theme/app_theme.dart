@@ -2,84 +2,155 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppTheme {
-  static Color onSurfaceVariantTextColor = const Color(0xFFFFD700); // Gold
-  static Color onSurfaceTextColor = Colors.white;
-  static Color hintTextColor = Colors.white70;
-  static Color primaryColor = const Color(0xFFFFD700); // Gold
-  static Color onPrimaryColor = Colors.black;
-  static Color primaryContainerColor = const Color(0xFFFFE082); // Lighter Gold
-  static Color surfaceColor = const Color(0xFF4A0000); // Dark Maroon/Red
-  static Color backgroundColor = const Color(0xFF060101); // Deep Red
+  /// 🎨 Core Colors (Matched to your UI)
+  static const Color primaryGold = Color(0xFFD4AF37); // Rich gold
+  static const Color darkBlue = Color(0xFF0A1F44); // Main background
+  static const Color navyBlue = Color(0xFF08142E); // Deep layer
+  static const Color cardBlue = Color(0xFF102A5C); // Cards / buttons
+  static const Color borderGold = Color(0xFFFFD700);
 
-  static ThemeData get lightTheme {
+  static const Color white = Colors.white;
+  static const Color white70 = Colors.white70;
+
+  static ThemeData get theme {
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryColor,
-        primary: primaryColor,
-        secondary: surfaceColor,
-        onPrimary: onPrimaryColor,
-        primaryContainer: primaryContainerColor,
-        onPrimaryContainer: Colors.black,
-        onSurfaceVariant: onSurfaceVariantTextColor,
-        onSurface: onSurfaceTextColor,
-        surface: surfaceColor,
+
+      /// 🌈 Color Scheme
+      colorScheme: const ColorScheme(
+        brightness: Brightness.dark,
+        primary: primaryGold,
+        onPrimary: Colors.black,
+        secondary: cardBlue,
+        onSecondary: white,
+        surface: navyBlue,
+        onSurface: white,
         error: Colors.redAccent,
+        onError: white,
       ),
-      scaffoldBackgroundColor: backgroundColor,
-      textTheme: TextTheme(
-        displayLarge: const TextStyle(fontSize: 57, fontWeight: FontWeight.bold, color: Colors.white),
-        displayMedium: const TextStyle(fontSize: 45, fontWeight: FontWeight.w600, color: Colors.white),
-        displaySmall: const TextStyle(fontSize: 36, fontWeight: FontWeight.w500, color: Colors.white),
-        headlineLarge: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: Colors.white),
-        headlineMedium: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Colors.white),
-        headlineSmall: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: onSurfaceTextColor),
-        titleLarge: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Color(0xFFFFD700)), // Gold title
-        titleMedium: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-        titleSmall: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
-        bodyLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-        bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: hintTextColor),
-        bodySmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: onSurfaceVariantTextColor),
-        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurfaceVariantTextColor),
-        labelMedium: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-        labelSmall: TextStyle(fontSize: 11, color: Colors.grey[400]),
+
+      scaffoldBackgroundColor: darkBlue,
+
+      /// 🧾 Text Theme (Luxury feel)
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(
+          fontSize: 52,
+          fontWeight: FontWeight.bold,
+          color: primaryGold,
+          letterSpacing: 1.5,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: white,
+        ),
+        titleLarge: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: primaryGold,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          color: white,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          color: white70,
+        ),
+        labelLarge: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: primaryGold,
+        ),
       ),
+
+      /// 📱 AppBar
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF4A0000),
-        titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Color(0xFFFFD700)),
-        iconTheme: IconThemeData(color: Color(0xFFFFD700)),
+        backgroundColor: navyBlue,
+        elevation: 0,
+        centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: primaryGold,
+        ),
+        iconTheme: IconThemeData(color: primaryGold),
       ),
-      checkboxTheme: CheckboxThemeData(
-          fillColor: WidgetStateProperty.resolveWith((states){
-            if (!states.contains(WidgetState.selected)) {
-              return Colors.transparent;
-            }
-            return primaryColor;
-          }),
-          checkColor: const WidgetStatePropertyAll(Colors.black),
-          side: BorderSide(color: primaryColor, width: 2),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          )
-      ),
-      dividerTheme: const DividerThemeData(
-          color: Color(0xFFFFD700), // Gold dividers
-          thickness: 1
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-          backgroundColor: Color(0xFF4A0000)
-      ),
+
+      /// 🔘 Buttons (Styled like your UI)
       elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll(primaryColor),
-              foregroundColor: WidgetStatePropertyAll(onPrimaryColor),
-              textStyle: const WidgetStatePropertyAll(TextStyle(fontWeight: FontWeight.bold))
-          )
+        style: ElevatedButton.styleFrom(
+          backgroundColor: cardBlue,
+          foregroundColor: primaryGold,
+          elevation: 4,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: borderGold, width: 1.2),
+          ),
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+      ),
+
+      /// 🔲 Card Theme
+      cardTheme: CardThemeData(
+        color: cardBlue,
+        elevation: 6,
+        shadowColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: borderGold, width: 0.8),
+        ),
+      ),
+
+      /// ☑ Checkbox
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primaryGold;
+          }
+          return Colors.transparent;
+        }),
+        checkColor: const WidgetStatePropertyAll(Colors.black),
+        side: const BorderSide(color: primaryGold, width: 1.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+
+      /// ➖ Divider
+      dividerTheme: const DividerThemeData(
+        color: borderGold,
+        thickness: 0.6,
+      ),
+
+      /// 📦 Bottom Sheet
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: navyBlue,
+      ),
+
+      /// 💡 Input Fields (Optional but useful)
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: cardBlue,
+        hintStyle: const TextStyle(color: white70),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: borderGold),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: borderGold, width: 0.8),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryGold, width: 1.5),
+        ),
       ),
     );
-  }
-
-  static ThemeData get darkTheme {
-    return lightTheme; // Since the app has a specific game theme, dark/light might be similar
   }
 }

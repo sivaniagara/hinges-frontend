@@ -55,6 +55,7 @@ dependencies:
   cached_network_image: ^3.4.1
   square_progress_indicator: ^0.0.8
   linked_scroll_controller: ^0.2.0
+  url_launcher: ^6.2.5
 
 
 dev_dependencies:

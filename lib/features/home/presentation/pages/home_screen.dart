@@ -3,20 +3,23 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hinges_frontend/core/presentation/widgets/dialog_details.dart';
-import 'package:hinges_frontend/core/presentation/widgets/shimmer_widget.dart';
-import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/rule_book_dialog.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/setting_dialog.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/shop_dialog.dart';
-import 'package:hinges_frontend/features/home/presentation/widgets/auction_card_shimmer.dart';
-import 'package:hinges_frontend/features/home/presentation/widgets/particle_background.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/shared_decorations.dart';
+
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
+import '../../../../core/presentation/widgets/shimmer_widget.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+
 import '../../../login/presentation/bloc/user_auth_bloc.dart';
 import '../../domain/entities/user_data_entity.dart';
-import '../widgets/glow_wrapper.dart';
+import '../bloc/home_bloc.dart';
+import '../widgets/app_background.dart';
+import '../widgets/auction_card_shimmer.dart';
+
+import '../widgets/currency_bar.dart';
 import 'profile_dialog.dart';
+import 'setting_dialog.dart';
+import 'shop_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,152 +51,121 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        final bool isLoading = state is HomeLoading || state is HomeInitial;
-        final UserDataEntity? userData = state is HomeLoaded ? state.userData : null;
+        final isLoading = state is HomeLoading || state is HomeInitial;
+        final userData =
+        state is HomeLoaded ? state.userData : null;
+
+        final auctionItems = [
+          {
+            "image": AppImages.miniAuctionLite,
+            "locked": false,
+            "route": "/miniAuction",
+          },
+          {
+            "image": AppImages.miniAuctionPro,
+            "locked": true,
+          },
+          {
+            "image": AppImages.megaAuctionLite,
+            "locked": true,
+          },
+          {
+            "image": AppImages.megaAuctionPro,
+            "locked": true,
+          },
+        ];
 
         return AdaptiveStatusBar(
           color: Theme.of(context).colorScheme.surface,
-          child: Scaffold(
-            body: Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF0F172A), Color(0xFF020617)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Stack(
+          child: AppBackground(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Column(
                 children: [
-                  ParticleBackground(),
-                  Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildTopBar(
-                        context: context,
-                        loading: isLoading,
-                        userData: userData,
-                      ),
-                      Expanded(
-                        child: Stack(
+                  _buildTopBar(
+                    context: context,
+                    loading: isLoading,
+                    userData: userData,
+                  ),
+
+                  /// MAIN CONTENT
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        /// TITLE
+                        Column(
                           children: [
-                            Column(
+                            Row(
+                              spacing: 10,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    AttentionWrapper(
-                                      child: PremiumAuctionCard(
-                                        title: "MINI AUCTION",
-                                        isLocked: false,
-                                        loading: isLoading,
-                                        image: AppImages.miniAuction,
-                                        onTap: () {
-                                          context.push('/miniAuction');
-                                        },
-                                        infoTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) => const DialogDetails(
-                                              points: [
-                                                'ONLY 5 SLOTS TO BE FILLED',
-                                                'PRIZE BASED ON RANK',
-                                                'READ RULE BOOK FOR DETAILS'
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    Opacity(
-                                      opacity: 0.6,
-                                      child: PremiumAuctionCard(
-                                        title: "MEGA AUCTION",
-                                        isLocked: false,
-                                        loading: isLoading,
-                                        image: AppImages.megaAuction,
-                                        onTap: () {
-                                          context.push('/miniAuction');
-                                        },
-                                        infoTap: () {
-                                        },
-                                      ),
-                                    ),
-                                  ],
+                                Image.asset(
+                                  AppImages.indianBiddingLeague,
+                                  height: size.height * 0.15,
+                                ),
+                                Text(
+                                  'INDIAN BIDDING LEAGUE',
+                                  style: GoogleFonts.cinzel(
+                                    fontSize: size.height * 0.07,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.borderGold,
+                                  ),
                                 ),
                               ],
                             ),
-                            Positioned(
-                              bottom: 0,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: (){
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => const RuleBookDialog(),
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Image.asset(width: 60, AppImages.ruleBookMenuIcon),
-                                            Text(
-                                              'Rule Book',
-                                              style: GoogleFonts.jockeyOne(
-                                                textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: (){
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => const SettingDialog(),
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Column(
-                                          children: [
-                                            Image.asset(width: 60, AppImages.settingsMenuIcon),
-                                            Text(
-                                              'Settings',
-                                              style: GoogleFonts.jockeyOne(
-                                                textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            )
+                            Image.asset(
+                              AppImages.goldenCrownLine,
+                              width: 200,
+                              height: 30,
+                            ),
+                            StarLine(fontSize: 16,),
                           ],
                         ),
-                      ),
 
-                    ],
+                        /// AUCTION CARDS
+                        Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
+                          children: auctionItems.map((item) {
+                            return _AuctionCard(
+                              image: item["image"] as String,
+                              locked: item["locked"] as bool,
+                              onTap: () {
+                                if (!(item["locked"] as bool) &&
+                                    item["route"] != null) {
+                                  context.push(
+                                      item["route"] as String);
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  /// BOTTOM BAR
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      children: [
+                        _BottomButton(
+                          icon: AppImages.ruleBookMenuIcon,
+                          title: "RULE BOOK",
+                        ),
+                        _BottomButton(
+                          icon: AppImages.exitMenuIcon,
+                          title: "EXIT",
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -204,276 +176,284 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// ================= TOP BAR =================
   Widget _buildTopBar({
     required BuildContext context,
     required bool loading,
     UserDataEntity? userData,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => ProfileDialog(userData: userData!,),
-              );
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber, width: 1),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.person, color: Colors.amber, size: 16),
-                  const SizedBox(width: 8),
-                  if (loading)
-                    const ShimmerWidget(width: 50, height: 10)
-                  else
-                    Text(
-                      userData?.userName.toUpperCase() ?? "USER NAME",
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  children: [
-                    SizedBox(
-                      width: 140,
-                      height: 50,
-                      child: Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          // 🔥 Glow Background
-                          Container(
-                            margin: const EdgeInsets.only(left: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF1E293B),
-                                  Color(0xFF0F172A),
-                                ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.amber.withOpacity(0.4),
-                                  blurRadius: 12,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                              border: Border.all(color: Colors.amber, width: 1.5),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                if (loading)
-                                  const ShimmerWidget(width: 40, height: 12)
-                                else
-                                  Text(
-                                    userData?.coinWon.toString() ?? "0",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      letterSpacing: 1,
-                                    ),
-                                  ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.green,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.greenAccent.withOpacity(0.6),
-                                        blurRadius: 8,
-                                      )
-                                    ],
-                                  ),
-                                  child: const Icon(Icons.add, size: 16, color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // 🪙 Coin Icon (floating)
-                          Positioned(
-                            left: 0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.amber.withOpacity(0.7),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  )
-                                ],
-                              ),
-                              child: Image.asset(
-                                AppImages.coinsMenuIcon,
-                                width: 42,
-                                height: 42,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                _TopActionButton(
-                  icon: AppImages.shopMenuIcon,
-                  title: 'Shop',
-                  onTap: () {
+          Row(
+            spacing: 20,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (userData != null) {
                     showDialog(
                       context: context,
-                      builder: (context) => const ShopDialog(),
+                      builder: (_) =>
+                          ProfileDialog(userData: userData),
                     );
-                  },
+                  }
+                },
+                child: _ProfileCard(
+                  loading: loading,
+                  name: userData?.userName ?? "USER",
                 ),
-                _TopActionButton(
-                  icon: AppImages.freeCoinMenuIcon,
-                  title: 'Free Coins',
-                  onTap: () {},
+              ),
+              CurrencyBar(
+                icon: AppImages.coinMenuIcon,
+                value: userData?.coinWon ?? 0,
+                onAddTap: () {
+                  // handle coin add
+                },
+              ),
+              CurrencyBar(
+                icon: AppImages.diamondMenuIcon,
+                value: userData?.coinWon ?? 0,
+                onAddTap: () {
+                  // handle diamond add
+                },
+              ),
+            ],
+          ),
+          /// ACTION BUTTONS
+          Row(
+            spacing: 20,
+            mainAxisAlignment:
+            MainAxisAlignment.spaceAround,
+            children: [
+              _TopActionButton(
+                icon: AppImages.rewardMenuIcon,
+                title: 'REWARDS',
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (_) => const ShopDialog(),
                 ),
-              ],
-            ),
+                iconSize: 30,
+              ),
+              _TopActionButton(
+                icon: AppImages.shopMenuIcon,
+                title: 'SHOP',
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (_) => const ShopDialog(),
+                ),
+                iconSize: 38,
+              ),
+              _TopActionButton(
+                icon: AppImages.mailMenuIcon,
+                title: 'MAIL',
+                onTap: () {},
+                iconSize: 38,
+              ),
+              _TopActionButton(
+                icon: AppImages.settingsMenuIcon,
+                title: 'SETTINGS',
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (_) => const SettingDialog(),
+                ),
+                iconSize: 30,
+              ),
+            ],
           )
-
         ],
       ),
     );
   }
 }
 
-class PremiumAuctionCard extends StatefulWidget {
-  final String title;
-  final bool isLocked;
-  final bool loading;
-  final String? image;
-  final VoidCallback? onTap;
-  final VoidCallback? infoTap;
+/// ================= AUCTION CARD =================
+class _AuctionCard extends StatelessWidget {
+  final String image;
+  final bool locked;
+  final VoidCallback onTap;
 
-  const PremiumAuctionCard({
-    super.key,
-    required this.title,
-    required this.isLocked,
-    required this.loading,
+  const _AuctionCard({
     required this.image,
-    this.onTap,
-    this.infoTap,
+    required this.locked,
+    required this.onTap,
   });
-
-  @override
-  State<PremiumAuctionCard> createState() => _PremiumAuctionCardState();
-}
-
-class _PremiumAuctionCardState extends State<PremiumAuctionCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> floatAnim;
-  late Animation<double> scaleAnim;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-
-    floatAnim = Tween<double>(begin: -8, end: 8).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-
-    scaleAnim = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    if (widget.loading) return const AuctionCardShimmer();
-
-    return Column(
-      children: [
-        Text(
-          widget.title,
-          style: GoogleFonts.oxanium(
-            color: widget.isLocked ? Colors.amber : Colors.cyanAccent,
-            fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: locked ? null : onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            image,
+            height: size.height * 0.4,
           ),
-        ),
 
-        const SizedBox(height: 10),
+          if (locked)
+            const Positioned(top: 0, right: 5, child: _LockIcon()),
 
-        GestureDetector(
-          onTap: widget.onTap,
-          child: Image.asset(
-            widget.image!,
-            width: size.width * 0.35,
-            height: size.height * 0.45,
-            fit: BoxFit.cover,
+          Positioned(
+            bottom: 0,
+            child: _InfoIcon(
+              isLocked: locked,
+            ),
           ),
-        ),
-
-        const SizedBox(height: 10),
-      ],
+        ],
+      ),
     );
   }
 }
 
+/// ================= LOCK ICON =================
+class _LockIcon extends StatelessWidget {
+  const _LockIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      backgroundColor: Colors.black54.withValues(alpha: 0.2),
+      child: Icon(Icons.lock, color: Colors.amber),
+    );
+  }
+}
+
+/// ================= INFO ICON =================
+class _InfoIcon extends StatelessWidget {
+  final bool isLocked;
+
+  const _InfoIcon({required this.isLocked});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: const Color(0xFF08142E),
+          builder: (_) => Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              isLocked
+                  ? "This mode is locked."
+                  : "Tap to start auction.",
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        );
+      },
+      child: CircleAvatar(
+        backgroundColor: Colors.black54.withValues(alpha: 0.2),
+        child: Icon(Icons.info_outline, color: Colors.white),
+      ),
+    );
+  }
+}
+
+/// ================= PROFILE =================
+class _ProfileCard extends StatelessWidget {
+  final bool loading;
+  final String name;
+
+  const _ProfileCard({
+    required this.loading,
+    required this.name,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.amber),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.black,
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.person, color: Colors.amber),
+          const SizedBox(width: 6),
+          Text(
+            loading ? "..." : name.toUpperCase(),
+            style: const TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ================= TOP BUTTON =================
 class _TopActionButton extends StatelessWidget {
-  final void Function()? onTap;
   final String icon;
   final String title;
-  const _TopActionButton({required this.icon, required this.title, required this.onTap});
+  final double iconSize;
+  final VoidCallback? onTap;
+
+  const _TopActionButton({
+    required this.icon,
+    required this.title,
+    required this.iconSize,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
-        spacing: 5,
         children: [
-          Image.asset(width: 40, icon),
+          Image.asset(icon, width: iconSize),
           Text(
             title,
-            style: GoogleFonts.jockeyOne(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-                letterSpacing: 1.5,
-              ),
+            style: GoogleFonts.cinzel(
+              color: AppTheme.borderGold,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
             ),
           )
+        ],
+      ),
+    );
+  }
+}
+
+/// ================= BOTTOM BUTTON =================
+class _BottomButton extends StatelessWidget {
+  final String icon;
+  final String title;
+
+  const _BottomButton({
+    required this.icon,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppTheme.borderGold),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Image.asset(icon, width: 25),
+          const SizedBox(width: 5),
+          Text(
+            title,
+            style: GoogleFonts.roboto(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );

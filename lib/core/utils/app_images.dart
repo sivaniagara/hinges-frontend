@@ -13,10 +13,15 @@ class AppImages {
   static const String biddingPeople = '${base}bidding_people.png';
   static const String cancelIcon = '${base}cancel_icon.png';
   static const String coinsMenuIcon = '${base}coins_menu_icon.png';
+  static const String coinMenuIcon = '${base}coin_menu_icon.png';
   static const String firstPrice = '${base}first_price.png';
   static const String freeCoinMenuIcon = '${base}free_coin_menu_icon.png';
   static const String greenTag = '${base}green_tag.png';
   static const String homeIcon = '${base}home_icon.png';
+  static const String miniAuctionLite = '${base}mini_auction_lite.png';
+  static const String megaAuctionLite = '${base}mega_auction_lite.png';
+  static const String miniAuctionPro = '${base}mini_auction_pro.png';
+  static const String megaAuctionPro = '${base}mega_auction_pro.png';
   static const String mandalaPattern = '${base}mandala_pattern.png';
   static const String goldenRingStump = '${base}golden_ring_stump.png';
   static const String goldenStarLine = '${base}golden_star_line.png';
@@ -29,7 +34,11 @@ class AppImages {
   static const String exitIcon = '${base}exit_icon.png';
   static const String settingMenuIcon = '${base}setting_menu_icon.png';
   static const String settingsMenuIcon = '${base}settings_menu_icon.png';
+  static const String rewardMenuIcon = '${base}reward_menu_icon.png';
+  static const String diamondMenuIcon = '${base}diamond_menu_icon.png';
+  static const String mailMenuIcon = '${base}mail_menu_icon.png';
   static const String shopMenuIcon = '${base}shop_menu_icon.png';
+  static const String exitMenuIcon = '${base}exit_menu_icon.png';
   static const String soundIcon = '${base}sound_icon.png';
   static const String vibrateIcon = '${base}vibrate_icon.png';
   static const String thirdPrice = '${base}third_price.png';
