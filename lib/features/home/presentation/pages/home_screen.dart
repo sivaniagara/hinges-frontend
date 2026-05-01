@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/features/home/presentation/widgets/top_user_bar.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/shared_decorations.dart';
 
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
@@ -17,7 +18,7 @@ import '../widgets/app_background.dart';
 import '../widgets/auction_card_shimmer.dart';
 
 import '../widgets/currency_bar.dart';
-import 'profile_dialog.dart';
+import 'profile_screen.dart';
 import 'setting_dialog.dart';
 import 'shop_dialog.dart';
 
@@ -132,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment:
                           MainAxisAlignment.spaceEvenly,
                           children: auctionItems.map((item) {
-                            return _AuctionCard(
+                            return AuctionCard(
                               image: item["image"] as String,
                               locked: item["locked"] as bool,
                               onTap: () {
@@ -156,11 +157,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
                       children: [
-                        _BottomButton(
+                        BottomButton(
                           icon: AppImages.ruleBookMenuIcon,
                           title: "RULE BOOK",
                         ),
-                        _BottomButton(
+                        BottomButton(
                           icon: AppImages.exitMenuIcon,
                           title: "EXIT",
                         ),
@@ -187,47 +188,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            spacing: 20,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  if (userData != null) {
-                    showDialog(
-                      context: context,
-                      builder: (_) =>
-                          ProfileDialog(userData: userData),
-                    );
-                  }
-                },
-                child: _ProfileCard(
-                  loading: loading,
-                  name: userData?.userName ?? "USER",
-                ),
-              ),
-              CurrencyBar(
-                icon: AppImages.coinMenuIcon,
-                value: userData?.coinWon ?? 0,
-                onAddTap: () {
-                  // handle coin add
-                },
-              ),
-              CurrencyBar(
-                icon: AppImages.diamondMenuIcon,
-                value: userData?.coinWon ?? 0,
-                onAddTap: () {
-                  // handle diamond add
-                },
-              ),
-            ],
-          ),
+          TopUserBar(loading: loading, userData: userData),
           /// ACTION BUTTONS
           Row(
             spacing: 20,
             mainAxisAlignment:
             MainAxisAlignment.spaceAround,
             children: [
-              _TopActionButton(
+              TopActionButton(
                 icon: AppImages.rewardMenuIcon,
                 title: 'REWARDS',
                 onTap: () => showDialog(
@@ -236,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 iconSize: 30,
               ),
-              _TopActionButton(
+              TopActionButton(
                 icon: AppImages.shopMenuIcon,
                 title: 'SHOP',
                 onTap: () => showDialog(
@@ -245,13 +213,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 iconSize: 38,
               ),
-              _TopActionButton(
+              TopActionButton(
                 icon: AppImages.mailMenuIcon,
                 title: 'MAIL',
                 onTap: () {},
                 iconSize: 38,
               ),
-              _TopActionButton(
+              TopActionButton(
                 icon: AppImages.settingsMenuIcon,
                 title: 'SETTINGS',
                 onTap: () => showDialog(
@@ -269,12 +237,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 /// ================= AUCTION CARD =================
-class _AuctionCard extends StatelessWidget {
+class AuctionCard extends StatelessWidget {
   final String image;
   final bool locked;
   final VoidCallback onTap;
 
-  const _AuctionCard({
+  const AuctionCard({
     required this.image,
     required this.locked,
     required this.onTap,
@@ -292,14 +260,16 @@ class _AuctionCard extends StatelessWidget {
           Image.asset(
             image,
             height: size.height * 0.4,
+            width: size.width/6,
+            fit: BoxFit.fill,
           ),
 
           if (locked)
-            const Positioned(top: 0, right: 5, child: _LockIcon()),
+            const Positioned(top: 0, right: 5, child: LockIcon()),
 
           Positioned(
             bottom: 0,
-            child: _InfoIcon(
+            child: InfoIcon(
               isLocked: locked,
             ),
           ),
@@ -310,8 +280,8 @@ class _AuctionCard extends StatelessWidget {
 }
 
 /// ================= LOCK ICON =================
-class _LockIcon extends StatelessWidget {
-  const _LockIcon();
+class LockIcon extends StatelessWidget {
+  const LockIcon();
 
   @override
   Widget build(BuildContext context) {
@@ -323,10 +293,10 @@ class _LockIcon extends StatelessWidget {
 }
 
 /// ================= INFO ICON =================
-class _InfoIcon extends StatelessWidget {
+class InfoIcon extends StatelessWidget {
   final bool isLocked;
 
-  const _InfoIcon({required this.isLocked});
+  const InfoIcon({required this.isLocked});
 
   @override
   Widget build(BuildContext context) {
@@ -348,54 +318,24 @@ class _InfoIcon extends StatelessWidget {
       },
       child: CircleAvatar(
         backgroundColor: Colors.black54.withValues(alpha: 0.2),
-        child: Icon(Icons.info_outline, color: Colors.white),
-      ),
-    );
-  }
-}
-
-/// ================= PROFILE =================
-class _ProfileCard extends StatelessWidget {
-  final bool loading;
-  final String name;
-
-  const _ProfileCard({
-    required this.loading,
-    required this.name,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding:
-      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.amber),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.black,
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.person, color: Colors.amber),
-          const SizedBox(width: 6),
-          Text(
-            loading ? "..." : name.toUpperCase(),
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
+        child: Icon(
+            Icons.info_outline,
+            color: AppTheme.borderGold,
+          size: 18,
+        ),
       ),
     );
   }
 }
 
 /// ================= TOP BUTTON =================
-class _TopActionButton extends StatelessWidget {
+class TopActionButton extends StatelessWidget {
   final String icon;
   final String title;
   final double iconSize;
   final VoidCallback? onTap;
 
-  const _TopActionButton({
+  const TopActionButton({
     required this.icon,
     required this.title,
     required this.iconSize,
@@ -424,11 +364,11 @@ class _TopActionButton extends StatelessWidget {
 }
 
 /// ================= BOTTOM BUTTON =================
-class _BottomButton extends StatelessWidget {
+class BottomButton extends StatelessWidget {
   final String icon;
   final String title;
 
-  const _BottomButton({
+  const BottomButton({
     required this.icon,
     required this.title,
   });

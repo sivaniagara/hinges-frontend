@@ -4,7 +4,8 @@ import '../../../login/presentation/widgets/mandala_background.dart';
 
 class AppBackground extends StatelessWidget {
   final Widget child;
-  const AppBackground({super.key, required this.child});
+  final bool animateContent;
+  const AppBackground({super.key, required this.child, this.animateContent = true});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class AppBackground extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: MandalaBackground(child: child,),
+      child: MandalaBackground(animateContent: animateContent,child: child,),
     );
   }
 }

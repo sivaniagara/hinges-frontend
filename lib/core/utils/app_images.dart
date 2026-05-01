@@ -15,6 +15,7 @@ class AppImages {
   static const String coinsMenuIcon = '${base}coins_menu_icon.png';
   static const String coinMenuIcon = '${base}coin_menu_icon.png';
   static const String firstPrice = '${base}first_price.png';
+  static const String firstPrize = '${base}first_prize.png';
   static const String freeCoinMenuIcon = '${base}free_coin_menu_icon.png';
   static const String greenTag = '${base}green_tag.png';
   static const String homeIcon = '${base}home_icon.png';
@@ -22,15 +23,22 @@ class AppImages {
   static const String megaAuctionLite = '${base}mega_auction_lite.png';
   static const String miniAuctionPro = '${base}mini_auction_pro.png';
   static const String megaAuctionPro = '${base}mega_auction_pro.png';
+  static const String classic = '${base}classic.png';
+  static const String premium = '${base}premium.png';
+  static const String elite = '${base}elite.png';
+  static const String royal = '${base}royal.png';
   static const String mandalaPattern = '${base}mandala_pattern.png';
   static const String goldenRingStump = '${base}golden_ring_stump.png';
   static const String goldenStarLine = '${base}golden_star_line.png';
   static const String goldenCrownLine = '${base}golden_crown_line.png';
+  static const String goldenFrame = '${base}golden_frame.png';
+  static const String goldenChamberFrame = '${base}golden_chamber_frame.png';
   static const String indianBiddingLeague = '${base}indian_bidding_league.png';
   static const String moreMenuIcon = '${base}more_menu_icon.png';
   static const String ruleBookMenuIcon = '${base}rule_book_menu_icon.png';
   static const String ruleBookIcon = '${base}rule_book_icon.png';
   static const String secondPrice = '${base}second_price.png';
+  static const String secondPrize = '${base}second_prize.png';
   static const String exitIcon = '${base}exit_icon.png';
   static const String settingMenuIcon = '${base}setting_menu_icon.png';
   static const String settingsMenuIcon = '${base}settings_menu_icon.png';
@@ -39,14 +47,25 @@ class AppImages {
   static const String mailMenuIcon = '${base}mail_menu_icon.png';
   static const String shopMenuIcon = '${base}shop_menu_icon.png';
   static const String exitMenuIcon = '${base}exit_menu_icon.png';
+  static const String homeMenuIcon = '${base}home_menu_icon.png';
+  static const String playOnline = '${base}play_online.png';
+  static const String playWithFriends = '${base}play_with_friends.png';
   static const String soundIcon = '${base}sound_icon.png';
   static const String vibrateIcon = '${base}vibrate_icon.png';
   static const String thirdPrice = '${base}third_price.png';
+  static const String thirdPrize = '${base}third_prize.png';
   static const String turningCoinIcon = '${base}turning_coin_icon.png';
   static const String yellowTag = '${base}yellow_tag.png';
   static const String redTag = '${base}red_tag.png';
   static const String yellowSharpEdgeTag = '${base}yellow_sharp_edge_tag.png';
   static const String startIcon = '${base}star_icon.png';
+  static const String qualifiedIcon = '${base}qualified_icon.png';
+  static const String unqualifiedIcon = '${base}unqualified_icon.png';
+  static const String playedIcon = '${base}played_icon.png';
+  static const String logoutFrame = '${base}logout_frame.png';
+  static const String goldenAvatar = '${base}golden_avatar.png';
+  static const String coinsIcon = '${base}coins_icon.png';
+  static const String highlightValue = '${base}highlight_value.png';
 
   /// game
   static const String gameBase = '${base}game/';

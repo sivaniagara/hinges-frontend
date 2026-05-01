@@ -7,15 +7,12 @@ import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dar
 import 'package:hinges_frontend/features/game/presentation/pages/my_squad_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/players_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/points_table_screen.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/profile_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/forgot_password_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/guest_name_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/login_screen.dart';
-import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_lite_mode.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
-import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_lite/mini_auction_mode.dart';
 import '../../features/home/presentation/bloc/home_bloc.dart';
-import '../../features/login/presentation/bloc/user_auth_bloc.dart';
-import '../../features/login/presentation/pages/email_auth_screen.dart';
 import '../../features/login/presentation/pages/sign_up_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/login/presentation/pages/loading_screen.dart';
@@ -109,6 +106,13 @@ final router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/profile',
+      builder: (context, state){
+        final homeData = context.read<HomeBloc>().state as HomeLoaded;
+        return ProfileScreen(userData: homeData.userData);
+      },
+    ),
+    GoRoute(
       path: '/loading',
       builder: (context, state) => const LoadingScreen(),
     ),
@@ -116,50 +120,6 @@ final router = GoRouter(
       path: '/miniAuction',
       builder: (context, state) => MiniAuctionScreen(),
     ),
-    // GoRoute(
-    //   path: '/miniAuctionMode',
-    //   builder: (context, state) => MiniAuctionMode(),
-    // ),
-    GoRoute(
-      path: '/miniAuctionLiteMode',
-      builder: (context, state){
-        return const MiniAuctionLiteMode();
-      },
-    ),
-    // GoRoute(
-    //   path: '/game',
-    //   builder: (context, state) {
-    //     final homeData = context.read<HomeBloc>().state as HomeLoaded;
-    //
-    //     return MultiBlocProvider(
-    //       providers: [
-    //         BlocProvider(
-    //           create: (context) => sl<GameBloc>()
-    //             ..add(
-    //               FetchGameData(
-    //                 userId: homeData.userData.userId,
-    //                 userName: homeData.userData.userName,
-    //                 auctionCategoryId:
-    //                 homeData.userData.auctionCategoryItem.first.id,
-    //               ),
-    //             ),
-    //         ),
-    //       ],
-    //       child: GameScreen(),
-    //     );
-    //   },
-    //   routes: [
-    //     GoRoute(
-    //       path: 'mySquad', // ✅ removed slash
-    //       builder: (context, state) {
-    //         return BlocProvider.value(
-    //           value: context.read<GameBloc>(),
-    //           child: MySquadScreen(),
-    //         );
-    //       },
-    //     ),
-    //   ],
-    // ),
     ShellRoute(
       builder: (context, state, child) {
         final homeData = context.read<HomeBloc>().state as HomeLoaded;

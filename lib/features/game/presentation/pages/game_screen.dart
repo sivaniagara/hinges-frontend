@@ -19,7 +19,7 @@ import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/presentation/widgets/gradient_text.dart';
 import '../../../home/domain/entities/player_entity.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
-import '../../../home/presentation/pages/profile_dialog.dart';
+import '../../../home/presentation/pages/profile_screen.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/game_data_entity.dart';
@@ -835,7 +835,7 @@ class _GameScreenState extends State<GameScreen> {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => ProfileDialog(userData: userData),
+                    builder: (context) => ProfileScreen(userData: userData),
                   );
                 },
                 child: Container(

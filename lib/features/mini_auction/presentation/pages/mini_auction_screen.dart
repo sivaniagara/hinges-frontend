@@ -1,15 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/rule_book_dialog.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/setting_dialog.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/shop_dialog.dart';
 
-import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
-import '../../../../core/presentation/widgets/dialog_details.dart';
-import '../../../../core/utils/app_images.dart';
+import 'package:hinges_frontend/core/presentation/widgets/icon_with_circular_border.dart';
+import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
+import 'package:hinges_frontend/features/home/presentation/widgets/top_user_bar.dart';
+import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.dart';
+import 'package:hinges_frontend/core/theme/app_theme.dart';
+import 'package:hinges_frontend/core/utils/app_images.dart';
 
+import '../../../home/domain/entities/user_data_entity.dart';
+import '../../../home/presentation/pages/home_screen.dart';
+import '../../../home/presentation/widgets/app_background.dart';
+
+/// ================= MODEL =================
+
+class MiniAuctionItem {
+  final String image;
+  final int fee;
+  final String name;
+  final bool locked;
+
+  const MiniAuctionItem({
+    required this.image,
+    required this.fee,
+    required this.name,
+    required this.locked,
+  });
+}
+
+class MiniAuctionLiteMode {
+  final String fee;
+  final String modeName;
+
+  MiniAuctionLiteMode(this.fee, this.modeName);
+}
+
+/// ================= SCREEN =================
 
 class MiniAuctionScreen extends StatefulWidget {
   const MiniAuctionScreen({super.key});
@@ -19,87 +48,71 @@ class MiniAuctionScreen extends StatefulWidget {
 }
 
 class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
+  late UserDataEntity userData;
+  MiniAuctionLiteMode? selectedMode;
 
+  static const List<MiniAuctionItem> items = [
+    MiniAuctionItem(
+        image: AppImages.classic, fee: 100, name: "CLASSIC", locked: false),
+    MiniAuctionItem(
+        image: AppImages.premium, fee: 250, name: "PREMIUM", locked: true),
+    MiniAuctionItem(
+        image: AppImages.elite, fee: 500, name: "ELITE", locked: true),
+    MiniAuctionItem(
+        image: AppImages.royal, fee: 1000, name: "ROYAL", locked: true),
+  ];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    /// Fullscreen landscape
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    final state = context.read<HomeBloc>().state;
+    if (state is HomeLoaded) {
+      userData = state.userData;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              colors: [
-                Color(0xFF800000), // Center deep red
-                Color(0xFFA7100E), // Outer darker red
-              ],
-              radius: 1.0,
-            ),
-          ),
-          child: Column(
+      child: AppBackground(
+        animateContent: false,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(width: 10,),
-                    GestureDetector(
-                      onTap: (){
-                        context.pop();
-                      },
-                      child: Image.asset(
-                          width: 60,
-                          AppImages.homeIcon
-                      ),
-                    ),
-                  ],
-                ),
+              _Header(userData: userData),
+
+              /// MAIN CONTENT
+              selectedMode == null
+                  ? _ArenaSelection(
+                items: items,
+                onSelect: (item) {
+                  setState(() {
+                    selectedMode = MiniAuctionLiteMode(
+                      item.fee.toString(),
+                      item.name,
+                    );
+                  });
+                },
+              )
+                  : _ModeSelection(
+                mode: selectedMode!,
+                size: size,
               ),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _MiniAuctionCard(
-                      title: "MINI AUCTION LITE",
-                      isLocked: false,
-                      onTap: (){
-                        context.push('/miniAuctionLiteMode');
-                      },
-                      infoTap: (){
-                        showDialog(
-                          context: context,
-                          builder: (context) => const DialogDetails(
-                              points: [
-                                'ONLY 5 SLOTS TO BE FILLED WITH YOUR REMAINING PURSE',
-                                'PRIZE DISTRIBUTION IS BASED ON THE HIGHEST RATING ORDER',
-                                'FOR FURTHER INFORMATION PLEASE READ THE RULE BOOK'
-                              ]
-                          ),
-                        );
-                      }
-                    ),
-                    _MiniAuctionCard(
-                      title: "MEGA AUCTION PRO",
-                      isLocked: true,
-                    ),
-                  ],
-                ),
-              ),
+
+              const _BottomBar(),
             ],
           ),
         ),
@@ -108,153 +121,285 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
   }
 }
 
+/// ================= HEADER =================
 
-class _MiniAuctionCard extends StatelessWidget {
-  final String title;
-  final bool isLocked;
-  void Function()? onTap;
-  void Function()? infoTap;
+class _Header extends StatelessWidget {
+  final UserDataEntity userData;
 
-  _MiniAuctionCard({
-    required this.title,
-    required this.isLocked,
-    this.onTap,
-    this.infoTap,
+  const _Header({required this.userData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        TopUserBar(loading: false, userData: userData),
+        GestureDetector(
+          onTap: () => context.pop(),
+          child: Column(
+            children: [
+              Image.asset(AppImages.homeMenuIcon, width: 50),
+              Text(
+                'HOME',
+                style: GoogleFonts.cinzel(
+                  color: AppTheme.borderGold,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// ================= ARENA SELECTION =================
+
+class _ArenaSelection extends StatelessWidget {
+  final List<MiniAuctionItem> items;
+  final Function(MiniAuctionItem) onSelect;
+
+  const _ArenaSelection({
+    required this.items,
+    required this.onSelect,
   });
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 20),
-                width: screenWidth * 0.4,
-                height: screenHeight * 0.6,
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage(AppImages.auctionCard), // Placeholder for wood texture
-                    fit: BoxFit.fitWidth,
-                  ),
-                  borderRadius: BorderRadius.circular(40),
-                  // border: Border.all(color: const Color(0xFF5D3A1A), width: 8),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.all(4),
-                  // decoration: BoxDecoration(
-                  //   gradient: const RadialGradient(
-                  //     colors: [Color(0xFF800000), Color(0xFF4A0000)],
-                  //   ),
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
-                  child: isLocked
-
-                      ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.lock, color: Color(0xFFFFD700), size: 50),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          color: const Color(0xFFFFD700),
-                          child: const Text(
-                            "LOCKED",
-                            style: TextStyle(color: Color(0xFF4A0000), fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                      : null,
-                ),
-              ),
-              Positioned(
-                top: 10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isLocked ? const Color(0xFFFFD700) : const Color(0xFFD32F2F),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4)],
-                  ),
-                  child: Text(
-                    title,
-                    style: GoogleFonts.oxanium(textStyle: TextStyle(
-                      color: isLocked ? const Color(0xFF4A0000) : Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    )),
-                  ),
-                ),
-              ),
-              if(!isLocked)
-                ...[
-                  Positioned(
-                    left: 50,
-                    top: 60,
-                    child: getFranchiseLogo(AppImages.csk),
-                  ),
-                  Positioned(
-                    right: 50,
-                    top: 60,
-                    child: getFranchiseLogo(AppImages.mi),
-                  ),
-                  Positioned(
-                    right: 50,
-                    bottom: 40,
-                    child: getFranchiseLogo(AppImages.rcb),
-                  ),
-                  Positioned(
-                    left: 50,
-                    bottom: 40,
-                    child: getFranchiseLogo(AppImages.kkr),
-                  ),
-                  Positioned(
-                    left: 115,
-                    bottom: screenHeight * 0.25,
-                    child: getFranchiseLogo(AppImages.srh),
-                  ),
-                ]
-            ],
-          ),
+        const _Title(text: 'CHOOSE YOUR ARENA'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: items.map((item) {
+            return MiniAuctionLiteCard(
+              image: item.image,
+              fee: item.fee.toString(),
+              isLocked: item.locked,
+              onTap: () => onSelect(item),
+            );
+          }).toList(),
         ),
-        const SizedBox(height: 8),
-        // Info Button
-        Align(
-          alignment: Alignment.centerRight,
-          child: GestureDetector(
-            onTap: infoTap,
-            child: Container(
-              margin: const EdgeInsets.only(left: 240),
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFD32F2F),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.info_outline, color: Colors.white, size: 20),
-            ),
-          ),
-        )
       ],
     );
   }
-  Widget getFranchiseLogo(String image){
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage(image)
+}
+
+/// ================= MODE SELECTION =================
+
+class _ModeSelection extends StatelessWidget {
+  final MiniAuctionLiteMode mode;
+  final Size size;
+
+  const _ModeSelection({
+    required this.mode,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _Title(text: '${mode.modeName} ROOM'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _GameCard(
+              image: AppImages.playOnline,
+              onTap: () => context.go('/game'),
+              size: size,
+            ),
+            const SizedBox(width: 20),
+            _GameCard(
+              image: AppImages.playWithFriends,
+              onTap: () {},
+              size: size,
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(20),
+      ],
+    );
+  }
+}
+
+/// ================= TITLE =================
+
+class _Title extends StatelessWidget {
+  final String text;
+
+  const _Title({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset(AppImages.goldenCrownLine, width: 250, height: 30),
+        Text(
+          text,
+          style: GoogleFonts.cinzel(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.borderGold,
+          ),
+        ),
+        Image.asset(AppImages.goldenCrownLine, width: 250, height: 30),
+      ],
+    );
+  }
+}
+
+/// ================= GAME CARD =================
+
+class _GameCard extends StatelessWidget {
+  final String image;
+  final VoidCallback onTap;
+  final Size size;
+
+  const _GameCard({
+    required this.image,
+    required this.onTap,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Image.asset(
+        image,
+        width: 250,
+      ),
+    );
+  }
+}
+
+/// ================= BOTTOM BAR =================
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconWithCircularBorder(
+            image: AppImages.ruleBookMenuIcon,
+            settingName: "RULE BOOK",
+          ),
+          Container(
+            width: size.width * 0.4,
+            height: 50,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.fill,
+                image: AssetImage(AppImages.goldenFrame),
+              ),
+            ),
+            child: Text(
+              'MINI AUCTION LITE',
+              style: GoogleFonts.cinzel(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.borderGold,
+              ),
+            ),
+          ),
+          IconWithCircularBorder(
+            image: AppImages.settingsMenuIcon,
+            settingName: "SETTINGS",
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ================= CARD =================
+
+class MiniAuctionLiteCard extends StatelessWidget {
+  final String image;
+  final VoidCallback onTap;
+  final String fee;
+  final bool isLocked;
+
+  const MiniAuctionLiteCard({
+    super.key,
+    required this.image,
+    required this.onTap,
+    required this.fee,
+    required this.isLocked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+
+    return InkWell(
+      onTap: isLocked ? null : onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            image,
+            height: size.height * 0.38,
+            width: size.width / 6,
+            fit: BoxFit.fill,
+          ),
+
+          /// LOCK ICON
+          if (isLocked)
+            const Positioned(
+              top: 10,
+              right: 10,
+              child: Icon(Icons.lock, color: Colors.red),
+            ),
+
+          /// INFO ICON
+          const Positioned(
+            bottom: 0,
+            right: 0,
+            child: InfoIcon(isLocked: false),
+          ),
+
+          /// ENTRY FEE
+          Positioned(
+            bottom: 28,
+            child: Column(
+              children: [
+                Text(
+                  'ENTRY FEE',
+                  style: GoogleFonts.cinzel(
+                    color: AppTheme.borderGold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Image.asset(AppImages.coinMenuIcon, width: 15),
+                    const SizedBox(width: 5),
+                    Text(
+                      '$fee COIN',
+                      style: GoogleFonts.cinzel(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

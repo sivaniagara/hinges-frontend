@@ -20,10 +20,11 @@ class GoldenTitle extends StatelessWidget {
     return ShaderMask(
       shaderCallback: (bounds) => const LinearGradient(
         colors: [
-          Color(0xFFB26D01),
+          AppTheme.primaryGold,
           AppTheme.borderGold,
           AppTheme.borderGold,
-          Color(0xFFB26D01),
+          AppTheme.borderGold,
+          AppTheme.primaryGold,
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
