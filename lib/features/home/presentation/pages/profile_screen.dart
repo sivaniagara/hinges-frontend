@@ -64,19 +64,7 @@ class ProfileScreen extends StatelessWidget {
                       top: 5,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: Column(
-                          children: [
-                            Image.asset(AppImages.homeMenuIcon, width: 50),
-                            Text(
-                              'HOME',
-                              style: GoogleFonts.cinzel(
-                                color: AppTheme.borderGold,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: Image.asset(AppImages.homeMenuIcon, width: 60),
                       ),
                     ),
                   ],

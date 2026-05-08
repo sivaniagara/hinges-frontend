@@ -19,8 +19,8 @@ import '../widgets/auction_card_shimmer.dart';
 
 import '../widgets/currency_bar.dart';
 import 'profile_screen.dart';
-import 'setting_dialog.dart';
-import 'shop_dialog.dart';
+import 'setting_screen.dart';
+import 'shop_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -160,10 +160,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         BottomButton(
                           icon: AppImages.ruleBookMenuIcon,
                           title: "RULE BOOK",
+                          onTap:  () {
+                            context.push('/ruleBook');
+                          },
                         ),
                         BottomButton(
                           icon: AppImages.exitMenuIcon,
                           title: "EXIT",
+                          onTap: () {  },
                         ),
                       ],
                     ),
@@ -198,35 +202,32 @@ class _HomeScreenState extends State<HomeScreen> {
               TopActionButton(
                 icon: AppImages.rewardMenuIcon,
                 title: 'REWARDS',
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (_) => const ShopDialog(),
-                ),
-                iconSize: 30,
+                onTap: (){
+
+                },
+                iconSize: 40,
               ),
               TopActionButton(
                 icon: AppImages.shopMenuIcon,
                 title: 'SHOP',
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (_) => const ShopDialog(),
-                ),
-                iconSize: 38,
+                onTap:  () {
+                  context.push('/shop');
+                },
+                iconSize: 40,
               ),
               TopActionButton(
                 icon: AppImages.mailMenuIcon,
                 title: 'MAIL',
                 onTap: () {},
-                iconSize: 38,
+                iconSize: 40,
               ),
               TopActionButton(
                 icon: AppImages.settingsMenuIcon,
                 title: 'SETTINGS',
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (_) => const SettingDialog(),
-                ),
-                iconSize: 30,
+                onTap: () {
+                  context.push('/settings');
+                },
+                iconSize: 40,
               ),
             ],
           )
@@ -260,8 +261,6 @@ class AuctionCard extends StatelessWidget {
           Image.asset(
             image,
             height: size.height * 0.4,
-            width: size.width/6,
-            fit: BoxFit.fill,
           ),
 
           if (locked)
@@ -295,27 +294,17 @@ class LockIcon extends StatelessWidget {
 /// ================= INFO ICON =================
 class InfoIcon extends StatelessWidget {
   final bool isLocked;
+  final void Function()? onTap;
 
-  const InfoIcon({required this.isLocked});
+  const InfoIcon({
+    required this.isLocked,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showModalBottomSheet(
-          context: context,
-          backgroundColor: const Color(0xFF08142E),
-          builder: (_) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              isLocked
-                  ? "This mode is locked."
-                  : "Tap to start auction.",
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        );
-      },
+      onTap: onTap,
       child: CircleAvatar(
         backgroundColor: Colors.black54.withValues(alpha: 0.2),
         child: Icon(
@@ -367,29 +356,26 @@ class TopActionButton extends StatelessWidget {
 class BottomButton extends StatelessWidget {
   final String icon;
   final String title;
+  final void Function()? onTap;
 
   const BottomButton({
     required this.icon,
     required this.title,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding:
-      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppTheme.borderGold),
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return GestureDetector(
+      onTap: onTap,
       child: Row(
         children: [
-          Image.asset(icon, width: 25),
+          Image.asset(icon, width: 40),
           const SizedBox(width: 5),
           Text(
             title,
             style: GoogleFonts.roboto(
-              color: Colors.white,
+              color: AppTheme.borderGold,
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),

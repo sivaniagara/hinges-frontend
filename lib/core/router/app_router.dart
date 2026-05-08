@@ -8,15 +8,22 @@ import 'package:hinges_frontend/features/game/presentation/pages/my_squad_screen
 import 'package:hinges_frontend/features/game/presentation/pages/players_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/points_table_screen.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/profile_screen.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/rule_book_screen.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/setting_screen.dart';
+import 'package:hinges_frontend/features/home/presentation/pages/shop_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/forgot_password_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/guest_name_screen.dart';
 import 'package:hinges_frontend/features/login/presentation/pages/login_screen.dart';
+import 'package:hinges_frontend/features/mini_auction/presentation/pages/create_room.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
+import 'package:hinges_frontend/features/mini_auction/presentation/pages/play_with_friends.dart';
 import '../../features/home/presentation/bloc/home_bloc.dart';
+import '../../features/home/presentation/pages/mini_auction_lite_rule_book_screen.dart';
 import '../../features/login/presentation/pages/sign_up_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/login/presentation/pages/loading_screen.dart';
 import '../../features/login/presentation/pages/splash_screen.dart';
+import '../../features/mini_auction/presentation/pages/join_room.dart';
 import '../di/dependency_injection.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -113,12 +120,62 @@ final router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/settings',
+      builder: (context, state){
+        final homeData = context.read<HomeBloc>().state as HomeLoaded;
+        return SettingScreen(userData: homeData.userData);
+      },
+    ),
+    GoRoute(
+      path: '/shop',
+      builder: (context, state){
+        final homeData = context.read<HomeBloc>().state as HomeLoaded;
+        return ShopScreen(userData: homeData.userData);
+      },
+    ),
+    GoRoute(
+      path: '/ruleBook',
+      builder: (context, state){
+        final homeData = context.read<HomeBloc>().state as HomeLoaded;
+        return RuleBookScreen();
+      },
+      routes: [
+        GoRoute(
+          path: 'miniAuctionLiteRuleBook',
+          builder: (context, state){
+            return const MiniAuctionLiteRuleBookScreen();
+          },
+        ),
+      ]
+    ),
+    GoRoute(
       path: '/loading',
       builder: (context, state) => const LoadingScreen(),
     ),
     GoRoute(
       path: '/miniAuction',
       builder: (context, state) => MiniAuctionScreen(),
+    ),
+    GoRoute(
+      path: '/playWithFriends',
+      builder: (context, state) {
+        final mode = state.extra as MiniAuctionLiteMode;
+        return PlayWithFriends(mode: mode,);
+      },
+    ),
+    GoRoute(
+      path: '/createRoom',
+      builder: (context, state) {
+        final mode = state.extra as MiniAuctionLiteMode;
+        return CreateRoom(mode: mode,);
+      },
+    ),
+    GoRoute(
+      path: '/joinRoom',
+      builder: (context, state) {
+        final mode = state.extra as MiniAuctionLiteMode;
+        return JoinRoom(mode: mode,);
+      },
     ),
     ShellRoute(
       builder: (context, state, child) {

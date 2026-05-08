@@ -14,28 +14,29 @@ import 'package:hinges_frontend/core/utils/app_images.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../../../home/presentation/widgets/app_background.dart';
+import '../widgets/golden_dialog.dart';
 
 /// ================= MODEL =================
-
+enum MiniAuctionLiteModeEnum {classic, premium, elite, royal}
 class MiniAuctionItem {
   final String image;
   final int fee;
   final String name;
   final bool locked;
+  final MiniAuctionLiteModeEnum miniAuctionLiteModeEnum;
 
   const MiniAuctionItem({
     required this.image,
     required this.fee,
     required this.name,
     required this.locked,
+    required this.miniAuctionLiteModeEnum,
   });
 }
 
 class MiniAuctionLiteMode {
-  final String fee;
-  final String modeName;
-
-  MiniAuctionLiteMode(this.fee, this.modeName);
+  final MiniAuctionItem miniAuctionItem;
+  MiniAuctionLiteMode(this.miniAuctionItem);
 }
 
 /// ================= SCREEN =================
@@ -53,13 +54,33 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
 
   static const List<MiniAuctionItem> items = [
     MiniAuctionItem(
-        image: AppImages.classic, fee: 100, name: "CLASSIC", locked: false),
+        image: AppImages.classic,
+        fee: 100, 
+        name: "CLASSIC",
+        locked: false, 
+        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.classic
+    ),
     MiniAuctionItem(
-        image: AppImages.premium, fee: 250, name: "PREMIUM", locked: true),
+        image: AppImages.premium,
+        fee: 250,
+        name: "PREMIUM", 
+        locked: true, 
+        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.premium
+    ),
     MiniAuctionItem(
-        image: AppImages.elite, fee: 500, name: "ELITE", locked: true),
+        image: AppImages.elite,
+        fee: 500, 
+        name: "ELITE",
+        locked: true,
+        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.elite
+    ),
     MiniAuctionItem(
-        image: AppImages.royal, fee: 1000, name: "ROYAL", locked: true),
+        image: AppImages.royal,
+        fee: 1000, 
+        name: "ROYAL", 
+        locked: true,
+        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.royal
+    ),
   ];
 
   @override
@@ -101,8 +122,7 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
                 onSelect: (item) {
                   setState(() {
                     selectedMode = MiniAuctionLiteMode(
-                      item.fee.toString(),
-                      item.name,
+                      item
                     );
                   });
                 },
@@ -119,6 +139,21 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
       ),
     );
   }
+}
+
+void showClassicRoomDialog(BuildContext context,MiniAuctionItem miniAuctionItem) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierColor: Colors.black.withOpacity(0.7),
+    builder: (context) {
+      return Dialog(
+        backgroundColor: AppTheme.navyBlue,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: GoldenDialog(miniAuctionItem: miniAuctionItem,),
+      );
+    },
+  );
 }
 
 /// ================= HEADER =================
@@ -170,7 +205,7 @@ class _ArenaSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const _Title(text: 'CHOOSE YOUR ARENA'),
+        const CrownTitle(text: 'CHOOSE YOUR ARENA'),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: items.map((item) {
@@ -179,6 +214,7 @@ class _ArenaSelection extends StatelessWidget {
               fee: item.fee.toString(),
               isLocked: item.locked,
               onTap: () => onSelect(item),
+              miniAuctionItem: item,
             );
           }).toList(),
         ),
@@ -201,20 +237,31 @@ class _ModeSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 10,
       children: [
-        _Title(text: '${mode.modeName} ROOM'),
+        CrownTitle(text: '${mode.miniAuctionItem.name} ROOM'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _GameCard(
+            Text('Entry Fee - ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+            Image.asset(AppImages.coinMenuIcon, width: 20,),
+            Text('${mode.miniAuctionItem.fee} COINS', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center ,
+          children: [
+            GameCard(
               image: AppImages.playOnline,
               onTap: () => context.go('/game'),
               size: size,
             ),
             const SizedBox(width: 20),
-            _GameCard(
+            GameCard(
               image: AppImages.playWithFriends,
-              onTap: () {},
+              onTap: () {
+                context.push('/playWithFriends', extra: mode);
+              },
               size: size,
             ),
           ],
@@ -226,16 +273,16 @@ class _ModeSelection extends StatelessWidget {
 
 /// ================= TITLE =================
 
-class _Title extends StatelessWidget {
+class CrownTitle extends StatelessWidget {
   final String text;
 
-  const _Title({required this.text});
+  const CrownTitle({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(AppImages.goldenCrownLine, width: 250, height: 30),
+        Image.asset(AppImages.headerGoldenCrown, width: 150, height: 20),
         Text(
           text,
           style: GoogleFonts.cinzel(
@@ -244,7 +291,7 @@ class _Title extends StatelessWidget {
             color: AppTheme.borderGold,
           ),
         ),
-        Image.asset(AppImages.goldenCrownLine, width: 250, height: 30),
+        Image.asset(AppImages.goldenCrownLine, width: 200, height: 20),
       ],
     );
   }
@@ -252,12 +299,12 @@ class _Title extends StatelessWidget {
 
 /// ================= GAME CARD =================
 
-class _GameCard extends StatelessWidget {
+class GameCard extends StatelessWidget {
   final String image;
   final VoidCallback onTap;
   final Size size;
 
-  const _GameCard({
+  const GameCard({
     required this.image,
     required this.onTap,
     required this.size,
@@ -329,6 +376,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
   final VoidCallback onTap;
   final String fee;
   final bool isLocked;
+  final MiniAuctionItem miniAuctionItem;
 
   const MiniAuctionLiteCard({
     super.key,
@@ -336,6 +384,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
     required this.onTap,
     required this.fee,
     required this.isLocked,
+    required this.miniAuctionItem,
   });
 
   @override
@@ -363,13 +412,18 @@ class MiniAuctionLiteCard extends StatelessWidget {
             ),
 
           /// INFO ICON
-          const Positioned(
+          Positioned(
             bottom: 0,
             right: 0,
-            child: InfoIcon(isLocked: false),
+            child: InfoIcon(
+                isLocked: false,
+              onTap: (){
+                  showClassicRoomDialog(context, miniAuctionItem);
+              },
+
+            ),
           ),
 
-          /// ENTRY FEE
           Positioned(
             bottom: 28,
             child: Column(
