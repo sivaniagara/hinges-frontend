@@ -1,10 +1,12 @@
 import '../../../../core/network/http_service.dart';
 import '../../utils/game_urls.dart';
 import '../models/game_data_model.dart';
+import '../models/room_code_model.dart';
 
 abstract class GameRemoteDataSource {
   Future<GameDataModel> getGameData(Map<String, dynamic> jsonData);
   Future<void> exitMatch(Map<String, dynamic> jsonData);
+  Future<RoomCodeModel> getRoomCode();
 }
 
 class GameRemoteDataSourceImpl implements GameRemoteDataSource {
@@ -26,8 +28,6 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
           }
       );
 
-      // Assuming the API returns the JSON structure directly or wrapped in a data field
-      // Based on previous patterns, let's assume it's direct or we handle the wrapper
       print("getGameData response => $response");
       return GameDataModel.fromJson(response['data']);
     }catch(e, stackTrace){
@@ -48,6 +48,16 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
           "match_id": jsonData['match_id'],
         },
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<RoomCodeModel> getRoomCode() async {
+    try {
+      final response = await httpService.get(GameUrls.getRoomCode);
+      return RoomCodeModel.fromJson(response);
     } catch (e) {
       rethrow;
     }

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/game_data_entity.dart';
+import '../../domain/entities/room_code_entity.dart';
 import '../../domain/repository/game_repository.dart';
 import '../../domain/usecase/get_game_data_usecase.dart';
 import '../../domain/usecase/exit_match_usecase.dart';
@@ -34,6 +35,16 @@ class GameRepositoryImpl implements GameRepository {
         "match_id": params.matchId,
       });
       return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, RoomCodeEntity>> getRoomCode() async {
+    try {
+      final result = await remoteDataSource.getRoomCode();
+      return Right(result);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

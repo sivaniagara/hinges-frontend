@@ -1,10 +1,12 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failure.dart';
 import '../entities/game_data_entity.dart';
+import '../entities/room_code_entity.dart';
 import '../usecase/get_game_data_usecase.dart';
 import '../usecase/exit_match_usecase.dart';
 
 abstract class GameRepository {
   Future<Either<Failure, GameDataEntity>> getGameData(GetGameDataParam params);
   Future<Either<Failure, void>> exitMatch(ExitMatchParams params);
+  Future<Either<Failure, RoomCodeEntity>> getRoomCode();
 }

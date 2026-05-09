@@ -69,3 +69,5 @@ class ExitMatch extends GameEvent {
 }
 
 class RefreshGameData extends GameEvent {}
+
+class GetRoomCode extends GameEvent {}

@@ -9,6 +9,26 @@ class GameInitial extends GameState {}
 
 class GameLoading extends GameState {}
 
+class RoomCodeLoading extends GameState {}
+
+class RoomCodeLoaded extends GameState {
+  final String roomCode;
+
+  RoomCodeLoaded(this.roomCode);
+
+  @override
+  List<Object?> get props => [roomCode];
+}
+
+class RoomCodeError extends GameState {
+  final String message;
+
+  RoomCodeError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class GameLoaded extends GameState {
   final GameDataEntity gameData;
   final double remainingSecondsToStart;
@@ -21,7 +41,7 @@ class GameLoaded extends GameState {
     required this.remainingSecondsToStart,
     required this.remainingSecondsToExpireAuctionPlayer,
     required this.remainingSecondsToExpireBreak,
-    this.isReconnecting = false,   // ✅ default false
+    this.isReconnecting = false,
   });
 
   GameLoaded copyWith({
@@ -51,7 +71,7 @@ class GameLoaded extends GameState {
     remainingSecondsToStart,
     remainingSecondsToExpireAuctionPlayer,
     remainingSecondsToExpireBreak,
-    isReconnecting,   // ✅ important
+    isReconnecting,
   ];
 }
 

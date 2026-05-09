@@ -69,7 +69,6 @@ final router = GoRouter(
         return CustomTransitionPage(
           key: state.pageKey,
           child: const LoginScreen(),
-          // child: const EmailAuthScreen(),
           transitionsBuilder: pageSlider,
         );
       },
@@ -136,7 +135,6 @@ final router = GoRouter(
     GoRoute(
       path: '/ruleBook',
       builder: (context, state){
-        final homeData = context.read<HomeBloc>().state as HomeLoaded;
         return RuleBookScreen();
       },
       routes: [
@@ -167,7 +165,10 @@ final router = GoRouter(
       path: '/createRoom',
       builder: (context, state) {
         final mode = state.extra as MiniAuctionLiteMode;
-        return CreateRoom(mode: mode,);
+        return BlocProvider(
+          create: (context) => sl<GameBloc>()..add(GetRoomCode()),
+          child: CreateRoom(mode: mode),
+        );
       },
     ),
     GoRoute(
@@ -213,7 +214,6 @@ final router = GoRouter(
             final userId = state.uri.queryParameters['userId'] ?? '';
             final playerRoleId = state.uri.queryParameters['playerRole'] ?? '';
             final playerRoleName = state.uri.queryParameters['playerRoleName'] ?? '';
-            print("state.uri.queryParameters => ${state.uri.queryParameters}");
             return PlayersScreen(userId: userId, playerRole: playerRoleId,playerRoleName: playerRoleName,);
           },
         ),

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/network/websocket_service.dart';
+import '../../../../core/usecase/usecase.dart';
 import '../../../../core/utils/app_ids.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
@@ -16,6 +17,7 @@ import '../../domain/entities/user_status_entity.dart';
 import '../../utils/game_urls.dart';
 import '../../domain/usecase/get_game_data_usecase.dart';
 import '../../domain/usecase/exit_match_usecase.dart';
+import '../../domain/usecase/get_room_code_usecase.dart';
 
 part 'game_event.dart';
 part 'game_state.dart';
@@ -23,6 +25,7 @@ part 'game_state.dart';
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GetGameDataUseCase getGameDataUseCase;
   final ExitMatchUseCase exitMatchUseCase;
+  final GetRoomCodeUseCase getRoomCodeUseCase;
   final WebSocketService webSocketService;
 
   StreamSubscription? _gameDataSubscription;
@@ -38,8 +41,19 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc({
     required this.getGameDataUseCase,
     required this.exitMatchUseCase,
+    required this.getRoomCodeUseCase,
     required this.webSocketService,
   }) : super(GameInitial()) {
+
+    // ================= GET ROOM CODE =================
+    on<GetRoomCode>((event, emit) async {
+      emit(RoomCodeLoading());
+      final result = await getRoomCodeUseCase(NoParams());
+      result.fold(
+        (failure) => emit(RoomCodeError(failure.message)),
+        (roomCodeEntity) => emit(RoomCodeLoaded(roomCodeEntity.roomCode)),
+      );
+    });
 
     // ================= FETCH GAME =================
     on<FetchGameData>((event, emit) async {
