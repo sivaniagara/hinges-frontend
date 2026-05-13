@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 
 import '../error/failure.dart';
 import 'websocket_service.dart';
@@ -10,7 +11,7 @@ class WebSocketServiceImpl implements WebSocketService {
   WebSocket? _socket;
   // final String ipAddress = 'wss://api.hingesgames.com/';
   final String ipAddress = 'ws://139.59.39.124:8000/';
-  // static final String ipAddress = 'ws://192.168.1.112:8000/'; // local
+  // static final String ipAddress = 'ws://192.168.1.42:8000/'; // local
   @override
   Stream<dynamic> get stream =>
       _socket?.map((event) => jsonDecode(event)) ??
@@ -19,7 +20,9 @@ class WebSocketServiceImpl implements WebSocketService {
   @override
   Future<Either<Failure, void>> connect(String url) async {
     try {
-      print('$ipAddress$url');
+      if (kDebugMode) {
+        print('$ipAddress$url');
+      }
       _socket = await WebSocket.connect('$ipAddress$url');
 
       _socket!.done.then((_) {

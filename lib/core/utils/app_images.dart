@@ -42,7 +42,7 @@ class AppImages {
   static const String moreMenuIcon = '${base}more_menu_icon.png';
   static const String ruleBookMenuIcon = '${base}rule_book_menu_icon.png';
   static const String ruleBookIcon = '${base}rule_book_icon.png';
-  static const String ruleBook = '${base}rule_book.png';
+  static const String ruleBook = '${base}rule_book_white.png';
   static const String secondPrice = '${base}second_price.png';
   static const String secondPrize = '${base}second_prize.png';
   static const String exitIcon = '${base}exit_icon.png';
@@ -83,6 +83,26 @@ class AppImages {
 
   /// game
   static const String gameBase = '${base}game/';
+  static const String icp = '${gameBase}ICP.png';
+  static const String iup = '${gameBase}IUP.png';
+  static const String fp = '${gameBase}FP.png';
+  static const String timerCircle = '${gameBase}timer_circle.png';
+  static const String shockWaves = '${gameBase}shock_waves.png';
+  static const String auctioner = '${gameBase}auctioner.png';
+  static const String pointsTable = '${gameBase}points_table.png';
+  static const String mySquad = '${gameBase}my_squad.png';
+  static const String purse = '${gameBase}purse.png';
+  static const String bidButton = '${gameBase}bid_button.png';
+  static const String playerRound = '${gameBase}player_round.png';
+  static const String cricketStadium = '${gameBase}cricket_stadium.png';
+  static const String hammer = '${gameBase}hammer.png';
+  static const String ball = '${gameBase}ball.png';
+  static const String setting = '${gameBase}setting.png';
+  static const String playerSet = '${gameBase}player_set.png';
+  static const String batBall = '${gameBase}bat_ball.png';
+  static const String wicketKeepingGloves = '${gameBase}wicket_keeping_gloves.png';
+  static const String ruleBookWhite = '${gameBase}rule_book_white.png';
+  static const String franchiseGoldenCard = '${gameBase}franchise_golden_card.png';
   static const String batsmanIcon = '${gameBase}batsman_icon.png';
   static const String bowlerIcon = '${gameBase}bowler_icon.png';
   static const String allRounderIcon = '${gameBase}all_rounder_icon.png';

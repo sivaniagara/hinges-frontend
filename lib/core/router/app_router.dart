@@ -199,7 +199,10 @@ final router = GoRouter(
       routes: [
         GoRoute(
           path: '/game',
-          builder: (context, state) => GameScreen(),
+          builder: (context, state) {
+            final mode = state.extra as MiniAuctionLiteMode;
+            return GameScreen(mode: mode,);
+          },
         ),
         GoRoute(
           path: '/game/mySquad',

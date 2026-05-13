@@ -189,6 +189,6 @@ class PlayerAuctionStatusWidget extends StatelessWidget {
 
   bool isCappedPlayer(AuctionPlayerStatusEntity player, List<PlayerEntity> playerList){
     PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    return playerEntity.playerCategory == AppIds.cappedPlayerId;
+    return playerEntity.playerCategory == AppIds.indianCappedPlayerId;
   }
 }

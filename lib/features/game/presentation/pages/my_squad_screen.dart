@@ -188,9 +188,9 @@ class MySquadScreen extends StatelessWidget {
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
-                                          _buildCriteriaRow('ICP', Colors.blue, getPlayerCategoryStatusList(mySquad, AppIds.cappedPlayerId, userState.userData.players, 5)),
+                                          _buildCriteriaRow('ICP', Colors.blue, getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 5)),
                                           _buildCriteriaRow('FP', Colors.orange, getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, userState.userData.players, 4)),
-                                          _buildCriteriaRow('IUP', Colors.grey, getPlayerCategoryStatusList(mySquad, AppIds.unCappedPlayerId, userState.userData.players, 3)),
+                                          _buildCriteriaRow('IUP', Colors.grey, getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 3)),
                                         ],
                                       ),
                                     ),

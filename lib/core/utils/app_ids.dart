@@ -6,9 +6,9 @@ class AppIds{
   static const String bowlerId = '6881e28cc8d219cd96a5c4b2';
 
   // Player Category Id
-  static const String cappedPlayerId = '6881bd7536213beb0017bea0';
+  static const String indianCappedPlayerId = '6881bd7536213beb0017bea0';
   static const String foreignPlayerId = '6881bd8436213beb0017bea2';
-  static const String unCappedPlayerId = '6881bd7a36213beb0017bea1';
+  static const String indianUnCappedPlayerId = '6881bd7a36213beb0017bea1';
 
 
   // Bowling Style Id

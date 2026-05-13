@@ -50,7 +50,7 @@ class PlayerStyleWidget extends StatelessWidget {
 
         return Text(
           [AppIds.batsmanId, AppIds.wicketKeeperId].contains(playerStyle.first.id) ? battingStyle.first.categoryItemName : bowlingStyle.first.categoryItemName,
-          style: GoogleFonts.jost(textStyle: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+          style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
         );
       },
     );;

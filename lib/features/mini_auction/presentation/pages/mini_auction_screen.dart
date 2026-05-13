@@ -253,7 +253,7 @@ class _ModeSelection extends StatelessWidget {
           children: [
             GameCard(
               image: AppImages.playOnline,
-              onTap: () => context.go('/game'),
+              onTap: () => context.go('/game', extra: mode),
               size: size,
             ),
             const SizedBox(width: 20),

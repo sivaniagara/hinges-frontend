@@ -14,6 +14,7 @@ enum MatchStatusEnum {
 }
 
 enum BreakStatusEnum {
+  strategicBreak,
   acceleratedBreak,
   playerSetBreak,
   auctionPlayerBreak,

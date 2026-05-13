@@ -6,15 +6,15 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
   String image(){
     switch(this){
       case MiniAuctionFranchiseEnum.csk:
-        return AppImages.csk;
+        return AppImages.cskLogo;
       case MiniAuctionFranchiseEnum.mi:
-        return AppImages.mi;
+        return AppImages.miLogo;
       case MiniAuctionFranchiseEnum.kkr:
-        return AppImages.kkr;
+        return AppImages.kkrLogo;
       case MiniAuctionFranchiseEnum.srh:
-        return AppImages.srh;
+        return AppImages.srhLogo;
       case MiniAuctionFranchiseEnum.rcb:
-        return AppImages.rcb;
+        return AppImages.rcbLogo;
       case MiniAuctionFranchiseEnum.empty:
         return 'empty image';
     }

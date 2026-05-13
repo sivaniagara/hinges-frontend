@@ -504,10 +504,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
     playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
     Map<String, String> roleCategory = {
-      '6881ba0f36213beb0017be9c': AppImages.batsmanIcon,
-      '6881ba3936213beb0017be9d': AppImages.wicketKeeperIcon,
+      '6881ba0f36213beb0017be9c': AppImages.bat,
+      '6881ba3936213beb0017be9d': AppImages.wicketKeepingGloves,
       '6881bba636213beb0017be9e': AppImages.allRounderIcon,
-      '6881e28cc8d219cd96a5c4b2': AppImages.bowlerIcon,
+      '6881e28cc8d219cd96a5c4b2': AppImages.ball,
     };
 
     if(roleCategory.containsKey(playerRoleId)){
@@ -516,7 +516,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return 'N/A';
     }
   }
-
 
   List<AuctionPlayerStatusEntity> sortPlayerByStatus(List<AuctionPlayerStatusEntity> listOfPlayer){
     listOfPlayer.sort((a, b) {
@@ -594,6 +593,22 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return MiniAuctionFranchiseEnum.srh;
     }else{
       return MiniAuctionFranchiseEnum.rcb;
+    }
+  }
+
+  MiniAuctionFranchiseEnum getFranchiseByTeamId(String teamId){
+    if(MiniAuctionFranchiseEnum.csk.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.csk;
+    }else if(MiniAuctionFranchiseEnum.mi.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.mi;
+    }else if(MiniAuctionFranchiseEnum.kkr.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.kkr;
+    }else if(MiniAuctionFranchiseEnum.srh.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.srh;
+    }else if(MiniAuctionFranchiseEnum.rcb.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.rcb;
+    }else{
+      return MiniAuctionFranchiseEnum.empty;
     }
   }
 
