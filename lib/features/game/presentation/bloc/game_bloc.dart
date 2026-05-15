@@ -517,6 +517,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
+  String getPlayerRoleName(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
+    String playerRoleId = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
+    Map<String, String> roleCategory = {
+      '6881ba0f36213beb0017be9c': 'BATSMEN',
+      '6881ba3936213beb0017be9d': 'WICKET-KEEPER',
+      '6881bba636213beb0017be9e': 'ALL-ROUNDER',
+      '6881e28cc8d219cd96a5c4b2': 'BOWLER',
+    };
+
+    if(roleCategory.containsKey(playerRoleId)){
+      return roleCategory[playerRoleId]!;
+    }else{
+      return 'N/A';
+    }
+  }
+
   List<AuctionPlayerStatusEntity> sortPlayerByStatus(List<AuctionPlayerStatusEntity> listOfPlayer){
     listOfPlayer.sort((a, b) {
       if (a.playerAuctionStatus == PlayerAuctionStatusEnum.sold &&

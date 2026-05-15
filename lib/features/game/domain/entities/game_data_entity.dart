@@ -30,6 +30,7 @@ class GameDataEntity extends Equatable {
   final MatchStatusEnum matchStatus;
   final BreakStatusEnum breakStatus;
   final double gameCreatedAt;
+  final int round;
   final int gameStartDuration;
   final double? gameStartAt;
   final int currentAuctionPlayerIndex;
@@ -48,6 +49,7 @@ class GameDataEntity extends Equatable {
     required this.matchStatus,
     required this.breakStatus,
     required this.gameCreatedAt,
+    required this.round,
     required this.gameStartDuration,
     required this.gameStartAt,
     required this.currentAuctionPlayerIndex,
@@ -69,6 +71,7 @@ class GameDataEntity extends Equatable {
         matchStatus,
         breakStatus,
         gameCreatedAt,
+        round,
         gameStartDuration,
         gameStartAt,
         currentAuctionPlayerIndex,

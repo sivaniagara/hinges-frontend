@@ -10,6 +10,7 @@ class GameDataModel extends GameDataEntity {
     required super.matchStatus,
     required super.breakStatus,
     required super.gameCreatedAt,
+    required super.round,
     required super.gameStartDuration,
     super.gameStartAt,
     required super.currentAuctionPlayerIndex,
@@ -63,6 +64,7 @@ class GameDataModel extends GameDataEntity {
       matchStatus: getMatchStatus(json['match_status']),
       breakStatus: getBreakStatus(json['break_status']),
       gameCreatedAt: json['match_created_at'],
+      round: json['round'],
       gameStartDuration: json['game_start_duration'] ?? 0,
       gameStartAt: json['game_start_at'],
       currentAuctionPlayerIndex: json['current_auction_player_index'] ?? 0,
@@ -96,7 +98,8 @@ class GameDataModel extends GameDataEntity {
         highestBid: entity.highestBid,
         teamList: entity.teamList,
         usersStatusList: entity.usersStatusList.map((e) => UserStatusModel.fromEntity(e)).toList(),
-        auctionPlayersStatusList: entity.auctionPlayersStatusList.map((e) => AuctionPlayerStatusModel.fromEntity(e)).toList()
+        auctionPlayersStatusList: entity.auctionPlayersStatusList.map((e) => AuctionPlayerStatusModel.fromEntity(e)).toList(),
+        round: entity.round
     );
   }
 
@@ -138,6 +141,7 @@ class GameDataModel extends GameDataEntity {
           ? getBreakStatus(json['break_status'])
           : breakStatus,
       gameCreatedAt: json['match_created_at'] ?? gameCreatedAt,
+      round: json['round'] ?? round,
       gameStartDuration: json['game_start_duration'] ?? gameStartDuration,
       currentAuctionPlayerIndex:
       json['current_auction_player_index'] ?? currentAuctionPlayerIndex,

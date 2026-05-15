@@ -83,6 +83,7 @@ class AppImages {
 
   /// game
   static const String gameBase = '${base}game/';
+  static const String chamberBox = '${gameBase}chamber_box.png';
   static const String sold = '${gameBase}sold.png';
   static const String unsold = '${gameBase}unsold.png';
   static const String welcomeAuctioner = '${gameBase}welcome_auctioner.png';
