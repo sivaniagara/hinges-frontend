@@ -83,6 +83,13 @@ class AppImages {
 
   /// game
   static const String gameBase = '${base}game/';
+  static const String sold = '${gameBase}sold.png';
+  static const String unsold = '${gameBase}unsold.png';
+  static const String welcomeAuctioner = '${gameBase}welcome_auctioner.png';
+  static const String soldAuctioner = '${gameBase}sold_auctioner.png';
+  static const String thankYouAuctioner = '${gameBase}thank_you_auctioner.png';
+  static const String bidStartAuctioner = '${gameBase}bid_start_auctioner.png';
+  static const String bidIncreaseAuctioner = '${gameBase}bid_increase_auctioner.png';
   static const String icp = '${gameBase}ICP.png';
   static const String iup = '${gameBase}IUP.png';
   static const String fp = '${gameBase}FP.png';

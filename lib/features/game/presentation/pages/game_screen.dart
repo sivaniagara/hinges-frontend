@@ -146,6 +146,7 @@ class _GameScreenState extends State<GameScreen> {
                           final playerData = state.gameData
                               .auctionPlayersStatusList[state
                               .gameData.currentAuctionPlayerIndex];
+                          print(" playerData : ${playerData.playerAuctionStatus}");
 
                           return RefreshIndicator(
                             onRefresh: () async {
@@ -176,13 +177,13 @@ class _GameScreenState extends State<GameScreen> {
                                             // else if (state.gameData.matchStatus ==
                                             //     MatchStatusEnum.initialMatch)
                                             //   const GameStartDuration()
-                                            else if (state.gameData.breakStatus ==
-                                                  BreakStatusEnum.auctionPlayerBreak)
-                                                PlayerAuctionStatusWidget(
-                                                    gameData: gameData,
-                                                    playerData: playerData,
-                                                    state: state
-                                                )
+                                            // else if (state.gameData.breakStatus ==
+                                            //       BreakStatusEnum.auctionPlayerBreak)
+                                            //     PlayerAuctionStatusWidget(
+                                            //         gameData: gameData,
+                                            //         playerData: playerData,
+                                            //         state: state
+                                            //     )
                                               else if (state.gameData.breakStatus ==
                                                     BreakStatusEnum.acceleratedBreak)
                                                   const AcceleratedRoundIntro()
@@ -307,28 +308,36 @@ class _GameScreenState extends State<GameScreen> {
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                                                           children: [
-                                                            Column(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                Text('TIMER', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-                                                                Container(
-                                                                  decoration: BoxDecoration(
-                                                                    image: DecorationImage(
-                                                                      image: AssetImage(AppImages.timerCircle)
-                                                                    )
+                                                            if(playerData.playerAuctionStatus == PlayerAuctionStatusEnum.available || playerData.playerAuctionStatus == PlayerAuctionStatusEnum.notShown)
+                                                              Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Text('TIMER', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+                                                                  Container(
+                                                                    decoration: BoxDecoration(
+                                                                        image: DecorationImage(
+                                                                            image: AssetImage(AppImages.timerCircle)
+                                                                        )
+                                                                    ),
+                                                                    width: 60,
+                                                                    height: 60,
+                                                                    child: Column(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      children: [
+                                                                        Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
+                                                                        Text('SEC', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
+                                                                      ],
+                                                                    ),
                                                                   ),
-                                                                  width: 60,
-                                                                  height: 60,
-                                                                  child: Column(
-                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                    children: [
-                                                                      Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
-                                                                      Text('SEC', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
+                                                                ],
+                                                              )
+                                                            else
+                                                              Image.asset(
+                                                                  playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy
+                                                                      ? AppImages.sold : AppImages.unsold,
+                                                                width: 80,
+                                                                height: 80,
+                                                              ),
                                                             SizedBox(
                                                               height: 50,
                                                               child: VerticalDivider(
@@ -338,7 +347,9 @@ class _GameScreenState extends State<GameScreen> {
                                                             Column(
                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                               children: [
-                                                                Text('CURRENT BID', style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+                                                                Text(
+                                                                    playerData.basePrice == playerData.basePrice ? 'BASE PRISE' : 'CURRENT BID',
+                                                                    style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
                                                                 Row(
                                                                   children: [
                                                                     Image.asset(
@@ -629,8 +640,6 @@ class _GameScreenState extends State<GameScreen> {
                                           }),
                                         ),
                                       ),
-
-
 
                                       // Container(
                                       //   width: double.infinity,
@@ -1378,7 +1387,10 @@ class _GameScreenState extends State<GameScreen> {
                                       playerData,
                                       gameBloc.getMySquad(
                                           currentState.userData.userId),
-                                      currentState.userData.userId)) {
+                                      currentState.userData.userId)
+                                  || gameData.breakStatus == BreakStatusEnum.strategicBreak
+                                  || gameData.breakStatus == BreakStatusEnum.auctionPlayerBreak
+                              ) {
                               } else {
                                 context.read<GameBloc>().add(
                                     BidAuctionPlayer(currentState.userData.userId));
@@ -1396,7 +1408,10 @@ class _GameScreenState extends State<GameScreen> {
                                     currentState.userData.userId),
                                 currentState.userData.userId) ||
                                 gameBloc.enableBidButton(
-                                    currentState.userData.userId))
+                                    currentState.userData.userId)
+                                || gameData.breakStatus == BreakStatusEnum.strategicBreak
+                                || gameData.breakStatus == BreakStatusEnum.auctionPlayerBreak
+                            )
                                 ? 0.2
                                 : 1,
                             child: Image.asset(
