@@ -83,7 +83,15 @@ class AppImages {
 
   /// game
   static const String gameBase = '${base}game/';
+  static const String rankTag = '${gameBase}rank_tag.png';
+  static const String exit = '${gameBase}exit.png';
+  static const String acceleratedRound = '${gameBase}accelerated_round.png';
+  static const String rating = '${gameBase}rating.png';
+  static const String purseRem = '${gameBase}purse_rem.png';
   static const String chamberBox = '${gameBase}chamber_box.png';
+  static const String goldenTag = '${gameBase}golden_tag.png';
+  static const String playerSold = '${gameBase}player_sold.png';
+  static const String playerUnsold = '${gameBase}player_unsold.png';
   static const String sold = '${gameBase}sold.png';
   static const String unsold = '${gameBase}unsold.png';
   static const String welcomeAuctioner = '${gameBase}welcome_auctioner.png';

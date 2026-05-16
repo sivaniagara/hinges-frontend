@@ -3,12 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
-import 'package:hinges_frontend/core/presentation/widgets/gradient_text.dart';
-import 'package:hinges_frontend/features/game/domain/entities/user_status_entity.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 
-import '../../../home/presentation/bloc/home_bloc.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
+import '../../domain/entities/user_status_entity.dart';
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});
@@ -16,305 +14,441 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            colors: [
-              Color(0xFF800000), // Center deep red
-              Color(0xFFA7100E), // Outer darker red
-            ],
-            radius: 1.0,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  // Header
-                  Center(
-                    child: Container(
-                      width: 220,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(AppImages.redTag),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      child: Center(
-                        child: GradientText(
-                          title: 'RESULT',
-                          colors: [Colors.white, const Color(0xffFF1D2B)],
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Table Header
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF4D2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.brown, width: 1),
-                    ),
-                    child: Row(
-                      children: [
-                        _buildHeaderCell('USER NAME', flex: 2),
-                        _buildHeaderCell('FRANCHISE NAME', flex: 4),
-                        _buildHeaderCell('ELIGIBILITY', flex: 3),
-                        _buildHeaderCell('FINAL RATING', flex: 2),
-                        _buildHeaderCell('PURSE', flex: 1),
-                        _buildHeaderCell('PRIZE', flex: 2),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  BlocBuilder<GameBloc, GameState>(
-                      builder: (context, state){
-                        if(state is GameLoaded){
-                          return Expanded(
-                            child: ListView(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              children: List.generate(
-                                  state.gameData.usersStatusList.length,
-                                  (index){
-                                    final user = state.gameData.usersStatusList[index];
-                                    MiniAuctionFranchiseEnum miniAuctionFranchiseEnum = getFranchiseEnum(user.teamId);
-                                    return _buildResultRow(
-                                        user.userName,
-                                        miniAuctionFranchiseEnum.fullName(),
-                                        miniAuctionFranchiseEnum.image(),
-                                        user.matchWinStatusEnum == MatchWinStatusEnum.qualified,
-                                        context.read<GameBloc>().getRating(user.userId).toString(),
-                                        (user.rank <= 3  && user.matchWinStatusEnum == MatchWinStatusEnum.qualified) ? getMedalImage(user.rank) : null,
-                                        getPrizeAmount(context, user.rank),
-                                        context.read<GameBloc>().formatPriceShort(user.balanceAmount)
-                                    );
-                                  }
-                              ),
-                            ),
-                          );
-                        }
-                        return Container();
-                      }
-                  ),
-                ],
-              ),
-              // Home Button
-              Positioned(
-                right: 0,
-                top: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    context.go('/home');
-                  },
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Center(
-                      child: Image.asset(AppImages.homeIcon, width: 24),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String getPrizeAmount(BuildContext context, int rank){
-    if(rank == 1){
-      return '300';
-    }else if(rank == 2){
-      return '200';
-    }else if(rank == 3){
-      return '100';
-    }else{
-      return '';
-    }
-  }
-
-  Widget _buildHeaderCell(String text, {required int flex}) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.oxanium(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResultRow(String userName, String franchiseName, String logo, bool isQualified, String rating, String? medalImage, String prize, String purse) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF4D2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.brown, width: 1),
-      ),
-      child: Row(
-        children: [
-          // USER NAME
-          Expanded(
-            flex: 2,
-            child: Text(
-              userName,
-              style: GoogleFonts.oxanium(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          // FRANCHISE NAME
-          Expanded(
-            flex: 4,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: const Color(0xFF020B1A),
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            /// HEADER
+            Row(
               children: [
                 Expanded(
-                  child: Text(
-                    franchiseName,
-                    style: GoogleFonts.oxanium(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  child: Container(
+                    height: 55,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFFD4AF37), width: 2),
+                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFF0A1F44),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.orange, width: 1),
-                  ),
-                  child: ClipOval(
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Image.asset(logo, fit: BoxFit.contain),
+                    child: Center(
+                      child: Text(
+                        "RESULT TABLE",
+                        style: GoogleFonts.cinzel(
+                          color: const Color(0xFFFFD700),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                        ),
+                      ),
                     ),
                   ),
                 ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () => context.go('/home'),
+                  child: Image.asset(AppImages.homeMenuIcon, width: 50),
+                )
               ],
             ),
-          ),
-          // ELIGIBILITY
-          Expanded(
-            flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  isQualified ? 'QUALIFIED' : 'DISQUALIFIED',
-                  style: GoogleFonts.oxanium(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: isQualified ? Colors.green : Colors.red,
-                  ),
+
+            const SizedBox(height: 10),
+
+            /// TABLE
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFFD4AF37), width: 1.5),
+                  borderRadius: BorderRadius.circular(8),
+                  color: const Color(0xFF04122A),
                 ),
-                const SizedBox(width: 4),
-                Icon(
-                  isQualified ? Icons.check_circle : Icons.cancel,
-                  color: isQualified ? Colors.green : Colors.red,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-          // FINAL RATING
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: Text(
-                rating,
-                style: GoogleFonts.oxanium(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                child: Column(
+                  children: [
+                    _buildHeader(),
+
+                    Expanded(
+                      child: BlocBuilder<GameBloc, GameState>(
+                        builder: (context, state) {
+                          if (state is GameLoaded) {
+                            return ListView.builder(
+                              itemCount: state.gameData.usersStatusList.length,
+                              itemBuilder: (context, index) {
+                                final user = state.gameData.usersStatusList[index];
+                                final franchise = getFranchiseEnum(user.teamId);
+
+                                return _AnimatedRow(
+                                  delay: index * 120,
+                                  child: _buildRow(
+                                    context,
+                                    user,
+                                    franchise,
+                                    index,
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: Text(
-                purse,
-                style: GoogleFonts.oxanium(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          // PRIZE
-          Expanded(
-            flex: 2,
-            child: Row(
-              children: [
-                if(medalImage != null)
-                  Image.asset(
-                      medalImage,
-                    width: 25,
-                    height: 25,
-                  ),
-                isQualified 
-                  ? GradientText(
-                      title: prize,
-                      colors: [const Color(0xFF330000), const Color(0xFFB8860B)], // Golden-ish gradient
-                      fontSize: 16,
-                    )
-                  : Expanded(child: const Icon(Icons.cancel, color: Colors.red, size: 20)),
-              ],
-            ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// HEADER
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFD4AF37))),
+      ),
+      child: Row(
+        children: const [
+          _HeaderCell("USER NAME", 2),
+          _HeaderCell("FRANCHISE", 3),
+          _HeaderCell("QUALIFICATION", 3),
+          _HeaderCell("REMAINING PURSE", 2),
+          _HeaderCell("FINAL RATING", 2),
+          _HeaderCell("RANK", 2),
         ],
       ),
     );
   }
-  
-  String getMedalImage(int rank){
-    if(rank == 1){
-      return AppImages.medal1;
-    }else if(rank == 2){
-      return AppImages.medal2;
-    }else if(rank == 3){
-      return AppImages.medal3;
-    }else{
-      return '';
+
+  /// ROW
+  Widget _buildRow(BuildContext context, UserStatusEntity user,
+      MiniAuctionFranchiseEnum franchise, int index) {
+    final isQualified =
+        user.matchWinStatusEnum == MatchWinStatusEnum.qualified;
+
+    final rating =
+    context.read<GameBloc>().getRating(user.userId).toString();
+
+    final purse =
+    context.read<GameBloc>().formatPriceShort(user.balanceAmount);
+
+    final isTop3 = user.rank <= 3 && isQualified;
+
+    return _ShimmerWrapper(
+      enabled: isTop3,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.white.withOpacity(0.1)),
+          ),
+
+          /// 🔥 GOLD BACKGROUND GLOW
+          gradient: isTop3
+              ? LinearGradient(
+            colors: [
+              const Color(0xFFFFD700).withOpacity(0.15),
+              Colors.transparent,
+            ],
+          )
+              : null,
+
+          /// 🔥 OUTER GLOW
+          boxShadow: isTop3
+              ? [
+            BoxShadow(
+              color: const Color(0xFFFFD700).withOpacity(0.4),
+              blurRadius: 14,
+              spreadRadius: 1,
+            ),
+          ]
+              : [],
+        ),
+        child: Row(
+          children: [
+            _cell(user.userName, 2),
+
+            /// FRANCHISE
+            Expanded(
+              flex: 3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(franchise.image(), height: 26),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      franchise.shortName(),
+                      overflow: TextOverflow.ellipsis,
+                      style: _textStyle(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            /// QUALIFICATION
+            Expanded(
+              flex: 3,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: isQualified ? Colors.green : Colors.red),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isQualified ? Icons.check : Icons.close,
+                        size: 14,
+                        color: isQualified ? Colors.green : Colors.red,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        isQualified ? "QUALIFIED" : "DISQUALIFIED",
+                        style: _textStyle(
+                            color: isQualified ? Colors.green : Colors.red,
+                            size: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            _cell(purse, 2),
+            _cell(rating, 2),
+
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: _buildRank(user.rank, isQualified),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRank(int rank, bool isQualified) {
+    if (!isQualified) {
+      return const Text("-", style: TextStyle(color: Colors.white));
+    }
+
+    if (rank == 1) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.emoji_events, color: Colors.amber, size: 18),
+          SizedBox(width: 4),
+          Text("1  ₹300", style: TextStyle(color: Colors.amber)),
+        ],
+      );
+    } else if (rank == 2) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.emoji_events, color: Colors.grey, size: 18),
+          SizedBox(width: 4),
+          Text("2  ₹200", style: TextStyle(color: Colors.grey)),
+        ],
+      );
+    } else if (rank == 3) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.emoji_events, color: Colors.brown, size: 18),
+          SizedBox(width: 4),
+          Text("3  ₹100", style: TextStyle(color: Colors.brown)),
+        ],
+      );
+    }
+
+    return Text(rank.toString(), style: _textStyle());
+  }
+
+  Widget _cell(String text, int flex) {
+    return Expanded(
+      flex: flex,
+      child: Center(
+        child: Text(text, style: _textStyle()),
+      ),
+    );
+  }
+
+  TextStyle _textStyle({Color color = Colors.white, double size = 12}) {
+    return GoogleFonts.cinzel(
+      color: color,
+      fontSize: size,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+  MiniAuctionFranchiseEnum getFranchiseEnum(String teamId) {
+    if (teamId == MiniAuctionFranchiseEnum.csk.teamId()) {
+      return MiniAuctionFranchiseEnum.csk;
+    } else if (teamId == MiniAuctionFranchiseEnum.mi.teamId()) {
+      return MiniAuctionFranchiseEnum.mi;
+    } else if (teamId == MiniAuctionFranchiseEnum.rcb.teamId()) {
+      return MiniAuctionFranchiseEnum.rcb;
+    } else if (teamId == MiniAuctionFranchiseEnum.kkr.teamId()) {
+      return MiniAuctionFranchiseEnum.kkr;
+    } else {
+      return MiniAuctionFranchiseEnum.srh;
+    }
+  }
+}
+
+/// HEADER CELL
+class _HeaderCell extends StatelessWidget {
+  final String text;
+  final int flex;
+
+  const _HeaderCell(this.text, this.flex);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex,
+      child: Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.cinzel(
+            color: const Color(0xFFFFD700),
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// ✨ SHIMMER EFFECT
+class _ShimmerWrapper extends StatefulWidget {
+  final Widget child;
+  final bool enabled;
+
+  const _ShimmerWrapper({
+    required this.child,
+    required this.enabled,
+  });
+
+  @override
+  State<_ShimmerWrapper> createState() => _ShimmerWrapperState();
+}
+
+class _ShimmerWrapperState extends State<_ShimmerWrapper>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    if (widget.enabled) {
+      _controller.repeat();
     }
   }
 
-  MiniAuctionFranchiseEnum getFranchiseEnum(String teamId){
-    if(teamId == MiniAuctionFranchiseEnum.csk.teamId()){
-      return MiniAuctionFranchiseEnum.csk;
-    }else if(teamId == MiniAuctionFranchiseEnum.mi.teamId()){
-      return MiniAuctionFranchiseEnum.mi;
-    }else if(teamId == MiniAuctionFranchiseEnum.rcb.teamId()){
-      return MiniAuctionFranchiseEnum.rcb;
-    }else if(teamId == MiniAuctionFranchiseEnum.kkr.teamId()){
-      return MiniAuctionFranchiseEnum.kkr;
-    }else{
-      return MiniAuctionFranchiseEnum.srh;
-    }
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.enabled) return widget.child;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return ShaderMask(
+          shaderCallback: (rect) {
+            return LinearGradient(
+              begin: Alignment(-1 + 2 * _controller.value, 0),
+              end: Alignment(1 + 2 * _controller.value, 0),
+              colors: const [
+                Colors.transparent,
+                Color(0xFFFFF3B0),
+                Colors.transparent,
+              ],
+            ).createShader(rect);
+          },
+          blendMode: BlendMode.lighten,
+          child: child,
+        );
+      },
+      child: widget.child,
+    );
+  }
+}
+
+/// 🎬 ROW ENTRY ANIMATION
+class _AnimatedRow extends StatefulWidget {
+  final Widget child;
+  final int delay;
+
+  const _AnimatedRow({
+    required this.child,
+    required this.delay,
+  });
+
+  @override
+  State<_AnimatedRow> createState() => _AnimatedRowState();
+}
+
+class _AnimatedRowState extends State<_AnimatedRow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation<double> opacity;
+  late Animation<Offset> offset;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    opacity = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: controller, curve: Curves.easeOut),
+    );
+
+    offset = Tween<Offset>(
+      begin: const Offset(0, 0.25),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: controller, curve: Curves.easeOut),
+    );
+
+    Future.delayed(Duration(milliseconds: widget.delay), () {
+      if (mounted) controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: opacity,
+      child: SlideTransition(
+        position: offset,
+        child: widget.child,
+      ),
+    );
   }
 }

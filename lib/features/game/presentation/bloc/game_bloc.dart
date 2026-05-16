@@ -535,6 +535,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
+  String getPlayerRoleImageById(String playerRoleId){
+    Map<String, String> roleCategory = {
+      '6881ba0f36213beb0017be9c': AppImages.bat,
+      '6881ba3936213beb0017be9d': AppImages.wicketKeepingGloves,
+      '6881bba636213beb0017be9e': AppImages.allRounderIcon,
+      '6881e28cc8d219cd96a5c4b2': AppImages.ball,
+    };
+
+    if(roleCategory.containsKey(playerRoleId)){
+      return roleCategory[playerRoleId]!;
+    }else{
+      return 'N/A';
+    }
+  }
+
   List<AuctionPlayerStatusEntity> sortPlayerByStatus(List<AuctionPlayerStatusEntity> listOfPlayer){
     listOfPlayer.sort((a, b) {
       if (a.playerAuctionStatus == PlayerAuctionStatusEnum.sold &&

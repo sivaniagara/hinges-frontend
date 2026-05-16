@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
-import 'package:hinges_frontend/core/presentation/widgets/gradient_text.dart';
+import 'package:hinges_frontend/core/utils/constant.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
-import 'package:hinges_frontend/features/mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
+import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/user_status_entity.dart';
 
@@ -19,275 +20,427 @@ class MySquadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Color> textColorForRedTag = [Colors.white, const Color(0xffFF1D2B)];
-    List<Color> textColorForYellowTag = [const Color(0xff330000), const Color(0xffFF1D2B)];
-
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: RadialGradient(
             colors: [
-              Color(0xFF800000), // Center deep red
-              Color(0xFFA7100E), // Outer darker red
+              AppTheme.navyBlue,
+              Color(0xFF000511), // Deep black edges
             ],
-            radius: 1.0,
+            radius: 1.2,
+            center: Alignment.center,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Stack(
-            children: [
-              Column(
+          padding: const EdgeInsets.all(12.0),
+          child: BlocBuilder<GameBloc, GameState>(
+            builder: (context, state) {
+              if (state is! GameLoaded) return const SizedBox.shrink();
+
+              final userState = context.read<HomeBloc>().state as HomeLoaded;
+              final mySquad = context.read<GameBloc>().getMySquad(userId);
+              final userStatus = state.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
+              final franchise = context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId);
+
+              return Column(
                 children: [
-                  // Header
-                  Center(
-                    child: Container(
-                      width: 150,
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(AppImages.yellowTag),
-                          fit: BoxFit.fill,
+                  // --- Header Row ---
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      // MY SQUAD Title Frame
+                      Container(
+                        width: 120,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(AppImages.titleGoldenFrame),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'MY SQUAD',
+                            style: GoogleFonts.cinzel(
+                              color: const Color(0xFFD4AF37),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child: GradientText(
-                          title: 'MY SQUAD',
-                          colors: textColorForYellowTag,
-                          fontSize: 16,
-                        ),
+                      // Team Logo
+                      Column(
+                        children: [
+                          Image.asset(franchise.image(), height: 40),
+                          Text(
+                            franchise.shortName().toUpperCase(),
+                            style: GoogleFonts.cinzel(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                        ],
+                      ), // Team Name
+
+                      // Stats Section
+                      _buildHeaderStat('TOTAL PURSE', '60 CR', AppImages.purse),
+                      const SizedBox(width: 10),
+                      _buildHeaderStat(
+                        'PURSE REM',
+                        context.read<GameBloc>().formatPriceShort(userStatus.balanceAmount), 
+                        AppImages.purseRem,
+                        valueColor: const Color(0xFF00FF00)
+                      ),
+                      const SizedBox(width: 10),
+                      _buildHeaderStat(
+                        'TOTAL RATING', 
+                        getSquadRating(mySquad).toStringAsFixed(1), 
+                        AppImages.rating,
+                        valueColor: const Color(0xFFFFD700)
+                      ),
+                      const SizedBox(width: 15),
+                      // Back Button
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Image.asset(AppImages.backMenuIcon, width: 45),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  // --- Table Section ---
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: AppTheme.borderGold, width: 0.5),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildTableHeader(),
+                          Expanded(
+                            child: RawScrollbar(
+                              thumbColor: const Color(0xFFD4AF37),
+                              radius: const Radius.circular(8),
+                              thickness: 6,
+                              thumbVisibility: true,
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                itemCount: 12,
+                                itemBuilder: (context, index) {
+                                  final key = index + 1;
+                                  final player = mySquad[key];
+                                  final role = context.read<GameBloc>().getRole(key);
+                                  
+                                  // Slot labeling to match image: BAT 1, BAT 2, BAT 3, WK 1, WK 2, ALR 1-4, BOWL 1-3
+                                  int subIndex = 0;
+                                  if (key <= 3) subIndex = key;
+                                  else if (key <= 5) subIndex = key - 3;
+                                  else if (key <= 9) subIndex = key - 5;
+                                  else subIndex = key - 9;
+                                  
+                                  final slotLabel = "$role";
+
+                                  if (player != null) {
+                                    return _buildTableRow(
+                                      slot: slotLabel,
+                                      name: player.playerName.toUpperCase(),
+                                      description: getRoleStyle(key, player, userState.userData.categoryAndItsItem, userState.userData.players),
+                                      category: getPlayerCategory(player, userState.userData.categoryAndItsItem, userState.userData.players),
+                                      basePrice: context.read<GameBloc>().formatPriceShort(player.basePrice),
+                                      rating: '${player.baseRating}',
+                                      soldPrice: context.read<GameBloc>().formatPriceShort(player.currentPrice),
+                                      isOdd: index.isOdd,
+                                    );
+                                  } else {
+                                    return _buildTableRow(
+                                      slot: slotLabel,
+                                      name: '-',
+                                      description: '-',
+                                      category: '-',
+                                      basePrice: '-',
+                                      rating: '-',
+                                      soldPrice: '-',
+                                      isOdd: index.isOdd,
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Table Section
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFF4D2),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.brown, width: 2),
-                            ),
-                            child: Column(
-                              children: [
-                                _buildTableHeader(),
-                                BlocBuilder<GameBloc,GameState>(builder: (context, state){
-                                  final userState = context.read<HomeBloc>().state as HomeLoaded;
-                                  final mySquad = context.read<GameBloc>().getMySquad(userId);
-                                  if(state is GameLoaded){
-                                    return Expanded(
-                                      child: ListView(
-                                        padding: EdgeInsets.zero,
-                                        children: [
-                                          for(var key = 1;key < 13;key++)
-                                            if(mySquad[key] != null)
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color:mySquad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy ?  Colors.blueGrey.shade50 : null
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    _buildTableRow(
-                                                        '$key',
-                                                        context.read<GameBloc>().getRole(key),
-                                                        mySquad[key]!.playerName,
-                                                        getRoleStyle(key, mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                        getPlayerCategory(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                        context.read<GameBloc>().getPlayerRoleImage(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                        getPlayerCountryShortForm(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                        context.read<GameBloc>().getPlayerCountryFlag(mySquad[key]!, userState.userData.categoryAndItsItem, userState.userData.players),
-                                                        context.read<GameBloc>().formatPriceShort(mySquad[key]!.currentPrice),
-                                                        mySquad[key]!.baseRating.toString()
-                                                    ),
-                                                    const Divider(height: 1, color: Colors.brown, thickness: 1),
-                                                  ],
-                                                ),
-                                              )
-                                            else
-                                              Column(
-                                                children: [
-                                                  _buildTableRow('$key', context.read<GameBloc>().getRole(key), '', '', '', '', '', '', '', ''),
-                                                  const Divider(height: 1, color: Colors.brown, thickness: 1),
-                                                ],
-                                              )
-                                        ],
-                                      ),
-                                    );
-                                  }
 
-                                  return const SizedBox.shrink();
-
-                                }),
-
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Bottom Section
-                  BlocBuilder<GameBloc,GameState>(builder: (context, state){
-                    final userState = context.read<HomeBloc>().state as HomeLoaded;
-                    final mySquad = context.read<GameBloc>().getMySquad(userId);
-                    if(state is GameLoaded){
-                      return Container(
-                        height: 140,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF4D2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.brown, width: 2),
-                        ),
-                        child: Row(
+                  // --- Bottom Sections: SLOT WISE, CATEGORY WISE, BOWLING WISE ---
+                  Row(
+                    children: [
+                      // SLOT WISE Box
+                      _buildBottomBox(
+                        title: 'SLOT WISE',
+                        content: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Expanded(
-                              flex: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                                child: Column(
-                                  children: [
-                                    Text('PRIMARY CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black)),
-                                    const SizedBox(height: 4),
-                                    const Divider(color: Colors.brown, height: 1),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          _buildPrimaryCriteriaRow('BAT', Colors.blue, getPlayerPrimaryCriteria(mySquad, AppIds.batsmanId, userState.userData.players, 3), AppImages.batsmanIcon),
-                                          _buildPrimaryCriteriaRow('WK', Colors.orange, getPlayerPrimaryCriteria(mySquad, AppIds.wicketKeeperId, userState.userData.players, 2), AppImages.wicketKeeperIcon),
-                                          _buildPrimaryCriteriaRow('AL', Colors.grey, getPlayerPrimaryCriteria(mySquad, AppIds.allRounderId, userState.userData.players, 4), AppImages.allRounderIcon),
-                                          _buildPrimaryCriteriaRow('BWL', Colors.grey, getPlayerPrimaryCriteria(mySquad, AppIds.bowlerId, userState.userData.players, 3), AppImages.bowlerIcon),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
-
-                            // Purchase Criteria
-                            Expanded(
-                              flex: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                                child: Column(
-                                  children: [
-                                    Text('PURCHASE CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black)),
-                                    const SizedBox(height: 4),
-                                    const Divider(color: Colors.brown, height: 1),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          _buildCriteriaRow('ICP', Colors.blue, getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 5)),
-                                          _buildCriteriaRow('FP', Colors.orange, getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, userState.userData.players, 4)),
-                                          _buildCriteriaRow('IUP', Colors.grey, getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 3)),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
-                            // Bowler Criteria
-                            Expanded(
-                              flex: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                                child: Column(
-                                  children: [
-                                    Text('BOWLER CRITERIA', style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black)),
-                                    const SizedBox(height: 4),
-                                    const Divider(color: Colors.brown, height: 1),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          _buildBowlerRow('RIGHT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmSpin, userState.userData.players)),
-                                          _buildBowlerRow('LEFT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmSpin, userState.userData.players)),
-                                          _buildBowlerRow('RIGHT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmFast, userState.userData.players)),
-                                          _buildBowlerRow('LEFT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmFast, userState.userData.players)),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const VerticalDivider(width: 1, color: Colors.brown, thickness: 1),
-                            // Team Info
-                            Container(
-                              width: 220,
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Image.asset(
-                                              context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).image(),                                        height: 50
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId).shortName(),
-                                            style: GoogleFonts.oxanium(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
-                                            overflow: TextOverflow.ellipsis,
-                                          )
-                                        ],
-                                      ),
-                                      _buildStatBox('TOTAL RATING', getSquadRating(mySquad).toStringAsFixed(2), AppImages.redTag, textColorForRedTag),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      _buildStatBox('MY PURSE', '60 CR', AppImages.yellowTag, textColorForYellowTag),
-                                      _buildStatBox('PURSE REM', context.read<GameBloc>().formatPriceShort((state.gameData.usersStatusList.firstWhere((e) => e.userId == userId).balanceAmount)), AppImages.redTag, textColorForRedTag),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
+                            _buildNumberedSquaresRow('BAT', getPlayerPrimaryCriteria(mySquad, AppIds.batsmanId, userState.userData.players, 3)),
+                            _buildNumberedSquaresRow('WK', getPlayerPrimaryCriteria(mySquad, AppIds.wicketKeeperId, userState.userData.players, 2)),
+                            _buildNumberedSquaresRow('ALR', getPlayerPrimaryCriteria(mySquad, AppIds.allRounderId, userState.userData.players, 4)),
+                            _buildNumberedSquaresRow('BOWL', getPlayerPrimaryCriteria(mySquad, AppIds.bowlerId, userState.userData.players, 3)),
                           ],
                         ),
-                      );
-                    }
-
-                    return const SizedBox.shrink();
-
-                  }),
+                      ),
+                      const SizedBox(width: 8),
+                      // CATEGORY WISE Box
+                      _buildBottomBox(
+                        title: 'CATEGORY WISE',
+                        content: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildNumberedSquaresRow('ICP', getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 5)),
+                            _buildNumberedSquaresRow('FP', getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, userState.userData.players, 4)),
+                            _buildNumberedSquaresRow('IUP', getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 3)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // BOWLING WISE Box
+                      _buildBottomBox(
+                        title: 'BOWLING WISE',
+                        content: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildBowlingSquareRow('RIGHT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmSpin, userState.userData.players)),
+                            _buildBowlingSquareRow('RIGHT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmFast, userState.userData.players)),
+                            _buildBowlingSquareRow('LEFT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmSpin, userState.userData.players)),
+                            _buildBowlingSquareRow('LEFT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmFast, userState.userData.players)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
-              ),
-              // Close Button
-              Positioned(
-                right: 0,
-                top: 0,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Image.asset(AppImages.cancelIcon, width: 30),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderStat(String label, String value, String iconPath, {Color valueColor = const Color(0xFFFFD700)}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5), width: 1.2),
+        borderRadius: BorderRadius.circular(6),
+        color: Colors.black.withOpacity(0.3),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(iconPath, width: 30, height: 30),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(label, style: GoogleFonts.cinzel(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold)),
+              Text(value, style: GoogleFonts.cinzel(fontSize: 16, color: valueColor, fontWeight: FontWeight.w900)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTableHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        border: const Border(bottom: BorderSide(color: Color(0xFFD4AF37), width: 1.5)),
+      ),
+      child: Row(
+        children: [
+          _buildCell('SLOT', flex: 1, isHeader: true),
+          _buildCell('PLAYER NAME', flex: 2, isHeader: true),
+          _buildCell('DESCRIPTION', flex: 2, isHeader: true),
+          _buildCell('CATERGORY', flex: 1, isHeader: true), // Typo preserved from image
+          _buildCell('BASE PRICE', flex: 1, isHeader: true),
+          _buildCell('RATING', flex: 1, isHeader: true),
+          _buildCell('SOLD PRICE', flex: 1, isHeader: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTableRow({
+    required String slot,
+    required String name,
+    required String description,
+    required String category,
+    required String basePrice,
+    required String rating,
+    required String soldPrice,
+    required bool isOdd,
+  }) {
+    Color categoryColor = const Color(0xFF00AFFF); // ICP light blue
+    if (category == 'IUP') categoryColor = const Color(0xFFFF8C00); // IUP orange/brown
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: name == '-' ? AppTheme.navyBlue : Colors.transparent,
+        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
+      ),
+      child: Row(
+        children: [
+          _buildCell(slot, flex: 1, color: Colors.white),
+          _buildCell(name, flex: 2, isBold: true, color: Colors.white),
+          _buildCell(description, flex: 2, fontSize: 10, color: Colors.white70),
+          _buildCell(category, flex: 1, color: categoryColor, isBold: true),
+          _buildCell(basePrice, flex: 1, color: Colors.white),
+          _buildCell(rating, flex: 1, color: const Color(0xFFFFD700), isBold: true),
+          _buildCell(soldPrice, flex: 1, color: const Color(0xFF00FF00), isBold: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 11}) {
+    return Expanded(
+      flex: flex,
+      child: Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.cinzel(
+            fontSize: isHeader ? 10 : fontSize,
+            fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
+            color: isHeader ? AppTheme.borderGold : color,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomBox({required String title, required Widget content}) {
+    return Expanded(
+      child: Container(
+        height: 110,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(AppImages.goldenOutline),
+            fit: BoxFit.fill,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+          child: Column(
+            children: [
+              Container(
+                width: 135,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(AppImages.goldenTag),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.quantico(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  ),
                 ),
               ),
+              const SizedBox(height: 2),
+              Expanded(child: content),
             ],
           ),
         ),
       ),
     );
   }
-  
+
+  Widget _buildNumberedSquaresRow(String label, List<bool> dots) {
+    return Row(
+      children: [
+        SizedBox(width: 45, child: Text(label, style: GoogleFonts.cinzel(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white))),
+        const SizedBox(width: 10),
+        ...List.generate(dots.length, (index) {
+          return Container(
+            width: 20,
+            height: 14,
+            margin: const EdgeInsets.only(right: 6),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: dots[index] ? [
+                    Color(0xff43A702),
+                    Color(0xff0F3600),
+                  ] : [
+                    Color(0xff992213),
+                    Color(0xff390000),
+                  ]
+              ),
+              borderRadius: BorderRadius.circular(2),
+              border: Border.all(color: Colors.white24, width: 0.5),
+            ),
+            child: Center(
+              child: Text(
+                '${index + 1}',
+                style: GoogleFonts.cinzel(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildBowlingSquareRow(String label, bool isAvailable) {
+    return Row(
+      children: [
+        Expanded(child: Text(label, style: GoogleFonts.cinzel(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white))),
+        Container(
+          width: 20,
+          height: 14,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: isAvailable ? [
+                  Color(0xff43A702),
+                  Color(0xff0F3600),
+                ] : [
+                  Color(0xff992213),
+                  Color(0xff390000),
+                ]
+            ),
+            borderRadius: BorderRadius.circular(2),
+            border: Border.all(color: Colors.white24, width: 0.5),
+          ),
+          child: Center(
+            child: Text(
+              '1',
+              style: GoogleFonts.cinzel(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // --- Logic Helper Methods (Preserved and integrated) ---
+
   double getSquadRating(Map<int, AuctionPlayerStatusEntity?> squad){
     double rating = 0.0;
     for(var key in squad.keys) {
@@ -298,38 +451,9 @@ class MySquadScreen extends StatelessWidget {
     return rating;
   }
 
-
-  String getPlayerCountryShortForm(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerCountryId = '';
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerCountryId = categoryAndItemsEntity.countryCategoryId.firstWhere((e) => e.id == playerEntity.countryId).id;
-    Map<String, String> countryShortForms = {
-      '6880d715f960074f0cf61be7': 'IND', // India
-      '6880d71ef960074f0cf61be8': 'AUS', // Australia
-      '6880d725f960074f0cf61be9': 'ENG', // England
-      '6880d72bf960074f0cf61bea': 'PAK', // Pakistan
-      '6880d734f960074f0cf61beb': 'NZ',  // New Zealand
-      '6880d73ff960074f0cf61bec': 'SA',  // South Africa
-      '6880d748f960074f0cf61bed': 'SL',  // Sri Lanka
-      '6880d751f960074f0cf61bee': 'WI',  // West Indies
-      '6880d759f960074f0cf61bef': 'BAN', // Bangladesh
-      '6880d760f960074f0cf61bf0': 'AFG', // Afghanistan
-      '6880d766f960074f0cf61bf1': 'IRE', // Ireland
-      '6880d76df960074f0cf61bf2': 'ZIM', // Zimbabwe
-    };
-
-    if(countryShortForms.containsKey(playerCountryId)){
-      return countryShortForms[playerCountryId]!;
-    }else{
-      return 'N/A';
-    }
-  }
-
   String getPlayerCategory(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerCategory = '';
     PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerCategory = toShortForm(categoryAndItemsEntity.playerCategoryCategoryId.firstWhere((e) => e.id == playerEntity.playerCategory).categoryItemName);
-    return playerCategory;
+    return toShortForm(categoryAndItemsEntity.playerCategoryCategoryId.firstWhere((e) => e.id == playerEntity.playerCategory).categoryItemName);
   }
 
   bool getPlayerBowlingStyleAvailable(Map<int, AuctionPlayerStatusEntity?> squad, String playerBowlingStyleId, List<PlayerEntity> playerList){
@@ -346,7 +470,7 @@ class MySquadScreen extends StatelessWidget {
     return available;
   }
 
-  List<bool> getPlayerPrimaryCriteria(Map<int, AuctionPlayerStatusEntity?> squad, String playerRoleId, List<PlayerEntity> playerList, totalCount){
+  List<bool> getPlayerPrimaryCriteria(Map<int, AuctionPlayerStatusEntity?> squad, String playerRoleId, List<PlayerEntity> playerList, int totalCount){
     int total = 0;
     for(var key in squad.keys) {
       if(squad[key] != null){
@@ -356,14 +480,10 @@ class MySquadScreen extends StatelessWidget {
         }
       }
     }
-    return List.generate(totalCount, (index) {
-      if(index < total){
-        return true;
-      }
-      return false;
-    });
+    return List.generate(totalCount, (index) => index < total);
   }
-  List<bool> getPlayerCategoryStatusList(Map<int, AuctionPlayerStatusEntity?> squad, String playerCategoryId, List<PlayerEntity> playerList, totalCount){
+
+  List<bool> getPlayerCategoryStatusList(Map<int, AuctionPlayerStatusEntity?> squad, String playerCategoryId, List<PlayerEntity> playerList, int totalCount){
     int total = 0;
     for(var key in squad.keys) {
       if(squad[key] != null){
@@ -373,188 +493,26 @@ class MySquadScreen extends StatelessWidget {
         }
       }
     }
-    return List.generate(totalCount, (index) {
-      if(index < total){
-        return true;
-      }
-      return false;
-    });
+    return List.generate(totalCount, (index) => index < total);
   }
 
   String getRoleStyle(int position, AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerRoleStyle = '';
+    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+    String style = '';
     if(position >= 1 && position <= 3){
-      PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-      playerRoleStyle = toShortForm(categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName);
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
     }else if(position >= 4 && position <= 5){
-      PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-      playerRoleStyle = toShortForm(categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName);
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
     }else if(position >= 6 && position <= 9){
-      PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-      playerRoleStyle = toShortForm(categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName);
-      playerRoleStyle += '/';
-      playerRoleStyle += toShortForm(categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName);
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
+      style += ' / ' + categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName;
     }else if(position >= 10 && position <= 12){
-      PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-      playerRoleStyle = toShortForm(categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName);
+      style = categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName;
     }
-    return playerRoleStyle;
+    return style.toUpperCase();
   }
+
   String toShortForm(String role) {
-    return role
-        .split(' ')
-        .map((word) => word[0])
-        .join();
-  }
-
-
-  Widget _buildTableHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.brown, width: 1)),
-      ),
-      child: Row(
-        children: [
-          _buildCell('SLOT NO', flex: 1, isHeader: true),
-          _buildCell('SLOT TYPE', flex: 1, isHeader: true),
-          _buildCell('PLAYER NAME', flex: 3, isHeader: true),
-          _buildCell('DESCRIPTION', flex: 2, isHeader: true),
-          _buildCell('CATERGORY', flex: 1, isHeader: true), // Preserve "CATERGORY" typo from image
-          _buildCell('COUNTRY', flex: 1, isHeader: true),
-          _buildCell('SOLD PRICE', flex: 1, isHeader: true),
-          _buildCell('RATING', flex: 1, isHeader: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTableRow(String slotNo, String slotType, String name, String desc, String category, String roleImage, String country, String flag, String price, String rating) {
-    print('roleImage => ${roleImage}');
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          _buildCell(slotNo, flex: 1),
-          _buildCell(slotType, flex: 1),
-          _buildCell(name, flex: 3, isBold: true),
-          _buildCell(desc, flex: 2),
-          _buildCell(category, flex: 1, image: roleImage),
-          _buildCell(country, flex: 1, flag: flag),
-          _buildCell(price, flex: 1, isBold: true,),
-          _buildCell(rating, flex: 1, isBold: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, bool useZuume = false , String image = '', String flag = ''}) {
-    return Expanded(
-      flex: flex,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              text,
-              style: useZuume 
-                ? const TextStyle(
-                    fontFamily: 'Zuume',
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 16,
-                    color: Colors.black,
-                  )
-                : GoogleFonts.oxanium(
-                    fontSize: isHeader ? 9 : 11,
-                    fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
-                    color: Colors.black,
-                  ),
-            ),
-            if (flag.isNotEmpty) ...[
-              const SizedBox(width: 4),
-              Text(
-                flag,
-                style: GoogleFonts.oxanium(
-                  fontSize: isHeader ? 9 : 11,
-                  fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
-                  color: Colors.black,
-                )
-              )            ],
-            if (image.isNotEmpty) ...[
-              const SizedBox(width: 4),
-              Image.asset(image, width: 18),
-            ]
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrimaryCriteriaRow(String label, Color iconColor, List<bool> dots, String image) {
-    return Row(
-      children: [
-        Image.asset(image, width: 14, height: 14),
-        const SizedBox(width: 6),
-        SizedBox(width: 25, child: Text(label, style: GoogleFonts.oxanium(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black))),
-        const SizedBox(width: 6),
-        ...dots.map((isGreen) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 1.5),
-          child: Icon(Icons.circle, color: isGreen ? Colors.green : Colors.red, size: 12),
-        )),
-      ],
-    );
-  }
-
-  Widget _buildCriteriaRow(String label, Color iconColor, List<bool> dots) {
-    return Row(
-      children: [
-        Icon(Icons.circle, color: iconColor, size: 14),
-        const SizedBox(width: 6),
-        SizedBox(width: 25, child: Text(label, style: GoogleFonts.oxanium(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black))),
-        const SizedBox(width: 6),
-        ...dots.map((isGreen) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 1.5),
-          child: Icon(Icons.circle, color: isGreen ? Colors.green : Colors.red, size: 12),
-        )),
-      ],
-    );
-  }
-
-  Widget _buildBowlerRow(String label, bool isGreen) {
-    return Row(
-      children: [
-        Image.asset(AppImages.bowlerIcon, width: 14, height: 14),
-        const SizedBox(width: 6),
-        Expanded(child: Text(label, style: GoogleFonts.oxanium(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black))),
-        Icon(Icons.circle, color: isGreen ? Colors.green : Colors.red, size: 12),
-      ],
-    );
-  }
-
-  Widget _buildStatBox(String label, String value, String tagImage, List<Color> colors) {
-    return Column(
-      children: [
-        Text(label, style: GoogleFonts.oxanium(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black)),
-        const SizedBox(height: 2),
-        Container(
-          width: 85,
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(tagImage),
-              fit: BoxFit.fill,
-            ),
-          ),
-          child: Center(
-            child: GradientText(
-              title: value,
-              colors: colors,
-              fontSize: 16,
-            ),
-          ),
-        ),
-      ],
-    );
+    return role.split(' ').map((word) => word[0]).join().toUpperCase();
   }
 }

@@ -1,128 +1,98 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AcceleratedRoundIntro extends StatefulWidget {
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_images.dart';
+import '../bloc/game_bloc.dart';
+
+class AcceleratedRoundIntro extends StatelessWidget {
   const AcceleratedRoundIntro({super.key});
 
   @override
-  State<AcceleratedRoundIntro> createState() =>
-      _AcceleratedRoundIntroState();
-}
-
-class _AcceleratedRoundIntroState extends State<AcceleratedRoundIntro>
-    with SingleTickerProviderStateMixin {
-  double _scale = 0.8;
-  double _opacity = 0.0;
-  double _glow = 10;
-
-  @override
-  void initState() {
-    super.initState();
-    _startAnimation();
-  }
-
-  Future<void> _startAnimation() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    if (!mounted) return;
-
-    setState(() {
-      _opacity = 1.0;
-      _scale = 1.2;
-      _glow = 30;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    if (!mounted) return;
-
-    // Pulse effect loop
-    while (mounted) {
-      setState(() {
-        _scale = 1.1;
-        _glow = 15;
-      });
-
-      await Future.delayed(const Duration(milliseconds: 400));
-
-      setState(() {
-        _scale = 1.2;
-        _glow = 30;
-      });
-
-      await Future.delayed(const Duration(milliseconds: 400));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 600),
-        opacity: _opacity,
-        child: AnimatedScale(
-          duration: const Duration(milliseconds: 400),
-          scale: _scale,
-          curve: Curves.easeOutExpo,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    return Column(
+      spacing: 20,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Container(
+          width: 160,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: AssetImage(AppImages.chamberBox),
+            ),
+          ),
+          child: Text(
+            'Round ${(context.read<GameBloc>().state as GameLoaded).gameData.round}',
+            style: GoogleFonts.cinzel(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.borderGold,
+            ),
+          ),
+        ),
+        Container(
+          width: 250,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: AssetImage(AppImages.chamberBox),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // 🔥 Main Title
               Text(
-                "ACCELERATED",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.jost(textStyle: TextStyle(
-                  fontSize: 30,
+                'ACCELERATED SET',
+                style: GoogleFonts.cinzel(
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 4,
-                  color: Colors.redAccent,
-                  shadows: [
-                    Shadow(
-                      blurRadius: _glow,
-                      color: Colors.red,
-                    ),
-                  ],
-                )),
-              ),
-
-              Text(
-                "ROUND",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.jost(textStyle: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 4,
-                  color: Colors.orangeAccent,
-                  shadows: [
-                    Shadow(
-                      blurRadius: _glow,
-                      color: Colors.orange,
-                    ),
-                  ],
-                )),
-              ),
-
-              const SizedBox(height: 20),
-
-              // ⚡ Subtitle
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 800),
-                opacity: _opacity,
-                child: Text(
-                  "Second Chance to Grab Missed Players",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.jost(textStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                    letterSpacing: 1.5,
-                  )),
+                  color: Colors.white,
                 ),
               ),
+              Image.asset(
+                  width: 50,
+                  AppImages.acceleratedRound,
+              )
             ],
           ),
         ),
-      ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            Image.asset(
+              AppImages.goldenStarLine,
+              width: 50,
+            ),
+            Text('  STARTS IN', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+            BlocBuilder<GameBloc, GameState>(
+                builder: (context, state){
+                  if(state is GameLoaded){
+                    return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
+                  }
+                  return SizedBox();
+                }
+            ),
+            Text('..!  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(math.pi),
+              child: Image.asset(
+                AppImages.goldenStarLine,
+                width: 50,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -12,13 +12,14 @@ import '../../domain/entities/auction_player_status_entity.dart';
 import '../bloc/game_bloc.dart';
 
 class PlayerRoundStartsIn extends StatelessWidget {
-  final AuctionPlayerStatusEntity playerData;
+  final List<AuctionPlayerStatusEntity> auctionPlayerList;
   final List<PlayerEntity> playerList;
   final CategoryAndItemsEntity categoryAndItemsEntity;
-  const PlayerRoundStartsIn({super.key, required this.playerList, required this.categoryAndItemsEntity, required this.playerData,});
+  const PlayerRoundStartsIn({super.key, required this.playerList, required this.categoryAndItemsEntity, required this.auctionPlayerList,});
 
   @override
   Widget build(BuildContext context) {
+    final playerData = auctionPlayerList.firstWhere((p) => p.playerAuctionStatus == PlayerAuctionStatusEnum.notShown);
     return Column(
       spacing: 20,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -53,7 +54,8 @@ class PlayerRoundStartsIn extends StatelessWidget {
             ),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            spacing: 20,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 context.read<GameBloc>().getPlayerRoleName(
