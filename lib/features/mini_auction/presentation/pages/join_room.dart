@@ -1,19 +1,27 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/presentation/widgets/back_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../game/presentation/pages/game_screen.dart';
 import '../../../home/presentation/widgets/app_background.dart';
 import 'mini_auction_screen.dart';
 
-class JoinRoom extends StatelessWidget {
+class JoinRoom extends StatefulWidget {
   final MiniAuctionLiteMode mode;
   const JoinRoom({super.key, required this.mode});
 
+  @override
+  State<JoinRoom> createState() => _JoinRoomState();
+}
+
+class _JoinRoomState extends State<JoinRoom> {
+  TextEditingController roomCodeController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
@@ -58,6 +66,7 @@ class JoinRoom extends StatelessWidget {
                       SizedBox(
                         width: 400,
                         child: TextFormField(
+                          controller: roomCodeController,
                           textAlign: TextAlign.center,
                           style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 14, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
                           decoration: const InputDecoration(
@@ -66,31 +75,40 @@ class JoinRoom extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                          width: 400,
-                          height: 50,
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 1, color: AppTheme.borderGold),
-                              borderRadius: BorderRadius.circular(8),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.black,
-                                  AppTheme.cardBlue,
-                                  Colors.black,
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              )
-                          ),
-                          alignment: Alignment.center,
-                          child: Row(
-                            spacing: 20,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(AppImages.enterRoomIcon, width: 30,),
-                              Text('ENTER THE ROOM', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontWeight: FontWeight.bold, fontSize: 16),))
-                            ],
-                          )
+                      GestureDetector(
+                        onTap: (){
+                          context.go('/game', extra: {
+                            "mode": widget.mode,
+                            "matchType": MatchTypeEnum.roomMatch,
+                            "roomCode": roomCodeController.text.trim(),
+                          });
+                        },
+                        child: Container(
+                            width: 400,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 1, color: AppTheme.borderGold),
+                                borderRadius: BorderRadius.circular(8),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black,
+                                    AppTheme.cardBlue,
+                                    Colors.black,
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                )
+                            ),
+                            alignment: Alignment.center,
+                            child: Row(
+                              spacing: 20,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(AppImages.enterRoomIcon, width: 30,),
+                                Text('ENTER THE ROOM', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontWeight: FontWeight.bold, fontSize: 16),))
+                              ],
+                            )
+                        ),
                       ),
                       Container(
                         width: size.width * 0.4,
@@ -113,7 +131,7 @@ class JoinRoom extends StatelessWidget {
                                 color: AppTheme.borderGold,
                               ),
                             ),
-                            Text('  ${mode.miniAuctionItem.name} ROOM  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                            Text('  ${widget.mode.miniAuctionItem.name} ROOM  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                           ],
                         ),
                       ),

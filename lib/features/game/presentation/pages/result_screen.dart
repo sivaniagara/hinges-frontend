@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/core/theme/app_theme.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
+import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 
+import '../../../home/domain/entities/auction_category_item_entity.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../domain/entities/user_status_entity.dart';
 
 class ResultScreen extends StatelessWidget {
-  const ResultScreen({super.key});
+  final String auctionCategoryId;
+  const ResultScreen({super.key, required this.auctionCategoryId});
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +73,17 @@ class ResultScreen extends StatelessWidget {
                       child: BlocBuilder<GameBloc, GameState>(
                         builder: (context, state) {
                           if (state is GameLoaded) {
+                            List<UserStatusEntity> sortedList = List.from(state.gameData.usersStatusList);
+                            sortedList.sort((a, b) {
+                              if (a.rank == 0 && b.rank == 0) return 0;
+                              if (a.rank == 0) return 1;
+                              if (b.rank == 0) return -1;
+                              return a.rank.compareTo(b.rank);
+                            });
                             return ListView.builder(
-                              itemCount: state.gameData.usersStatusList.length,
+                              itemCount: sortedList.length,
                               itemBuilder: (context, index) {
-                                final user = state.gameData.usersStatusList[index];
+                                final user = sortedList[index];
                                 final franchise = getFranchiseEnum(user.teamId);
 
                                 return _AnimatedRow(
@@ -124,6 +135,8 @@ class ResultScreen extends StatelessWidget {
   /// ROW
   Widget _buildRow(BuildContext context, UserStatusEntity user,
       MiniAuctionFranchiseEnum franchise, int index) {
+    final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
+    AuctionCategoryItemEntity auctionCategoryItemEntity = homeLoaded.userData.auctionCategoryItem.firstWhere((e) => e.id == auctionCategoryId);
     final isQualified =
         user.matchWinStatusEnum == MatchWinStatusEnum.qualified;
 
@@ -158,7 +171,7 @@ class ResultScreen extends StatelessWidget {
           boxShadow: isTop3
               ? [
             BoxShadow(
-              color: const Color(0xFFFFD700).withOpacity(0.4),
+              color: AppTheme.borderGold.withValues(alpha: 0.1),
               blurRadius: 14,
               spreadRadius: 1,
             ),
@@ -226,7 +239,7 @@ class ResultScreen extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Center(
-                child: _buildRank(user.rank, isQualified),
+                child: _buildRank(user.rank, isQualified, auctionCategoryItemEntity),
               ),
             ),
           ],
@@ -235,7 +248,7 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRank(int rank, bool isQualified) {
+  Widget _buildRank(int rank, bool isQualified, AuctionCategoryItemEntity auctionCategoryItemEntity) {
     if (!isQualified) {
       return const Text("-", style: TextStyle(color: Colors.white));
     }
@@ -243,28 +256,28 @@ class ResultScreen extends StatelessWidget {
     if (rank == 1) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           Icon(Icons.emoji_events, color: Colors.amber, size: 18),
           SizedBox(width: 4),
-          Text("1  ₹300", style: TextStyle(color: Colors.amber)),
+          Text("1  ₹${auctionCategoryItemEntity.coinsFirstPrize}", style: TextStyle(color: Colors.amber)),
         ],
       );
     } else if (rank == 2) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           Icon(Icons.emoji_events, color: Colors.grey, size: 18),
           SizedBox(width: 4),
-          Text("2  ₹200", style: TextStyle(color: Colors.grey)),
+          Text("2  ₹${auctionCategoryItemEntity.coinsSecondPrize}", style: TextStyle(color: Colors.grey)),
         ],
       );
     } else if (rank == 3) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           Icon(Icons.emoji_events, color: Colors.brown, size: 18),
           SizedBox(width: 4),
-          Text("3  ₹100", style: TextStyle(color: Colors.brown)),
+          Text("3  ₹${auctionCategoryItemEntity.coinsThirdPrize}", style: TextStyle(color: Colors.brown)),
         ],
       );
     }
@@ -276,7 +289,7 @@ class ResultScreen extends StatelessWidget {
     return Expanded(
       flex: flex,
       child: Center(
-        child: Text(text, style: _textStyle()),
+        child: Text(text, style: _textStyle(), maxLines: 2, textAlign: TextAlign.center,),
       ),
     );
   }
@@ -374,9 +387,9 @@ class _ShimmerWrapperState extends State<_ShimmerWrapper>
             return LinearGradient(
               begin: Alignment(-1 + 2 * _controller.value, 0),
               end: Alignment(1 + 2 * _controller.value, 0),
-              colors: const [
+              colors: [
                 Colors.transparent,
-                Color(0xFFFFF3B0),
+                AppTheme.borderGold.withValues(alpha: 0.2),
                 Colors.transparent,
               ],
             ).createShader(rect);

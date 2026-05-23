@@ -1,3 +1,5 @@
+import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
+
 import '../../domain/entities/game_data_entity.dart';
 import '../../domain/entities/user_status_entity.dart';
 import 'user_status_model.dart';
@@ -22,6 +24,8 @@ class GameDataModel extends GameDataEntity {
     required super.teamList,
     required List<UserStatusModel> super.usersStatusList,
     required List<AuctionPlayerStatusModel> super.auctionPlayersStatusList,
+    required super.matchType,
+    required super.roomCode,
   });
 
   static MatchStatusEnum getMatchStatus(String matchStatus) {
@@ -56,6 +60,14 @@ class GameDataModel extends GameDataEntity {
     }
   }
 
+  static MatchTypeEnum getMatchType(String matchType) {
+    if(matchType == 'normal_match'){
+      return MatchTypeEnum.normalMatch;
+    }else{
+      return MatchTypeEnum.roomMatch;
+    }
+  }
+
   factory GameDataModel.fromJson(Map<String, dynamic> json) {
     print("json['users_status_list'] : ${json['users_status_list']}");
     return GameDataModel(
@@ -80,6 +92,8 @@ class GameDataModel extends GameDataEntity {
       auctionPlayersStatusList: (json['auction_players_status_list'] as List? ?? [])
           .map((i) => AuctionPlayerStatusModel.fromJson(i))
           .toList(),
+      matchType: getMatchType(json['match_type']),
+      roomCode: json['room_code'] ?? '',
     );
   }
 
@@ -99,7 +113,9 @@ class GameDataModel extends GameDataEntity {
         teamList: entity.teamList,
         usersStatusList: entity.usersStatusList.map((e) => UserStatusModel.fromEntity(e)).toList(),
         auctionPlayersStatusList: entity.auctionPlayersStatusList.map((e) => AuctionPlayerStatusModel.fromEntity(e)).toList(),
-        round: entity.round
+        round: entity.round,
+        matchType: entity.matchType,
+        roomCode: entity.roomCode
     );
   }
 
@@ -153,5 +169,7 @@ class GameDataModel extends GameDataEntity {
       json['team_list'] != null ? List<String>.from(json['team_list']) : teamList,
       usersStatusList: updatedUsers,
       auctionPlayersStatusList: updatedPlayers,
+      matchType: matchType,
+      roomCode: roomCode,
     );
   }}

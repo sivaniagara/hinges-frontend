@@ -9,11 +9,15 @@ class GetGameDataParam{
   final String userName;
   final String auctionCategoryId;
   final String matchType;
+  final String roomCode;
+  String? hostId;
   GetGameDataParam({
     required this.userId,
     required this.userName,
     required this.auctionCategoryId,
     required this.matchType,
+    required this.roomCode,
+    this.hostId,
   });
 }
 

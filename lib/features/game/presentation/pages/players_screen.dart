@@ -45,12 +45,17 @@ class PlayersScreen extends StatelessWidget {
 
               final userState = context.read<HomeBloc>().state as HomeLoaded;
               List<AuctionPlayerStatusEntity> playersList = state.gameData.auctionPlayersStatusList.where((e) => e.playerRoleId == playerRole).toList();
-              
+              List<AuctionPlayerStatusEntity> availableAndNotShown = playersList.where((e) => e.playerAuctionStatus != PlayerAuctionStatusEnum.sold).toList();
+              List<AuctionPlayerStatusEntity> unSold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notSold).toList();
+              List<AuctionPlayerStatusEntity> sold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.sold).toList();
+              availableAndNotShown = sortByIcpFpIup(availableAndNotShown, context);
+              unSold = sortByIcpFpIup(unSold, context);
+              sold = sortByIcpFpIup(sold, context);
               // Sorting logic: Auction players first, then Unsold, then Sold/Buy
               playersList = [
-                ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.available || e.playerAuctionStatus == PlayerAuctionStatusEnum.notShown),
-                ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notSold),
-                ...playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.buy || e.playerAuctionStatus == PlayerAuctionStatusEnum.sold),
+                ...availableAndNotShown,
+                // ...unSold,
+                ...sold,
               ];
 
               final totalCount = playersList.length;
@@ -180,6 +185,27 @@ class PlayersScreen extends StatelessWidget {
     );
   }
 
+  List<AuctionPlayerStatusEntity> sortByIcpFpIup(List<AuctionPlayerStatusEntity> auctionPlayerList, BuildContext context){
+    final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
+    List<PlayerEntity> playerList = homeLoaded.userData.players;
+    List<AuctionPlayerStatusEntity> icpList = [];
+    List<AuctionPlayerStatusEntity> fpList = [];
+    List<AuctionPlayerStatusEntity> iupList = [];
+    for(var p in playerList){
+      for(var ap in auctionPlayerList){
+        if(p.playerCategory == AppIds.indianCappedPlayerId && p.playerId == ap.playerId){
+          icpList.add(ap);
+        }else if(p.playerCategory == AppIds.foreignPlayerId && p.playerId == ap.playerId){
+          fpList.add(ap);
+        }else if(p.playerCategory == AppIds.indianUnCappedPlayerId && p.playerId == ap.playerId){
+          iupList.add(ap);
+        }
+      }
+
+    }
+    return [...icpList, ...fpList, ...iupList];
+  }
+
   Widget _buildDiamondDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -260,8 +286,11 @@ class PlayersScreen extends StatelessWidget {
     required bool isOdd,
   }) {
     Color categoryColor = const Color(0xFF00BFFF); // ICP blue
-    if (category == 'IUP') categoryColor = const Color(0xFFFF8C00); // IUP orange
-    else if (category == 'FP') categoryColor = const Color(0xFFFF00FF); // FP purple
+    if (category == 'IUP') {
+      categoryColor = const Color(0xFFFF8C00); // IUP orange
+    } else if (category == 'FP') {
+      categoryColor = const Color(0xFFFF00FF);
+    } // FP purple
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),

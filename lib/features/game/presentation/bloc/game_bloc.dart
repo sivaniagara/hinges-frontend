@@ -67,6 +67,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             userName: event.userName,
             auctionCategoryId: event.auctionCategoryId,
             matchType: event.matchType,
+            roomCode: event.roomCode,
+            hostId: event.hostId,
           ),
         );
 
@@ -443,7 +445,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     int bowlerStartingPoint = 10;
     for(int i = 0; i < currentState.gameData.auctionPlayersStatusList.length;i++){
       final player = currentState.gameData.auctionPlayersStatusList[i];
-      if(player.teamId == getTeamId(userId)){
+      if(player.teamId == getTeamId(userId) && (player.playerAuctionStatus == PlayerAuctionStatusEnum.buy || player.playerAuctionStatus == PlayerAuctionStatusEnum.sold)){
         if(player.playerRoleId == batsmanRoleId){
           batsmanList.add(player);
         }else if(player.playerRoleId == bowlerRoleId){
@@ -652,7 +654,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   String formatPriceShort(
       num rupees, {
-        int maxDecimalsForCr = 1,   // most common choice
+        int maxDecimalsForCr = 2,   // most common choice
         int maxDecimalsForLakh = 1,
         bool removeTrailingZeros = true,
       }) {
@@ -683,4 +685,5 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             (Match m) => '${m[1]},',
       );
     }
-  }}
+  }
+}

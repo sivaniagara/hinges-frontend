@@ -23,10 +23,10 @@ class AppImages {
   static const String megaAuctionLite = '${base}mega_auction_lite.png';
   static const String miniAuctionPro = '${base}mini_auction_pro.png';
   static const String megaAuctionPro = '${base}mega_auction_pro.png';
-  static const String classic = '${base}classic.png';
-  static const String premium = '${base}premium.png';
-  static const String elite = '${base}elite.png';
-  static const String royal = '${base}royal.png';
+  static const String miniAuctionLiteClassic = '${base}classic.png';
+  static const String miniAuctionLitePremium = '${base}premium.png';
+  static const String miniAuctionLiteElite = '${base}elite.png';
+  static const String miniAuctionLiteRoyal = '${base}royal.png';
   static const String mandalaPattern = '${base}mandala_pattern.png';
   static const String goldenRingStump = '${base}golden_ring_stump.png';
   static const String goldenStarLine = '${base}golden_star_line.png';

@@ -20,6 +20,8 @@ class GameRepositoryImpl implements GameRepository {
         "userName": params.userName,
         "auctionCategoryId": params.auctionCategoryId,
         "matchType": params.matchType,
+        "roomCode": params.roomCode,
+        "hostId": params.hostId,
       });
       return Right(result);
     } catch (e) {

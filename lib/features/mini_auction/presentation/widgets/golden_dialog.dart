@@ -54,7 +54,7 @@ class GoldenDialog extends StatelessWidget {
               /// 🔹 ENTRY FEES
               _infoRow(
                 title: "ENTRY FEES",
-                value: "100 COINS",
+                value: "${miniAuctionItem.fee} COINS",
               ),
 
               const SizedBox(height: 10),
@@ -63,17 +63,17 @@ class GoldenDialog extends StatelessWidget {
               _prizeRow(
                 trophy: AppImages.firstPrize,
                 title: "1ST PRIZE",
-                value: "300 COINS",
+                value: "${miniAuctionItem.firstPrize} COINS",
               ),
               _prizeRow(
                 trophy: AppImages.secondPrize,
                 title: "2ND PRIZE",
-                value: "150 COINS",
+                value: "${miniAuctionItem.secondPrize} COINS",
               ),
               _prizeRow(
                 trophy: AppImages.thirdPrize,
                 title: "3RD PRIZE",
-                value: "50 COINS",
+                value: "${miniAuctionItem.thirdPrize} COINS",
               ),
 
               const SizedBox(height: 15),

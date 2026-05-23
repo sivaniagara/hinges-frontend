@@ -10,16 +10,20 @@ class FetchGameData extends GameEvent {
   final String userName;
   final String auctionCategoryId;
   final String matchType;
+  final String roomCode;
+  String? hostId;
 
   FetchGameData({
     required this.userId,
     required this.userName,
     required this.auctionCategoryId,
     required this.matchType,
+    this.roomCode = '',
+    this.hostId,
   });
 
   @override
-  List<Object?> get props => [userId, auctionCategoryId];
+  List<Object?> get props => [userId, userName, auctionCategoryId, matchType, roomCode, hostId];
 }
 
 class SendGameMessage extends GameEvent {
@@ -48,7 +52,6 @@ class BidAuctionPlayer extends GameEvent {
   @override
   List<Object?> get props => [userId];
 }
-
 
 class GameCountdownTick extends GameEvent {}
 class AuctionPlayerTick extends GameEvent {}

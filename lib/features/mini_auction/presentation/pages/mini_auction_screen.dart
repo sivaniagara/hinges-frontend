@@ -5,12 +5,15 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:hinges_frontend/core/presentation/widgets/icon_with_circular_border.dart';
+import 'package:hinges_frontend/core/utils/app_ids.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/widgets/top_user_bar.dart';
 import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.dart';
 import 'package:hinges_frontend/core/theme/app_theme.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 
+import '../../../game/presentation/pages/game_screen.dart';
+import '../../../home/domain/entities/auction_category_item_entity.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../../../home/presentation/widgets/app_background.dart';
@@ -19,15 +22,23 @@ import '../widgets/golden_dialog.dart';
 /// ================= MODEL =================
 enum MiniAuctionLiteModeEnum {classic, premium, elite, royal}
 class MiniAuctionItem {
+  final String id;
   final String image;
   final int fee;
+  final int firstPrize;
+  final int secondPrize;
+  final int thirdPrize;
   final String name;
   final bool locked;
   final MiniAuctionLiteModeEnum miniAuctionLiteModeEnum;
 
   const MiniAuctionItem({
+    required this.id,
     required this.image,
     required this.fee,
+    required this.firstPrize,
+    required this.secondPrize,
+    required this.thirdPrize,
     required this.name,
     required this.locked,
     required this.miniAuctionLiteModeEnum,
@@ -42,7 +53,8 @@ class MiniAuctionLiteMode {
 /// ================= SCREEN =================
 
 class MiniAuctionScreen extends StatefulWidget {
-  const MiniAuctionScreen({super.key});
+  final AuctionItem auctionItem;
+  const   MiniAuctionScreen({super.key, required this.auctionItem});
 
   @override
   State<MiniAuctionScreen> createState() => _MiniAuctionScreenState();
@@ -51,37 +63,7 @@ class MiniAuctionScreen extends StatefulWidget {
 class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
   late UserDataEntity userData;
   MiniAuctionLiteMode? selectedMode;
-
-  static const List<MiniAuctionItem> items = [
-    MiniAuctionItem(
-        image: AppImages.classic,
-        fee: 100, 
-        name: "CLASSIC",
-        locked: false, 
-        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.classic
-    ),
-    MiniAuctionItem(
-        image: AppImages.premium,
-        fee: 250,
-        name: "PREMIUM", 
-        locked: true, 
-        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.premium
-    ),
-    MiniAuctionItem(
-        image: AppImages.elite,
-        fee: 500, 
-        name: "ELITE",
-        locked: true,
-        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.elite
-    ),
-    MiniAuctionItem(
-        image: AppImages.royal,
-        fee: 1000, 
-        name: "ROYAL", 
-        locked: true,
-        miniAuctionLiteModeEnum: MiniAuctionLiteModeEnum.royal
-    ),
-  ];
+  List<MiniAuctionItem> items = [];
 
   @override
   void initState() {
@@ -97,6 +79,29 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
     final state = context.read<HomeBloc>().state;
     if (state is HomeLoaded) {
       userData = state.userData;
+      if(widget.auctionItem.auctionModeEnum == AuctionModeEnum.miniAuctionLite){
+        items = userData.categoryAndItsItem.miniAuctionLiteCategoryId.map((miniAuctionLiteItem) {
+          AuctionCategoryItemEntity auctionCategoryItemEntity = userData.auctionCategoryItem.firstWhere((e) => e.categoryItemId == miniAuctionLiteItem.id);
+          final imageAndMode = {
+            AppIds.miniAuctionLiteClassicId: (AppImages.miniAuctionLiteClassic, MiniAuctionLiteModeEnum.classic, false),
+            AppIds.miniAuctionLitePremiumId: (AppImages.miniAuctionLitePremium, MiniAuctionLiteModeEnum.premium, !(userData.miniAuctionLiteClassicPlayed >= 50)),
+            AppIds.miniAuctionLiteEliteId: (AppImages.miniAuctionLiteElite, MiniAuctionLiteModeEnum.elite, !(userData.miniAuctionLitePremiumPlayed >= 50)),
+            AppIds.miniAuctionLiteRoyalId: (AppImages.miniAuctionLiteRoyal, MiniAuctionLiteModeEnum.royal, !(userData.miniAuctionLiteElitePlayed >= 50)),
+          };
+          final id = auctionCategoryItemEntity.id;
+          return MiniAuctionItem(
+              id: id,
+              image: imageAndMode[id]!.$1,
+              fee: auctionCategoryItemEntity.coinsGameFees,
+              firstPrize: auctionCategoryItemEntity.coinsFirstPrize,
+              secondPrize: auctionCategoryItemEntity.coinsSecondPrize,
+              thirdPrize: auctionCategoryItemEntity.coinsThirdPrize,
+              name: miniAuctionLiteItem.categoryItemName,
+              locked: imageAndMode[id]!.$3,
+              miniAuctionLiteModeEnum: imageAndMode[id]!.$2
+          );
+        }).toList();
+      }
     }
   }
 
@@ -253,7 +258,11 @@ class _ModeSelection extends StatelessWidget {
           children: [
             GameCard(
               image: AppImages.playOnline,
-              onTap: () => context.go('/game', extra: mode),
+              onTap: () => context.go('/game', extra: {
+                "mode": mode,
+                "matchType": MatchTypeEnum.normalMatch,
+                "id": mode.miniAuctionItem.id
+              }),
               size: size,
             ),
             const SizedBox(width: 20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,6 +12,8 @@ import '../../../../core/utils/app_images.dart';
 
 import '../../../../core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import '../../../game/presentation/bloc/game_bloc.dart';
+import '../../../game/presentation/pages/game_screen.dart';
+import '../../../home/presentation/bloc/home_bloc.dart';
 import '../../../home/presentation/widgets/app_background.dart';
 import 'mini_auction_screen.dart';
 
@@ -320,38 +323,51 @@ class CreateRoom extends StatelessWidget {
                       ),
 
                       /// ENTER ROOM
-                      Container(
-                        width: 400,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 1, color: AppTheme.borderGold),
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black,
-                              AppTheme.cardBlue,
-                              Colors.black,
+                      GestureDetector(
+                        onTap: (){
+                          final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
+                          if(context.read<GameBloc>().state is RoomCodeLoaded){
+                            context.go('/game', extra: {
+                              "mode": mode,
+                              "matchType": MatchTypeEnum.roomMatch,
+                              "roomCode": (context.read<GameBloc>().state as RoomCodeLoaded).roomCode,
+                              "hostId": homeLoaded.userData.userId
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: 400,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 1, color: AppTheme.borderGold),
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black,
+                                AppTheme.cardBlue,
+                                Colors.black,
+                              ],
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Row(
+                            spacing: 20,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(AppImages.enterRoomIcon, width: 30),
+                              Text(
+                                'ENTER THE ROOM',
+                                style: GoogleFonts.cinzel(
+                                  textStyle: const TextStyle(
+                                    color: AppTheme.borderGold,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
                             ],
                           ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Row(
-                          spacing: 20,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(AppImages.enterRoomIcon, width: 30),
-                            Text(
-                              'ENTER THE ROOM',
-                              style: GoogleFonts.cinzel(
-                                textStyle: const TextStyle(
-                                  color: AppTheme.borderGold,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            )
-                          ],
                         ),
                       ),
 

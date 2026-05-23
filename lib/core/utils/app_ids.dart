@@ -16,4 +16,11 @@ class AppIds{
   static const String rightArmSpin = '6881c20536213beb0017bea9';
   static const String leftArmFast = '6881c21036213beb0017beaa';
   static const String leftArmSpin = '6881c21836213beb0017beab';
+
+
+  // mini auction mode
+  static const String miniAuctionLiteClassicId = '69845f1753d444b0e140dc35';
+  static const String miniAuctionLitePremiumId = '69d4921424f9d81793bfc413';
+  static const String miniAuctionLiteEliteId = '69d4923424f9d81793bfc414';
+  static const String miniAuctionLiteRoyalId = '69d4924824f9d81793bfc415';
 }

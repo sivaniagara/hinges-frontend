@@ -19,6 +19,10 @@ class UserDataEntity extends Equatable {
   final int firstPrice;
   final int secondPrice;
   final int thirdPrice;
+  final int miniAuctionLiteClassicPlayed;
+  final int miniAuctionLitePremiumPlayed;
+  final int miniAuctionLiteElitePlayed;
+  final int miniAuctionLiteRoyalPlayed;
   final CategoryAndItemsEntity categoryAndItsItem;
   final List<AuctionCategoryItemEntity> auctionCategoryItem;
   final List<PlayerEntity> players;
@@ -39,6 +43,10 @@ class UserDataEntity extends Equatable {
     required this.firstPrice,
     required this.secondPrice,
     required this.thirdPrice,
+    required this.miniAuctionLiteClassicPlayed,
+    required this.miniAuctionLitePremiumPlayed,
+    required this.miniAuctionLiteElitePlayed,
+    required this.miniAuctionLiteRoyalPlayed,
     required this.categoryAndItsItem,
     required this.auctionCategoryItem,
     required this.players,
@@ -61,6 +69,10 @@ class UserDataEntity extends Equatable {
         firstPrice,
         secondPrice,
         thirdPrice,
+        miniAuctionLiteClassicPlayed,
+        miniAuctionLitePremiumPlayed,
+        miniAuctionLiteElitePlayed,
+        miniAuctionLiteRoyalPlayed,
         categoryAndItsItem,
         auctionCategoryItem,
         players,

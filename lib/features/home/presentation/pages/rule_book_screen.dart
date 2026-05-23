@@ -61,7 +61,7 @@ class RuleBookScreen extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () => context.pop(),
                         child: Image.asset(
-                          AppImages.homeMenuIcon,
+                          AppImages.backMenuIcon,
                           width: 60,
                         ),
                       ),
@@ -145,7 +145,7 @@ class RuleBookScreen extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Image.asset(
-                AppImages.ruleBook,
+                AppImages.ruleBookMenuIcon,
                 fit: BoxFit.contain,
               ),
             ),

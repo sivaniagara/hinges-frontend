@@ -53,7 +53,8 @@ extension MatchTypeExtension on MatchTypeEnum {
 
 class GameScreen extends StatefulWidget {
   final MiniAuctionLiteMode mode;
-  const GameScreen({super.key, required this.mode});
+  final String auctionCategoryId;
+  const GameScreen({super.key, required this.mode, required this.auctionCategoryId});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -85,7 +86,7 @@ class _GameScreenState extends State<GameScreen> {
         selector: (state) => state is GameLoaded ? state.gameData.matchStatus : null,
         builder: (context, matchStatus) {
           if (matchStatus == MatchStatusEnum.finished) {
-            return const ResultScreen();
+            return ResultScreen(auctionCategoryId: widget.auctionCategoryId,);
           }
           if (matchStatus == MatchStatusEnum.notStarted || matchStatus == MatchStatusEnum.initialMatch) {
             return GameExpireWidget(mode: widget.mode);
@@ -262,7 +263,7 @@ class _GameScreenState extends State<GameScreen> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildStatColumn('BASE PRICE', state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].basePrice),
+        _buildStatColumn('BASE PRICE', context.read<GameBloc>().formatPriceShort(state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].basePrice)),
         _buildVerticalDivider(),
         _buildStatColumn('RATING', state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].baseRating.toString()),
         _buildVerticalDivider(),
@@ -374,7 +375,7 @@ class _GameScreenState extends State<GameScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('BASE PRISE',
+        Text('CURRENT PRICE',
             style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
         Row(
           children: [
@@ -407,24 +408,50 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildTeamRow(GameLoaded state, GameDataEntity gameData) {
-    return SizedBox(
-      height: 100,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(5, (index) {
-          final glow = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].teamId == gameData.teamList[index];
-          return _buildTeamCard(
-            gameData.usersStatusList[index].userName,
-            context.read<GameBloc>().getFranchise(gameData.usersStatusList, gameData.teamList, gameData.usersStatusList[index].userId).shortName(),
-            context.read<GameBloc>().getFranchise(gameData.usersStatusList, gameData.teamList, gameData.usersStatusList[index].userId).image(),
-            glow,
-          );
-        }),
+    final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
+    List<UserStatusEntity> otherUser = [];
+    List<UserStatusEntity> currentUser = [];
+    List<String> otherTeam = [];
+    List<String> currentTeam = [];
+    for(var user = 0; user < gameData.usersStatusList.length;user++){
+      if(gameData.usersStatusList[user].userId != homeLoaded.userData.userId){
+        otherUser.add(gameData.usersStatusList[user]);
+        otherTeam.add(gameData.teamList[user]);
+      }else{
+        currentUser.add(gameData.usersStatusList[user]);
+        currentTeam.add(gameData.teamList[user]);
+      }
+    }
+    List<UserStatusEntity> userList = [...otherUser, ...currentUser];
+    List<String> teamList = [...otherTeam, ...currentTeam];
+
+    return GestureDetector(
+      child: SizedBox(
+        height: 100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(5, (index) {
+            final glow = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].teamId == teamList[index];
+            return GestureDetector(
+              onTap: (){
+                print("userList[index].userId : ${userList[index].userId}");
+                context.push('/game/mySquad?userId=${userList[index].userId}');
+              },
+              child: _buildTeamCard(
+                  userList[index].userName,
+                  context.read<GameBloc>().getFranchise(userList, teamList, userList[index].userId).shortName(),
+                  context.read<GameBloc>().getFranchise(userList, teamList, userList[index].userId).image(),
+                  glow,
+                  userList[index].userId
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
 
-  Widget _buildTeamCard(String userName, String franchiseName, String franchiseImage, bool glow) {
+  Widget _buildTeamCard(String userName, String franchiseName, String franchiseImage, bool glow, String userId) {
     return Column(
       spacing: 10,
       children: [

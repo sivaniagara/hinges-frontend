@@ -7,7 +7,6 @@ import 'package:hinges_frontend/features/home/presentation/widgets/top_user_bar.
 import 'package:hinges_frontend/features/login/presentation/widgets/shared_decorations.dart';
 
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
-import '../../../../core/presentation/widgets/shimmer_widget.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
 
@@ -15,12 +14,21 @@ import '../../../login/presentation/bloc/user_auth_bloc.dart';
 import '../../domain/entities/user_data_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/app_background.dart';
-import '../widgets/auction_card_shimmer.dart';
 
-import '../widgets/currency_bar.dart';
-import 'profile_screen.dart';
-import 'setting_screen.dart';
-import 'shop_screen.dart';
+enum AuctionModeEnum{miniAuctionLite, miniAuctionPro, megaAuctionLite, megaAuctionPro}
+class AuctionItem {
+  final String image;
+  final String route;
+  final bool locked;
+  final AuctionModeEnum auctionModeEnum;
+
+  const AuctionItem({
+    required this.image,
+    required this.route,
+    required this.locked,
+    required this.auctionModeEnum,
+  });
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,119 +69,155 @@ class _HomeScreenState extends State<HomeScreen> {
         state is HomeLoaded ? state.userData : null;
 
         final auctionItems = [
-          {
-            "image": AppImages.miniAuctionLite,
-            "locked": false,
-            "route": "/miniAuction",
-          },
-          {
-            "image": AppImages.miniAuctionPro,
-            "locked": true,
-          },
-          {
-            "image": AppImages.megaAuctionLite,
-            "locked": true,
-          },
-          {
-            "image": AppImages.megaAuctionPro,
-            "locked": true,
-          },
+          AuctionItem(
+              image: AppImages.miniAuctionLite,
+              route: "/miniAuctionLite",
+              locked: false,
+              auctionModeEnum: AuctionModeEnum.miniAuctionLite
+          ),
+          AuctionItem(
+              image: AppImages.miniAuctionPro,
+              route: "",
+              locked: true,
+              auctionModeEnum: AuctionModeEnum.miniAuctionPro
+          ),
+          AuctionItem(
+              image: AppImages.megaAuctionLite,
+              route: "",
+              locked: true,
+              auctionModeEnum: AuctionModeEnum.megaAuctionLite
+          ),
+          AuctionItem(
+              image: AppImages.megaAuctionPro,
+              route: "",
+              locked: true,
+              auctionModeEnum: AuctionModeEnum.megaAuctionPro
+          ),
         ];
 
         return AdaptiveStatusBar(
           color: Theme.of(context).colorScheme.surface,
           child: AppBackground(
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: Column(
-                children: [
-                  _buildTopBar(
-                    context: context,
-                    loading: isLoading,
-                    userData: userData,
-                  ),
+            child: Stack(
+              children: [
+                /// ✅ YOUR ORIGINAL UI (UNCHANGED)
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: Column(
+                    children: [
+                      _buildTopBar(
+                        context: context,
+                        loading: isLoading,
+                        userData: userData,
+                      ),
 
-                  /// MAIN CONTENT
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        /// TITLE
-                        Column(
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
-                              spacing: 10,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Column(
                               children: [
+                                Row(
+                                  spacing: 10,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      AppImages.indianBiddingLeague,
+                                      height: size.height * 0.15,
+                                    ),
+                                    Text(
+                                      'INDIAN BIDDING LEAGUE',
+                                      style: GoogleFonts.cinzel(
+                                        fontSize: size.height * 0.07,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.borderGold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 Image.asset(
-                                  AppImages.indianBiddingLeague,
-                                  height: size.height * 0.15,
+                                  AppImages.goldenCrownLine,
+                                  width: 200,
+                                  height: 30,
                                 ),
-                                Text(
-                                  'INDIAN BIDDING LEAGUE',
-                                  style: GoogleFonts.cinzel(
-                                    fontSize: size.height * 0.07,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.borderGold,
-                                  ),
-                                ),
+                                const StarLine(fontSize: 16),
                               ],
                             ),
-                            Image.asset(
-                              AppImages.goldenCrownLine,
-                              width: 200,
-                              height: 30,
+
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: auctionItems.map((item) {
+                                return AuctionCard(
+                                  image: item.image,
+                                  locked: item.locked,
+                                  onTap: () {
+                                    if (!item.locked &&
+                                        item.route.isNotEmpty) {
+                                      context.push(item.route, extra:  item);
+                                    }
+                                  },
+                                );
+                              }).toList(),
                             ),
-                            StarLine(fontSize: 16,),
                           ],
                         ),
+                      ),
 
-                        /// AUCTION CARDS
-                        Row(
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
                           mainAxisAlignment:
-                          MainAxisAlignment.spaceEvenly,
-                          children: auctionItems.map((item) {
-                            return AuctionCard(
-                              image: item["image"] as String,
-                              locked: item["locked"] as bool,
+                          MainAxisAlignment.spaceBetween,
+                          children: [
+                            BottomButton(
+                              icon: AppImages.ruleBookMenuIcon,
+                              title: "RULE BOOK",
                               onTap: () {
-                                if (!(item["locked"] as bool) &&
-                                    item["route"] != null) {
-                                  context.push(
-                                      item["route"] as String);
-                                }
+                                context.push('/ruleBook');
                               },
-                            );
-                          }).toList(),
+                            ),
+                            BottomButton(
+                              icon: AppImages.exitMenuIcon,
+                              title: "EXIT",
+                              onTap: () {},
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  /// BOTTOM BAR
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                      children: [
-                        BottomButton(
-                          icon: AppImages.ruleBookMenuIcon,
-                          title: "RULE BOOK",
-                          onTap:  () {
-                            context.push('/ruleBook');
-                          },
-                        ),
-                        BottomButton(
-                          icon: AppImages.exitMenuIcon,
-                          title: "EXIT",
-                          onTap: () {  },
-                        ),
-                      ],
+                /// ✅ LOADING OVERLAY
+                if (state is HomeLoading || state is HomeInitial)
+                  const Positioned.fill(child: GameLoadingOverlay()),
+
+                /// ❌ ERROR OVERLAY
+                if (state is HomeError)
+                  Positioned.fill(
+                    child: GameErrorOverlay(
+                      message: state.message,
+                      onRetry: () {
+                        final authState =
+                            context.read<UserAuthBloc>().state;
+
+                        String uid = '';
+                        if (authState is EmailAuthenticated) {
+                          uid = authState.user.uid;
+                        } else if (authState is GoogleAuthenticated) {
+                          uid = authState.user.uid;
+                        } else if (authState is GuestAuthenticated) {
+                          uid = authState.user.uid;
+                        }
+
+                        context
+                            .read<HomeBloc>()
+                            .add(FetchUserData(uid));
+                      },
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
           ),
         );
@@ -381,6 +425,70 @@ class BottomButton extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// ================= LOADING OVERLAY =================
+class GameLoadingOverlay extends StatelessWidget {
+  const GameLoadingOverlay({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black.withOpacity(0.6),
+      child: const Center(
+        child: CircularProgressIndicator(color: Colors.amber),
+      ),
+    );
+  }
+}
+
+/// ================= ERROR OVERLAY =================
+class GameErrorOverlay extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const GameErrorOverlay({
+    super.key,
+    required this.message,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Container(
+        color: Colors.black.withOpacity(0.7),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.wifi_off, color: Colors.red, size: 60),
+              const SizedBox(height: 10),
+              Text(
+                "CONNECTION LOST",
+                style: TextStyle(
+                  color: AppTheme.borderGold,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                style: const TextStyle(color: Colors.white70),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: onRetry,
+                child: const Text("RETRY"),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

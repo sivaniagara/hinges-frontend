@@ -206,7 +206,7 @@ class MySquadScreen extends StatelessWidget {
                         content: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildNumberedSquaresRow('ICP', getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 5)),
+                            _buildNumberedSquaresRow('ICP', getPlayerCategoryStatusList(mySquad, AppIds.indianCappedPlayerId, userState.userData.players, 5)),
                             _buildNumberedSquaresRow('FP', getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, userState.userData.players, 4)),
                             _buildNumberedSquaresRow('IUP', getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 3)),
                           ],
@@ -493,6 +493,7 @@ class MySquadScreen extends StatelessWidget {
         }
       }
     }
+    print("total : $total");
     return List.generate(totalCount, (index) => index < total);
   }
 

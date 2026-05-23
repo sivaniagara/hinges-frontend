@@ -151,8 +151,11 @@ final router = GoRouter(
       builder: (context, state) => const LoadingScreen(),
     ),
     GoRoute(
-      path: '/miniAuction',
-      builder: (context, state) => MiniAuctionScreen(),
+      path: '/miniAuctionLite',
+      builder: (context, state) {
+        final mode = state.extra as AuctionItem;
+        return MiniAuctionScreen(auctionItem: mode,);
+      },
     ),
     GoRoute(
       path: '/playWithFriends',
@@ -182,50 +185,90 @@ final router = GoRouter(
       builder: (context, state, child) {
         final homeData = context.read<HomeBloc>().state as HomeLoaded;
 
+        // ✅ Only create GameBloc ONCE for all /game routes
         return BlocProvider(
-          create: (_) => sl<GameBloc>()
-            ..add(
-              FetchGameData(
-                userId: homeData.userData.userId,
-                userName: homeData.userData.userName,
-                auctionCategoryId:
-                homeData.userData.auctionCategoryItem.first.id,
-                matchType: MatchTypeEnum.normalMatch.value,
-              ),
-            ),
+          create: (_) {
+            final bloc = sl<GameBloc>();
+
+            // ✅ Only trigger FetchGameData when entering /game root
+            if (state.uri.toString().startsWith('/game')) {
+              final extra = state.extra as Map<String, dynamic>?;
+
+              if (extra != null) {
+                bloc.add(
+                  FetchGameData(
+                    userId: homeData.userData.userId,
+                    userName: homeData.userData.userName,
+                    auctionCategoryId: extra['id'],
+                    matchType:
+                    (extra['matchType'] as MatchTypeEnum).value,
+                    roomCode: extra['roomCode'] ?? '',
+                    hostId: extra['hostId'],
+                  ),
+                );
+              }
+            }
+
+            return bloc;
+          },
           child: child,
         );
       },
       routes: [
+        /// =========================
+        /// 🎮 GAME MAIN
+        /// =========================
         GoRoute(
           path: '/game',
           builder: (context, state) {
-            final mode = state.extra as MiniAuctionLiteMode;
-            return GameScreen(mode: mode,);
+            final extra = state.extra as Map<String, dynamic>;
+
+            return GameScreen(
+              mode: extra["mode"] as MiniAuctionLiteMode, auctionCategoryId: extra["id"],
+            );
           },
         ),
+
+        /// =========================
+        /// 👥 MY SQUAD
+        /// =========================
         GoRoute(
           path: '/game/mySquad',
           builder: (context, state) {
             final userId = state.uri.queryParameters['userId'] ?? '';
+
             return MySquadScreen(userId: userId);
           },
         ),
+
+        /// =========================
+        /// 🧑‍🤝‍🧑 PLAYER LIST
+        /// =========================
         GoRoute(
           path: '/game/playerList',
           builder: (context, state) {
             final userId = state.uri.queryParameters['userId'] ?? '';
-            final playerRoleId = state.uri.queryParameters['playerRole'] ?? '';
-            final playerRoleName = state.uri.queryParameters['playerRoleName'] ?? '';
-            return PlayersScreen(userId: userId, playerRole: playerRoleId,playerRoleName: playerRoleName,);
+            final playerRoleId =
+                state.uri.queryParameters['playerRole'] ?? '';
+            final playerRoleName =
+                state.uri.queryParameters['playerRoleName'] ?? '';
+
+            return PlayersScreen(
+              userId: userId,
+              playerRole: playerRoleId,
+              playerRoleName: playerRoleName,
+            );
           },
         ),
+
+        /// =========================
+        /// 📊 POINTS TABLE
+        /// =========================
         GoRoute(
           path: '/game/pointsTable',
           builder: (context, state) => const PointsTableScreen(),
         ),
       ],
-    ),
-
+    )
   ],
 );

@@ -35,6 +35,32 @@ class GameExpireWidget extends StatelessWidget {
                   final isStarted = state.gameData.matchStatus == MatchStatusEnum.initialMatch;
                   return Stack(
                     children: [
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text('GAME EXPIRE', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+                              Container(
+                                decoration: const BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
+                                width: 60,
+                                height: 60,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('${state.remainingSecondsToStart.toInt()}',
+                                        style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
+                                    Text('SEC', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
                       SizedBox(
                         width: size.width,
                         height: size.height,

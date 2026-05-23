@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
 import '../../data/models/auction_player_status_model.dart';
 import '../../data/models/user_status_model.dart';
 import 'user_status_entity.dart';
@@ -28,6 +29,8 @@ class GameDataEntity extends Equatable {
   final String matchId;
   final String auctionCategoryId;
   final MatchStatusEnum matchStatus;
+  final MatchTypeEnum matchType;
+  final String roomCode;
   final BreakStatusEnum breakStatus;
   final double gameCreatedAt;
   final int round;
@@ -47,6 +50,8 @@ class GameDataEntity extends Equatable {
     required this.matchId,
     required this.auctionCategoryId,
     required this.matchStatus,
+    required this.matchType,
+    this.roomCode = '',
     required this.breakStatus,
     required this.gameCreatedAt,
     required this.round,
@@ -69,6 +74,8 @@ class GameDataEntity extends Equatable {
         matchId,
         auctionCategoryId,
         matchStatus,
+        matchType,
+        roomCode,
         breakStatus,
         gameCreatedAt,
         round,

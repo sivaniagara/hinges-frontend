@@ -18,6 +18,7 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
   Future<GameDataModel> getGameData(Map<String, dynamic> jsonData) async {
     try{
       print("going to get gameData.....");
+      print("jsonData => ${jsonData}");
       final response = await httpService.post(
           GameUrls.joinMatch,
           body: {
@@ -25,6 +26,8 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
             "user_name" : jsonData['userName'],
             "auction_category_id": jsonData['auctionCategoryId'],
             "match_type": jsonData['matchType'],
+            "room_code": jsonData['roomCode'],
+            "host_id": jsonData['hostId'],
           }
       );
 
