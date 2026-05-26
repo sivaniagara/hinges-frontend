@@ -53,6 +53,18 @@ class BidAuctionPlayer extends GameEvent {
   List<Object?> get props => [userId];
 }
 
+class ReactEvent extends GameEvent {
+  final String userId;
+  final String message;
+
+  ReactEvent(this.userId, this.message);
+
+  @override
+  List<Object?> get props => [userId, message];
+}
+
+class MessageShowed extends GameEvent {}
+
 class GameCountdownTick extends GameEvent {}
 class AuctionPlayerTick extends GameEvent {}
 class BreakTick extends GameEvent {}

@@ -73,8 +73,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         );
 
         await result.fold(
-              (failure) async => emit(GameError(failure.message)),
+              (failure) async {
+                print("FetchGameData failure : ${failure.message}");
+                emit(GameError(failure.message));
+              },
               (gameData) async {
+                print("gameData  ${gameData.lastMessage}");
             _matchId = gameData.matchId;
             final wsUrl = GameUrls.connectMatch
                 .replaceFirst(':matchId', gameData.matchId);
@@ -217,6 +221,33 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       };
       add(SendGameMessage(dataToSend));
     });
+
+    on<ReactEvent>((event, emit){
+      print("event.message : ${event.message.length}");
+      Map<String, dynamic> dataToSend = {
+        'user_id': event.userId,
+        'message': event.message,
+        'payload_code': 300
+      };
+      add(SendGameMessage(dataToSend));
+    });
+
+    on<MessageShowed>((event, emit){
+      if(state is! GameLoaded) return;
+      final currentState = state as GameLoaded;
+      
+      final updatedGameData = currentState.gameData.copyWith(
+        lastMessage: currentState.gameData.lastMessage.copyWith(isShowed: true),
+      );
+
+      emit(
+          currentState.copyWith(
+            gameData: updatedGameData,
+          )
+      );
+    });
+    
+    
 
     // ================= SEND MESSAGE =================
     on<SendGameMessage>((event, emit) {

@@ -24,6 +24,7 @@ class GameDataModel extends GameDataEntity {
     required super.teamList,
     required List<UserStatusModel> super.usersStatusList,
     required List<AuctionPlayerStatusModel> super.auctionPlayersStatusList,
+    required super.lastMessage,
     required super.matchType,
     required super.roomCode,
   });
@@ -94,6 +95,11 @@ class GameDataModel extends GameDataEntity {
           .toList(),
       matchType: getMatchType(json['match_type']),
       roomCode: json['room_code'] ?? '',
+      lastMessage: LastMessageModel(
+          userId: '',
+          message: '',
+          isShowed: true
+      ),
     );
   }
 
@@ -115,7 +121,8 @@ class GameDataModel extends GameDataEntity {
         auctionPlayersStatusList: entity.auctionPlayersStatusList.map((e) => AuctionPlayerStatusModel.fromEntity(e)).toList(),
         round: entity.round,
         matchType: entity.matchType,
-        roomCode: entity.roomCode
+        roomCode: entity.roomCode,
+        lastMessage: entity.lastMessage
     );
   }
 
@@ -171,5 +178,23 @@ class GameDataModel extends GameDataEntity {
       auctionPlayersStatusList: updatedPlayers,
       matchType: matchType,
       roomCode: roomCode,
+      lastMessage: json['last_message'] == null ? lastMessage : LastMessageModel.fromJson(json['last_message']),
     );
-  }}
+  }
+}
+
+class LastMessageModel extends LastMessageEntity{
+  const LastMessageModel({
+    required super.userId,
+    required super.message,
+    required super.isShowed,
+  });
+
+  factory LastMessageModel.fromJson(Map<String, dynamic> json){
+    return LastMessageModel(
+        userId: json['user_id'],
+        message: json['message'],
+        isShowed: false
+    );
+  }
+}

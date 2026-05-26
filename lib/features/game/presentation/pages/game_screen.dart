@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/player_round_starts_in.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/player_set_break_widget.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/emoji_button.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/quick_reaction_button.dart';
 import 'package:square_progress_indicator/square_progress_indicator.dart';
 
 import 'package:hinges_frontend/core/theme/app_theme.dart';
@@ -37,6 +39,7 @@ import 'package:hinges_frontend/features/game/domain/entities/auction_player_sta
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/domain/entities/user_status_entity.dart';
 import '../bloc/game_bloc.dart';
+import '../widgets/chat_buddle.dart';
 
 enum MatchTypeEnum { normalMatch, roomMatch }
 
@@ -67,6 +70,7 @@ class _GameScreenState extends State<GameScreen> {
   static const _teamGlowDuration = Duration(milliseconds: 300);
   static const _reconnectDelay = Duration(milliseconds: 500);
   static const _playerImageSize = 90.0;
+  final List<GlobalKey> _teamKeys = List.generate(5, (_) => GlobalKey());
 
   @override
   void initState() {
@@ -102,6 +106,11 @@ class _GameScreenState extends State<GameScreen> {
       context.pushReplacement('/home');
     } else if (state is GameExitError) {
       showGameInfoDialog(context, message: state.message);
+    }else if (state is GameLoaded) {
+      if(!state.gameData.lastMessage.isShowed){
+        final userIndex = state.gameData.usersStatusList.indexWhere((e)=> e.userId == state.gameData.lastMessage.userId);
+        showChatPopup(_teamKeys[userIndex], state.gameData.lastMessage.message);
+      }
     }
   }
 
@@ -180,11 +189,11 @@ class _GameScreenState extends State<GameScreen> {
                   else if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! <= 5)
                     PlayerRoundStartsIn(playerList: homeState.userData.players, categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
                   else if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
-                    AcceleratedRoundIntro()
-                  else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
-                      PlayerSetBreakWidget(playerList: homeState.userData.players, categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
-                  else
-                    _buildPlayerAuctionContent(state, homeState, gameData, playerData),
+                      AcceleratedRoundIntro()
+                    else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
+                        PlayerSetBreakWidget(playerList: homeState.userData.players, categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                      else
+                        _buildPlayerAuctionContent(state, homeState, gameData, playerData),
                   _buildTeamRow(state, gameData),
                 ],
               ),
@@ -425,54 +434,117 @@ class _GameScreenState extends State<GameScreen> {
     List<UserStatusEntity> userList = [...otherUser, ...currentUser];
     List<String> teamList = [...otherTeam, ...currentTeam];
 
-    return GestureDetector(
-      child: SizedBox(
-        height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(5, (index) {
-            final glow = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].teamId == teamList[index];
-            return GestureDetector(
-              onTap: (){
-                print("userList[index].userId : ${userList[index].userId}");
-                context.push('/game/mySquad?userId=${userList[index].userId}');
-              },
-              child: _buildTeamCard(
-                  userList[index].userName,
-                  context.read<GameBloc>().getFranchise(userList, teamList, userList[index].userId).shortName(),
-                  context.read<GameBloc>().getFranchise(userList, teamList, userList[index].userId).image(),
-                  glow,
-                  userList[index].userId
-              ),
-            );
-          }),
+    return Column(
+      children: [
+        GestureDetector(
+          child: SizedBox(
+            height: 120,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(5, (index) {
+                final glow = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].teamId == teamList[index];
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: (){
+                        // print("userList[index].userId : ${userList[index].userId}");
+                        context.push('/game/mySquad?userId=${userList[index].userId}');
+                      },
+                      child: _buildTeamCard(
+                          userList[index].userName,
+                          context.read<GameBloc>().getFranchise(userList, teamList, userList[index].userId).shortName(),
+                          context.read<GameBloc>().getFranchise(userList, teamList, userList[index].userId).image(),
+                          glow,
+                          userList[index].userId,
+                          _teamKeys[gameData.usersStatusList.indexWhere((e) => e.userId == userList[index].userId)]
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTeamCard(
+      String userName,
+      String franchiseName,
+      String franchiseImage,
+      bool glow,
+      String userId,
+      GlobalKey key,
+      ) {
+    return Container(
+      key: key, // 👈 IMPORTANT
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              AnimatedContainer(
+                duration: _teamGlowDuration,
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  boxShadow: glow
+                      ? [
+                    BoxShadow(
+                      color: AppTheme.borderGold.withOpacity(0.9),
+                      blurRadius: 20,
+                      spreadRadius: 4,
+                    )
+                  ]
+                      : [],
+                ),
+                child: Image.asset(franchiseImage, width: 60, height: 60),
+              ),
+              Text(
+                franchiseName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.cinzel(
+                  color: AppTheme.borderGold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildTeamCard(String userName, String franchiseName, String franchiseImage, bool glow, String userId) {
-    return Column(
-      spacing: 10,
-      children: [
-        AnimatedContainer(
-          duration: _teamGlowDuration,
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            boxShadow: glow ? [BoxShadow(color: AppTheme.borderGold.withOpacity(0.9), blurRadius: 20, spreadRadius: 4)] : [],
+  void showChatPopup(GlobalKey key, String message) {
+    context.read<GameBloc>().add(MessageShowed());
+    final renderBox = key.currentContext!.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    final overlay = Overlay.of(context);
+
+    late OverlayEntry entry;
+
+    entry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          left: position.dx + size.width / 2 - 40,
+          top: position.dy - 50,
+          child: Material(
+            color: Colors.transparent,
+            child: ChatBubble(
+              message: message,
+              onDone: () => entry.remove(),
+            ),
           ),
-          child: Image.asset(franchiseImage, width: 60, height: 60),
-        ),
-        Text(
-          franchiseName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.cinzel(color: AppTheme.borderGold, fontSize: 14, fontWeight: FontWeight.bold),
-        ),
-      ],
+        );
+      },
     );
+
+    overlay.insert(entry);
   }
 
   Widget _buildRetryWidget(BuildContext context, String message) {
@@ -587,8 +659,8 @@ class _GameScreenState extends State<GameScreen> {
                     width: 60,
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))
                     ),
                     child: Column(
                       spacing: 5,
@@ -616,8 +688,8 @@ class _GameScreenState extends State<GameScreen> {
                     width: 60,
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))
                     ),
                     child: Column(
                       spacing: 5,
@@ -678,11 +750,25 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildAuctionerSection(),
-          _buildTileCard(image: AppImages.playerRound, t1: 'Round 1/5'),
+          BlocBuilder<GameBloc, GameState>(
+              builder: (context, state){
+               if(state is GameLoaded){
+                 return  _buildTileCard(image: AppImages.playerRound, t1: 'Round ${state.gameData.round}/5');
+                }
+               return  _buildTileCard(image: AppImages.playerRound, t1: 'Round 0/5');
+              }
+          ),
           _buildTileCard(image: AppImages.pointsTable, t1: 'POINTS TABLE', onTap: () => context.push('/game/pointsTable')),
           _buildTileCard(image: AppImages.mySquad, t1: 'MY SQUAD', onTap: () => context.push('/game/mySquad?userId=$userId')),
-          _buildTileCard(image: AppImages.purse, t1: 'MY PURSE', val: '60 CR'),
           _buildRemainingPurseCard(userId),
+          //emoji
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              EmojiButton(),
+              QuickReactionButton(),
+            ],
+          ),
           _buildBidButton(),
         ],
       ),
@@ -700,7 +786,7 @@ class _GameScreenState extends State<GameScreen> {
         final user = state.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
         return context.read<GameBloc>().formatPriceShort(user.balanceAmount);
       },
-      builder: (context, balance) => _buildTileCard(image: AppImages.purseRem, t1: 'PURSE REMAIN', val: balance),
+      builder: (context, balance) => _buildTileCard(image: AppImages.purseRem, t1: 'MY PURSE', val: '$balance / 60 CR'),
     );
   }
 

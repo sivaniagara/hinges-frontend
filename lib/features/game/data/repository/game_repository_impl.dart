@@ -24,7 +24,9 @@ class GameRepositoryImpl implements GameRepository {
         "hostId": params.hostId,
       });
       return Right(result);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print("getGameData error : ${e}");
+      print("getGameData stackTrace : ${stackTrace}");
       return Left(ServerFailure(e.toString()));
     }
   }
