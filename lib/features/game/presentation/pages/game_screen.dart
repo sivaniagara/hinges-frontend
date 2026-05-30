@@ -108,8 +108,12 @@ class _GameScreenState extends State<GameScreen> {
       showGameInfoDialog(context, message: state.message);
     }else if (state is GameLoaded) {
       if(!state.gameData.lastMessage.isShowed){
-        final userIndex = state.gameData.usersStatusList.indexWhere((e)=> e.userId == state.gameData.lastMessage.userId);
-        showChatPopup(_teamKeys[userIndex], state.gameData.lastMessage.message);
+        if (ModalRoute.of(context)?.isCurrent ?? false) {
+          final userIndex = state.gameData.usersStatusList.indexWhere((e)=> e.userId == state.gameData.lastMessage.userId);
+          showChatPopup(_teamKeys[userIndex], state.gameData.lastMessage.message);
+        } else {
+          context.read<GameBloc>().add(MessageShowed());
+        }
       }
     }
   }
@@ -914,6 +918,12 @@ class _GameScreenState extends State<GameScreen> {
       default:
         return (AppImages.fp, 'FP');
     }
+  }
+
+  bool _isDisqualified(String userId){
+    final currentState = context.read<GameBloc>().state as GameLoaded;
+    final user = currentState.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
+    return user.matchWinStatusEnum == MatchWinStatusEnum.disqualified;
   }
 }
 

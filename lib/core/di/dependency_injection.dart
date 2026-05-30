@@ -3,6 +3,7 @@ import 'package:hinges_frontend/features/login/domain/usecase/facebook_sign_in_u
 import 'package:hinges_frontend/features/login/domain/usecase/register_guest_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
+import '../../features/ads/bloc/ad_bloc.dart';
 import '../../features/game/di/initialize_game_dependencies.dart';
 import '../../features/home/di/initialize_home_dependecies.dart';
 import '../../features/login/data/data_source/firebase_auth_data_source.dart';
@@ -15,6 +16,7 @@ import '../../features/login/domain/usecase/guest_sign_in_usecase.dart';
 import '../../features/login/domain/usecase/sign_up_usecase.dart';
 import '../../features/login/domain/usecase/update_user_details_usecase.dart';
 import '../../features/login/presentation/bloc/user_auth_bloc.dart';
+import '../ads/ad_service.dart';
 import '../network/http_service.dart';
 import '../network/http_service_impl.dart';
 import '../network/websocket_service.dart';
@@ -34,7 +36,9 @@ Future<void> init() async {
   sl.registerLazySingleton<WebSocketService>(
         () => WebSocketServiceImpl(),
   );
+  sl.registerLazySingleton<AdService>(() => AdService());
 
+  sl.registerFactory<AdBloc>(() => AdBloc(sl<AdService>()));
   sl.registerFactory(() => UserAuthBloc(
     googleSignIn: sl(),
     signUpUseCase: sl(),

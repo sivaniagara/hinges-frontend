@@ -3,14 +3,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'core/di/dependency_injection.dart' as di;
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/ads/bloc/ad_bloc.dart';
 import 'features/home/presentation/bloc/home_bloc.dart';
 import 'features/login/presentation/bloc/user_auth_bloc.dart';
 import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   // Ensure Flutter binding is initialized before using platform channels
   WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
 
   // Initialize dependency injection
   await di.init();
@@ -27,7 +30,10 @@ void main() async {
         BlocProvider(create: (_) => di.sl<UserAuthBloc>()..add(AppStarted())),
         BlocProvider.value(
           value: di.sl<HomeBloc>(),
-        )
+        ),
+        BlocProvider(
+          create: (_) => di.sl<AdBloc>(),
+        ),
       ],
       child: const MyApp(),
     ),
