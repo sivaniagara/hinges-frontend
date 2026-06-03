@@ -58,6 +58,7 @@ dependencies:
   url_launcher: ^6.2.5
   flutter_launcher_icons: ^0.14.4
   google_mobile_ads: ^8.0.0
+  audioplayers: ^6.1.0
 
 
 dev_dependencies:
@@ -87,6 +88,7 @@ flutter:
      - assets/images/png/
      - assets/images/png/game/
      - assets/images/png/game/players/
+     - assets/audio/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -21,6 +21,7 @@ import '../network/http_service.dart';
 import '../network/http_service_impl.dart';
 import '../network/websocket_service.dart';
 import '../network/websocket_service_impl.dart';
+import '../utils/audio_manager.dart';
 
 final sl = GetIt.instance;
 
@@ -37,6 +38,7 @@ Future<void> init() async {
         () => WebSocketServiceImpl(),
   );
   sl.registerLazySingleton<AdService>(() => AdService());
+  sl.registerLazySingleton<AudioManager>(() => AudioManager());
 
   sl.registerFactory<AdBloc>(() => AdBloc(sl<AdService>()));
   sl.registerFactory(() => UserAuthBloc(
