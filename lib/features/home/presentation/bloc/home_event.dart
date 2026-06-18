@@ -1,7 +1,5 @@
 part of 'home_bloc.dart';
 
-
-
 abstract class HomeEvent extends Equatable {
   @override
   List<Object?> get props => [];
@@ -14,4 +12,14 @@ class FetchUserData extends HomeEvent {
 
   @override
   List<Object?> get props => [firebaseId];
+}
+
+class IncreaseUserCoins extends HomeEvent {
+  final String userId;
+  final int coins;
+
+  IncreaseUserCoins({required this.userId, required this.coins});
+
+  @override
+  List<Object?> get props => [userId, coins];
 }

@@ -18,4 +18,14 @@ class HomeRepositoryImpl implements HomeRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> increaseUserCoins(String userId, int coins) async {
+    try {
+      await remoteDataSource.increaseUserCoins(userId, coins);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

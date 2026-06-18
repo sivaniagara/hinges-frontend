@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../pages/mini_auction_screen.dart';
 
 /// 🔹 CALL THIS FUNCTION FROM YOUR BUTTON
@@ -98,7 +102,10 @@ class GoldenDialog extends StatelessWidget {
           right: 8,
           top: 8,
           child: GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              playTap();
+              Navigator.pop(context);
+            },
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

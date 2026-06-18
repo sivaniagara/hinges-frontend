@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../../domain/entities/user_data_entity.dart';
 import '../widgets/app_background.dart';
@@ -69,8 +73,11 @@ class _SettingScreenState extends State<SettingScreen> {
                       right: 20,
                       top: 0,
                       child: GestureDetector(
-                        onTap: () => context.pop(),
-                        child: Image.asset(AppImages.homeMenuIcon, width: 60),
+                        onTap: () async{
+                          playTap();
+                          context.pop();
+                        },
+                        child: Image.asset(AppImages.backMenuIcon, width: 60),
                       ),
                     ),
                   ],
@@ -121,6 +128,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       image: AppImages.termsAndCondition,
                       title: 'TERMS AND CONDITIONS',
                       onTap: () {
+                        playTap();
                         // TODO: Add Navigation
                       },
                     ),
@@ -128,6 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       image: AppImages.privacyPolicy,
                       title: 'PRIVACY POLICY',
                       onTap: () {
+                        playTap();
                         // TODO: Add Navigation
                       },
                     ),
@@ -192,7 +201,10 @@ class _SettingScreenState extends State<SettingScreen> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => onToggle(true),
+                    onTap: () {
+                      playTap();
+                      onToggle(true);
+                    },
                     child: Container(
                       height: 30,
                       decoration: BoxDecoration(
@@ -229,7 +241,10 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => onToggle(false),
+                    onTap: () {
+                      playTap();
+                      onToggle(false);
+                    },
                     child: Container(
                       height: 30,
                       decoration: BoxDecoration(

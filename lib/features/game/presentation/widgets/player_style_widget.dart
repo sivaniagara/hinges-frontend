@@ -9,11 +9,11 @@ import '../../domain/entities/game_data_entity.dart';
 class PlayerStyleWidget extends StatelessWidget {
   final GameDataEntity gameData;
   const PlayerStyleWidget({super.key, required this.gameData});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-
         if (state is! HomeLoaded) {
           return const SizedBox();
         }
@@ -24,35 +24,23 @@ class PlayerStyleWidget extends StatelessWidget {
           return const SizedBox();
         }
 
-        final currentPlayerId =
-            gameData.auctionPlayersStatusList[
-            gameData.currentAuctionPlayerIndex].playerId;
-
-        final player = state.userData.players
-            .where((e) => e.playerId == currentPlayerId)
-            .toList();
-
-        if (player.isEmpty) {
-          return const Text(
-            'Unknown Player',
-            style: TextStyle(color: Colors.white),
-          );
-        }
+        final player = gameData.auctionPlayersStatusList[
+        gameData.currentAuctionPlayerIndex];
 
         final playerStyle = state.userData.categoryAndItsItem.playerRoleCategoryId
-            .where((e) => e.id == player.first.playerRole).toList();
+            .where((e) => e.id == player.playerRole).toList();
 
         final battingStyle = state.userData.categoryAndItsItem.battingStyleCategoryId
-            .where((e) => e.id == player.first.battingStyle).toList();
+            .where((e) => e.id == player.battingStyle).toList();
 
         final bowlingStyle = state.userData.categoryAndItsItem.bowlingStyleCategoryId
-            .where((e) => e.id == player.first.bowlingStyle).toList();
+            .where((e) => e.id == player.bowlingStyle).toList();
 
         return Text(
           [AppIds.batsmanId, AppIds.wicketKeeperId].contains(playerStyle.first.id) ? battingStyle.first.categoryItemName : bowlingStyle.first.categoryItemName,
           style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
         );
       },
-    );;
+    );
   }
 }

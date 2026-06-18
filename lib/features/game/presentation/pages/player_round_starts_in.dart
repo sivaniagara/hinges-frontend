@@ -13,9 +13,8 @@ import '../bloc/game_bloc.dart';
 
 class PlayerRoundStartsIn extends StatelessWidget {
   final List<AuctionPlayerStatusEntity> auctionPlayerList;
-  final List<PlayerEntity> playerList;
   final CategoryAndItemsEntity categoryAndItemsEntity;
-  const PlayerRoundStartsIn({super.key, required this.playerList, required this.categoryAndItemsEntity, required this.auctionPlayerList,});
+  const PlayerRoundStartsIn({super.key, required this.categoryAndItemsEntity, required this.auctionPlayerList,});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,6 @@ class PlayerRoundStartsIn extends StatelessWidget {
                 context.read<GameBloc>().getPlayerRoleName(
                   playerData,
                   categoryAndItemsEntity,
-                  playerList,
                 ),
                 style: GoogleFonts.cinzel(
                   fontSize: 20,
@@ -74,8 +72,7 @@ class PlayerRoundStartsIn extends StatelessWidget {
                 height: 25,
                 context.read<GameBloc>().getPlayerRoleImage(
                   playerData,
-                  categoryAndItemsEntity,
-                  playerList,
+                  categoryAndItemsEntity
                 ),
               ),
             ],

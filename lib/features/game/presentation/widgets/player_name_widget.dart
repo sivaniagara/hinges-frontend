@@ -23,23 +23,12 @@ class PlayerNameWidget extends StatelessWidget {
           return const SizedBox();
         }
 
-        final currentPlayerId =
-            gameData.auctionPlayersStatusList[
-            gameData.currentAuctionPlayerIndex].playerId;
+        final player = gameData.auctionPlayersStatusList[
+        gameData.currentAuctionPlayerIndex];
 
-        final player = state.userData.players
-            .where((e) => e.playerId == currentPlayerId)
-            .toList();
-
-        if (player.isEmpty) {
-          return const Text(
-            'Unknown Player',
-            style: TextStyle(color: Colors.white),
-          );
-        }
 
         return Text(
-          player.first.playerName,
+          player.playerName,
           style: const TextStyle(
             fontFamily: 'Zuume',
             fontWeight: FontWeight.w700,

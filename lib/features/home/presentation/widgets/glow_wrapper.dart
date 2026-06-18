@@ -67,7 +67,9 @@ class _AttentionWrapperState extends State<AttentionWrapper>
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
-      onTapCancel: () => _tapController.reverse(),
+      onTapCancel: () {
+        _tapController.reverse();
+      },
       child: AnimatedBuilder(
         animation: Listenable.merge([_pulseController, _tapController]),
         builder: (context, child) {

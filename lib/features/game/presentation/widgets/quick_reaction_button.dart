@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
+import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../home/presentation/bloc/home_bloc.dart';
 
 class QuickReactionButton extends StatefulWidget {
@@ -43,6 +47,7 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
           Positioned.fill(
             child: GestureDetector(
               onTap: () {
+                playTap();
                 _overlayEntry?.remove();
                 _overlayEntry = null;
               },

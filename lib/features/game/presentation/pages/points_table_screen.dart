@@ -65,7 +65,9 @@ class PointsTableScreen extends StatelessWidget {
                       const Spacer(),
                       // Back Button
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
                         child: Image.asset(AppImages.backMenuIcon, width: 45),
                       ),
                     ],
@@ -94,7 +96,7 @@ class PointsTableScreen extends StatelessWidget {
                                 itemCount: pointsTableList.length,
                                 itemBuilder: (context, index) {
                                   final user = pointsTableList[index];
-                                  final franchise = getFranchiseEnum(user.teamId);
+                                  final franchise = context.read<GameBloc>().getFranchiseEnum(user.teamId);
                                   final rating = getRating(context, user.userId);
 
                                   return _buildTeamRow(
@@ -227,20 +229,6 @@ class PointsTableScreen extends StatelessWidget {
       }
     }
     return totalRating;
-  }
-
-  MiniAuctionFranchiseEnum getFranchiseEnum(String teamId){
-    if(teamId == MiniAuctionFranchiseEnum.csk.teamId()) return MiniAuctionFranchiseEnum.csk;
-    if(teamId == MiniAuctionFranchiseEnum.mi.teamId()) return MiniAuctionFranchiseEnum.mi;
-    if(teamId == MiniAuctionFranchiseEnum.rcb.teamId()) return MiniAuctionFranchiseEnum.rcb;
-    if(teamId == MiniAuctionFranchiseEnum.kkr.teamId()) return MiniAuctionFranchiseEnum.kkr;
-    if(teamId == MiniAuctionFranchiseEnum.srh.teamId()) return MiniAuctionFranchiseEnum.srh;
-    // if(teamId == MiniAuctionFranchiseEnum.gt.teamId()) return MiniAuctionFranchiseEnum.gt;
-    // if(teamId == MiniAuctionFranchiseEnum.lsg.teamId()) return MiniAuctionFranchiseEnum.lsg;
-    // if(teamId == MiniAuctionFranchiseEnum.dc.teamId()) return MiniAuctionFranchiseEnum.dc;
-    // if(teamId == MiniAuctionFranchiseEnum.pk.teamId()) return MiniAuctionFranchiseEnum.pk;
-    // if(teamId == MiniAuctionFranchiseEnum.rr.teamId()) return MiniAuctionFranchiseEnum.rr;
-    return MiniAuctionFranchiseEnum.empty;
   }
 
   List<UserStatusEntity> getPointsTableList(List<UserStatusEntity> listOfUser, BuildContext context){

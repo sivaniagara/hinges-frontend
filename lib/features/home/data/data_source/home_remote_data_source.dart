@@ -5,6 +5,7 @@ import '../models/user_data_model.dart';
 
 abstract class HomeRemoteDataSource {
   Future<UserDataModel> getUserData(String firebaseId);
+  Future<void> increaseUserCoins(String userId, int coins);
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -14,8 +15,6 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
   @override
   Future<UserDataModel> getUserData(String firebaseId) async {
-    // Assuming the endpoint is /user/details?firebase_id=...
-    // You should update this with your actual endpoint URL
     try{
       final response = await httpService.post(
         HomeUrls.fetchHome,
@@ -25,7 +24,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       );
 
       if (response['status'] == 200) {
-        print("getUserData response => ${response}");
+        print("getUserData response => $response");
         return UserDataModel.fromJson(response['data']);
       } else {
         throw Exception(response['message'] ?? 'Failed to fetch user data');
@@ -35,6 +34,25 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       print("stackTrace : $stackTrace");
       rethrow;
     }
+  }
 
+  @override
+  Future<void> increaseUserCoins(String userId, int coins) async {
+    try {
+      final response = await httpService.post(
+        HomeUrls.increaseUserCoins,
+        body: {
+          'user_id': userId,
+          'coins': coins,
+        },
+      );
+
+      if (response['status'] != 200) {
+        throw Exception(response['message'] ?? 'Failed to update user coins');
+      }
+    } catch (e) {
+      print("error increasing coins : $e");
+      rethrow;
+    }
   }
 }

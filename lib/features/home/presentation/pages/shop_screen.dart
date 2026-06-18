@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../../domain/entities/user_data_entity.dart';
 import '../widgets/app_background.dart';
@@ -65,8 +69,11 @@ class ShopScreen extends StatelessWidget {
                       right: 20,
                       top: 0,
                       child: GestureDetector(
-                        onTap: () => context.pop(),
-                        child: Image.asset(AppImages.homeMenuIcon, width: 60),
+                        onTap: () {
+                          playTap();
+                          context.pop();
+                        },
+                        child: Image.asset(AppImages.backMenuIcon, width: 60),
                       ),
                     ),
                   ],

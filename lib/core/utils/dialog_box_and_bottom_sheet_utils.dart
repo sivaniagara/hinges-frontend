@@ -3,8 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'dart:math' as Math;
 import 'package:flutter/material.dart';
+import 'package:hinges_frontend/core/utils/so_loud.dart';
 
+import '../di/dependency_injection.dart';
 import 'app_images.dart';
+import 'app_sounds.dart';
+import 'audio_manager.dart';
 
 void showLoadingDialog(BuildContext context, {String message = "Loading..."}) {
   showDialog(
@@ -352,7 +356,10 @@ class _GamingMessageDialogState extends State<_GamingMessageDialog>
   /// 🔘 DEFAULT BUTTON
   Widget _buildPrimaryButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
+      onTap: () {
+        playTap();
+        Navigator.of(context).pop();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
         decoration: BoxDecoration(
@@ -554,7 +561,9 @@ class _GameInfoDialog extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(

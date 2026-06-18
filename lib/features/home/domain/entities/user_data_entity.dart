@@ -25,7 +25,7 @@ class UserDataEntity extends Equatable {
   final int miniAuctionLiteRoyalPlayed;
   final CategoryAndItemsEntity categoryAndItsItem;
   final List<AuctionCategoryItemEntity> auctionCategoryItem;
-  final List<PlayerEntity> players;
+  // final List<PlayerEntity> players;
 
   const UserDataEntity({
     required this.userId,
@@ -49,8 +49,60 @@ class UserDataEntity extends Equatable {
     required this.miniAuctionLiteRoyalPlayed,
     required this.categoryAndItsItem,
     required this.auctionCategoryItem,
-    required this.players,
+    // required this.players,
   });
+
+  UserDataEntity copyWith({
+    String? userId,
+    String? userName,
+    String? userEmailId,
+    String? userMobileNumber,
+    int? authProvider,
+    String? firebaseId,
+    String? profilePath,
+    String? createdAt,
+    int? gamePlayed,
+    int? qualified,
+    int? disqualified,
+    int? coinWon,
+    int? firstPrice,
+    int? secondPrice,
+    int? thirdPrice,
+    int? miniAuctionLiteClassicPlayed,
+    int? miniAuctionLitePremiumPlayed,
+    int? miniAuctionLiteElitePlayed,
+    int? miniAuctionLiteRoyalPlayed,
+    CategoryAndItemsEntity? categoryAndItsItem,
+    List<AuctionCategoryItemEntity>? auctionCategoryItem,
+  }) {
+    return UserDataEntity(
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      userEmailId: userEmailId ?? this.userEmailId,
+      userMobileNumber: userMobileNumber ?? this.userMobileNumber,
+      authProvider: authProvider ?? this.authProvider,
+      firebaseId: firebaseId ?? this.firebaseId,
+      profilePath: profilePath ?? this.profilePath,
+      createdAt: createdAt ?? this.createdAt,
+      gamePlayed: gamePlayed ?? this.gamePlayed,
+      qualified: qualified ?? this.qualified,
+      disqualified: disqualified ?? this.disqualified,
+      coinWon: coinWon ?? this.coinWon,
+      firstPrice: firstPrice ?? this.firstPrice,
+      secondPrice: secondPrice ?? this.secondPrice,
+      thirdPrice: thirdPrice ?? this.thirdPrice,
+      miniAuctionLiteClassicPlayed:
+          miniAuctionLiteClassicPlayed ?? this.miniAuctionLiteClassicPlayed,
+      miniAuctionLitePremiumPlayed:
+          miniAuctionLitePremiumPlayed ?? this.miniAuctionLitePremiumPlayed,
+      miniAuctionLiteElitePlayed:
+          miniAuctionLiteElitePlayed ?? this.miniAuctionLiteElitePlayed,
+      miniAuctionLiteRoyalPlayed:
+          miniAuctionLiteRoyalPlayed ?? this.miniAuctionLiteRoyalPlayed,
+      categoryAndItsItem: categoryAndItsItem ?? this.categoryAndItsItem,
+      auctionCategoryItem: auctionCategoryItem ?? this.auctionCategoryItem,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -75,6 +127,6 @@ class UserDataEntity extends Equatable {
         miniAuctionLiteRoyalPlayed,
         categoryAndItsItem,
         auctionCategoryItem,
-        players,
+        // players,
       ];
 }

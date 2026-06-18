@@ -15,9 +15,8 @@ import '../bloc/game_bloc.dart';
 class PlayerSetBreakWidget extends StatelessWidget {
   final AuctionPlayerStatusEntity playerData;
   final List<AuctionPlayerStatusEntity> auctionPlayerList;
-  final List<PlayerEntity> playerList;
   final CategoryAndItemsEntity categoryAndItemsEntity;
-  const PlayerSetBreakWidget({super.key, required this.playerList, required this.categoryAndItemsEntity, required this.playerData, required this.auctionPlayerList,});
+  const PlayerSetBreakWidget({super.key, required this.categoryAndItemsEntity, required this.playerData, required this.auctionPlayerList,});
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +88,6 @@ class PlayerSetBreakWidget extends StatelessWidget {
         ],
       );
     }
-    return PlayerRoundStartsIn(playerList: playerList, categoryAndItemsEntity: categoryAndItemsEntity, auctionPlayerList: auctionPlayerList);
+    return PlayerRoundStartsIn(categoryAndItemsEntity: categoryAndItemsEntity, auctionPlayerList: auctionPlayerList);
   }
 }

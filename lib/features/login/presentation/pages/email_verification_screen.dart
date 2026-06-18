@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/long_button.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/dialog_box_and_bottom_sheet_utils.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../bloc/user_auth_bloc.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
@@ -55,6 +59,7 @@ class EmailVerificationScreen extends StatelessWidget {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
+                            playTap();
                             context.read<UserAuthBloc>().add(ResendEmailVerification());
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Verification email resent!')),

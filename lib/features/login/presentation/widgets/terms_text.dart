@@ -44,7 +44,9 @@ class TermsText extends StatelessWidget {
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: GestureDetector(
-                    onTap: () => _openUrl("https://your-terms-url.com"),
+                    onTap: () {
+                      _openUrl("https://your-terms-url.com");
+                    },
                     child: Text(
                       "Terms",
                       style: GoogleFonts.roboto(
@@ -67,7 +69,9 @@ class TermsText extends StatelessWidget {
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: GestureDetector(
-                    onTap: () => _openUrl("https://your-privacy-url.com"),
+                    onTap: () {
+                      _openUrl("https://your-privacy-url.com");
+                    },
                     child: Text(
                       "Privacy Policy",
                       style: GoogleFonts.roboto(

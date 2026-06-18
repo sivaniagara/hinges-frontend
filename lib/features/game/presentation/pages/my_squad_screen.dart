@@ -7,7 +7,11 @@ import 'package:hinges_frontend/core/utils/constant.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
@@ -109,7 +113,10 @@ class MySquadScreen extends StatelessWidget {
                       const SizedBox(width: 15),
                       // Back Button
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          playTap();
+                          Navigator.pop(context);
+                        },
                         child: Image.asset(AppImages.backMenuIcon, width: 45),
                       ),
                     ],
@@ -154,8 +161,8 @@ class MySquadScreen extends StatelessWidget {
                                     return _buildTableRow(
                                       slot: slotLabel,
                                       name: player.playerName.toUpperCase(),
-                                      description: getRoleStyle(key, player, userState.userData.categoryAndItsItem, userState.userData.players),
-                                      category: getPlayerCategory(player, userState.userData.categoryAndItsItem, userState.userData.players),
+                                      description: getRoleStyle(key, player, userState.userData.categoryAndItsItem,),
+                                      category: getPlayerCategory(player, userState.userData.categoryAndItsItem),
                                       basePrice: context.read<GameBloc>().formatPriceShort(player.basePrice),
                                       rating: '${player.baseRating}',
                                       soldPrice: context.read<GameBloc>().formatPriceShort(player.currentPrice),
@@ -192,10 +199,10 @@ class MySquadScreen extends StatelessWidget {
                         content: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildNumberedSquaresRow('BAT', getPlayerPrimaryCriteria(mySquad, AppIds.batsmanId, userState.userData.players, 3)),
-                            _buildNumberedSquaresRow('WK', getPlayerPrimaryCriteria(mySquad, AppIds.wicketKeeperId, userState.userData.players, 2)),
-                            _buildNumberedSquaresRow('ALR', getPlayerPrimaryCriteria(mySquad, AppIds.allRounderId, userState.userData.players, 4)),
-                            _buildNumberedSquaresRow('BOWL', getPlayerPrimaryCriteria(mySquad, AppIds.bowlerId, userState.userData.players, 3)),
+                            _buildNumberedSquaresRow('BAT', getPlayerPrimaryCriteria(mySquad, AppIds.batsmanId, 3)),
+                            _buildNumberedSquaresRow('WK', getPlayerPrimaryCriteria(mySquad, AppIds.wicketKeeperId, 2)),
+                            _buildNumberedSquaresRow('ALR', getPlayerPrimaryCriteria(mySquad, AppIds.allRounderId, 4)),
+                            _buildNumberedSquaresRow('BOWL', getPlayerPrimaryCriteria(mySquad, AppIds.bowlerId, 3)),
                           ],
                         ),
                       ),
@@ -206,9 +213,9 @@ class MySquadScreen extends StatelessWidget {
                         content: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildNumberedSquaresRow('ICP', getPlayerCategoryStatusList(mySquad, AppIds.indianCappedPlayerId, userState.userData.players, 5)),
-                            _buildNumberedSquaresRow('FP', getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, userState.userData.players, 4)),
-                            _buildNumberedSquaresRow('IUP', getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, userState.userData.players, 3)),
+                            _buildNumberedSquaresRow('ICP', getPlayerCategoryStatusList(mySquad, AppIds.indianCappedPlayerId, 5)),
+                            _buildNumberedSquaresRow('FP', getPlayerCategoryStatusList(mySquad, AppIds.foreignPlayerId, 4)),
+                            _buildNumberedSquaresRow('IUP', getPlayerCategoryStatusList(mySquad, AppIds.indianUnCappedPlayerId, 3)),
                           ],
                         ),
                       ),
@@ -219,10 +226,10 @@ class MySquadScreen extends StatelessWidget {
                         content: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildBowlingSquareRow('RIGHT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmSpin, userState.userData.players)),
-                            _buildBowlingSquareRow('RIGHT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmFast, userState.userData.players)),
-                            _buildBowlingSquareRow('LEFT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmSpin, userState.userData.players)),
-                            _buildBowlingSquareRow('LEFT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmFast, userState.userData.players)),
+                            _buildBowlingSquareRow('RIGHT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmSpin)),
+                            _buildBowlingSquareRow('RIGHT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.rightArmFast)),
+                            _buildBowlingSquareRow('LEFT ARM SPIN', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmSpin)),
+                            _buildBowlingSquareRow('LEFT ARM FAST', getPlayerBowlingStyleAvailable(mySquad, AppIds.leftArmFast)),
                           ],
                         ),
                       ),
@@ -451,17 +458,15 @@ class MySquadScreen extends StatelessWidget {
     return rating;
   }
 
-  String getPlayerCategory(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    return toShortForm(categoryAndItemsEntity.playerCategoryCategoryId.firstWhere((e) => e.id == playerEntity.playerCategory).categoryItemName);
+  String getPlayerCategory(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
+    return toShortForm(categoryAndItemsEntity.playerCategoryCategoryId.firstWhere((e) => e.id == player.playerCategory).categoryItemName);
   }
 
-  bool getPlayerBowlingStyleAvailable(Map<int, AuctionPlayerStatusEntity?> squad, String playerBowlingStyleId, List<PlayerEntity> playerList){
+  bool getPlayerBowlingStyleAvailable(Map<int, AuctionPlayerStatusEntity?> squad, String playerBowlingStyleId){
     bool available = false;
     for(var key in squad.keys) {
       if(squad[key] != null){
-        PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
-        if(playerEntity.bowlingStyle == playerBowlingStyleId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
+        if(squad[key]!.bowlingStyle == playerBowlingStyleId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           available = true;
           break;
         }
@@ -470,12 +475,11 @@ class MySquadScreen extends StatelessWidget {
     return available;
   }
 
-  List<bool> getPlayerPrimaryCriteria(Map<int, AuctionPlayerStatusEntity?> squad, String playerRoleId, List<PlayerEntity> playerList, int totalCount){
+  List<bool> getPlayerPrimaryCriteria(Map<int, AuctionPlayerStatusEntity?> squad, String playerRoleId, int totalCount){
     int total = 0;
     for(var key in squad.keys) {
       if(squad[key] != null){
-        PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
-        if(playerEntity.playerRole == playerRoleId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
+        if(squad[key]!.playerRole == playerRoleId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           total++;
         }
       }
@@ -483,12 +487,11 @@ class MySquadScreen extends StatelessWidget {
     return List.generate(totalCount, (index) => index < total);
   }
 
-  List<bool> getPlayerCategoryStatusList(Map<int, AuctionPlayerStatusEntity?> squad, String playerCategoryId, List<PlayerEntity> playerList, int totalCount){
+  List<bool> getPlayerCategoryStatusList(Map<int, AuctionPlayerStatusEntity?> squad, String playerCategoryId, int totalCount){
     int total = 0;
     for(var key in squad.keys) {
       if(squad[key] != null){
-        PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == squad[key]!.playerId);
-        if(playerEntity.playerCategory == playerCategoryId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
+        if(squad[key]!.playerCategory == playerCategoryId && (squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.sold || squad[key]!.playerAuctionStatus == PlayerAuctionStatusEnum.buy)){
           total++;
         }
       }
@@ -497,18 +500,17 @@ class MySquadScreen extends StatelessWidget {
     return List.generate(totalCount, (index) => index < total);
   }
 
-  String getRoleStyle(int position, AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+  String getRoleStyle(int position, AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
     String style = '';
     if(position >= 1 && position <= 3){
-      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == player.battingStyle).categoryItemName;
     }else if(position >= 4 && position <= 5){
-      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == player.battingStyle).categoryItemName;
     }else if(position >= 6 && position <= 9){
-      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
-      style += ' / ' + categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName;
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == player.battingStyle).categoryItemName;
+      style += ' / ${categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == player.bowlingStyle).categoryItemName}';
     }else if(position >= 10 && position <= 12){
-      style = categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName;
+      style = categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == player.bowlingStyle).categoryItemName;
     }
     return style.toUpperCase();
   }

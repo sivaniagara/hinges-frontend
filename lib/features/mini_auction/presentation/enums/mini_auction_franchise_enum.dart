@@ -1,6 +1,6 @@
 import '../../../../core/utils/app_images.dart';
 
-enum MiniAuctionFranchiseEnum {csk, mi, kkr, srh, rcb, empty}
+enum MiniAuctionFranchiseEnum {csk, mi, kkr, srh, rcb, gt, rr, dc, lsg, pk, empty}
 
 extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
   String image(){
@@ -15,6 +15,16 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return AppImages.srhLogo;
       case MiniAuctionFranchiseEnum.rcb:
         return AppImages.rcbLogo;
+      case MiniAuctionFranchiseEnum.gt:
+        return AppImages.gtLogo;
+      case MiniAuctionFranchiseEnum.rr:
+        return AppImages.rrLogo;
+      case MiniAuctionFranchiseEnum.dc:
+        return AppImages.dcLogo;
+      case MiniAuctionFranchiseEnum.lsg:
+        return AppImages.lsgLogo;
+      case MiniAuctionFranchiseEnum.pk:
+        return AppImages.pkLogo;
       case MiniAuctionFranchiseEnum.empty:
         return 'empty image';
     }
@@ -32,6 +42,16 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return 'STORMRISERS HYDERABAD';
       case MiniAuctionFranchiseEnum.rcb:
         return 'ROYAL CHAMPIONS BENGALURU';
+      case MiniAuctionFranchiseEnum.gt:
+        return 'GUJARAT THUNDERS';
+      case MiniAuctionFranchiseEnum.rr:
+        return 'RAJASTHAN RANGERS';
+      case MiniAuctionFranchiseEnum.dc:
+        return 'DELHI COMBATS';
+      case MiniAuctionFranchiseEnum.lsg:
+        return 'LUCKNOW SUPER GALLANTS';
+      case MiniAuctionFranchiseEnum.pk:
+        return 'PUNJAB KINETICS';
       case MiniAuctionFranchiseEnum.empty:
         return ' - ';
     }
@@ -48,6 +68,16 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return 'SRH';
       case MiniAuctionFranchiseEnum.rcb:
         return 'RCB';
+      case MiniAuctionFranchiseEnum.gt:
+        return 'GT';
+      case MiniAuctionFranchiseEnum.rr:
+        return 'RR';
+      case MiniAuctionFranchiseEnum.dc:
+        return 'DC';
+      case MiniAuctionFranchiseEnum.lsg:
+        return 'LSG';
+      case MiniAuctionFranchiseEnum.pk:
+        return 'PK';
       case MiniAuctionFranchiseEnum.empty:
         return ' - ';
     }
@@ -65,6 +95,16 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return '688078c5cdb3a1195b5a1fd3';
       case MiniAuctionFranchiseEnum.rcb:
         return '688078a7cdb3a1195b5a1fd2';
+      case MiniAuctionFranchiseEnum.gt:
+        return '6a1ff64a7e31be3c41b99846';
+      case MiniAuctionFranchiseEnum.rr:
+        return '6a1ff6587e31be3c41b99847';
+      case MiniAuctionFranchiseEnum.dc:
+        return '6a1ff6717e31be3c41b99848';
+      case MiniAuctionFranchiseEnum.lsg:
+        return '6a1ff67f7e31be3c41b99849';
+      case MiniAuctionFranchiseEnum.pk:
+        return '6a2020367e31be3c41b9984a';
       case MiniAuctionFranchiseEnum.empty:
         return ' - ';
     }
@@ -82,6 +122,16 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
         return MiniAuctionFranchiseEnum.srh;
       case '688078a7cdb3a1195b5a1fd2':
         return MiniAuctionFranchiseEnum.rcb;
+      case '6a1ff64a7e31be3c41b99846':
+        return MiniAuctionFranchiseEnum.gt;
+      case '6a1ff6587e31be3c41b99847':
+        return MiniAuctionFranchiseEnum.rr;
+      case '6a1ff6717e31be3c41b99848':
+        return MiniAuctionFranchiseEnum.dc;
+      case '6a1ff67f7e31be3c41b99849':
+        return MiniAuctionFranchiseEnum.lsg;
+      case '6a2020367e31be3c41b9984a':
+        return MiniAuctionFranchiseEnum.pk;
       default:
         return MiniAuctionFranchiseEnum.empty;
     }

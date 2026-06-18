@@ -2,16 +2,21 @@ import 'package:hinges_frontend/features/home/data/data_source/home_remote_data_
 import 'package:hinges_frontend/features/home/data/repository/home_repository_impl.dart';
 import 'package:hinges_frontend/features/home/domain/repository/home_repository.dart';
 import 'package:hinges_frontend/features/home/domain/usecase/get_user_data_usecase.dart';
+import 'package:hinges_frontend/features/home/domain/usecase/increase_user_coins_usecase.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 
 import '../../../core/di/dependency_injection.dart';
 
 void initializeHomeDependencies(){
   // BLoC - Changed to Singleton to ensure consistency across the app
-  sl.registerLazySingleton(() => HomeBloc(getUserDataUseCase: sl()));
+  sl.registerLazySingleton(() => HomeBloc(
+    getUserDataUseCase: sl(),
+    increaseUserCoinsUseCase: sl(),
+  ));
 
   // UseCases
   sl.registerLazySingleton(() => GetUserDataUseCase(repository: sl()));
+  sl.registerLazySingleton(() => IncreaseUserCoinsUseCase(sl()));
 
   // Repositories
   sl.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl(remoteDataSource: sl()));

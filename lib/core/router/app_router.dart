@@ -30,7 +30,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _subscription = stream.asBroadcastStream().listen(
           (dynamic _) => notifyListeners(),
-        );
+    );
   }
 
   late final StreamSubscription<dynamic> _subscription;
@@ -64,46 +64,46 @@ final router = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
-      path: '/login',
-      pageBuilder: (context, state) {
-        return CustomTransitionPage(
-          key: state.pageKey,
-          child: const LoginScreen(),
-          transitionsBuilder: pageSlider,
-        );
-      },
-      routes: [
-        GoRoute(
-          path: 'signUp',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage(
-              key: state.pageKey,
-              child: const SignUpScreen(),
-              transitionsBuilder: pageSlider,
-            );
-          },
-        ),
-        GoRoute(
-          path: 'forgotPassword',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage(
-              key: state.pageKey,
-              child: const ForgotPasswordScreen(),
-              transitionsBuilder: pageSlider,
-            );
-          },
-        ),
-        GoRoute(
-          path: 'guestName',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage(
-              key: state.pageKey,
-              child: const GuestNameScreen(),
-              transitionsBuilder: pageSlider,
-            );
-          },
-        ),
-      ]
+        path: '/login',
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const LoginScreen(),
+            transitionsBuilder: pageSlider,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: 'signUp',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const SignUpScreen(),
+                transitionsBuilder: pageSlider,
+              );
+            },
+          ),
+          GoRoute(
+            path: 'forgotPassword',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const ForgotPasswordScreen(),
+                transitionsBuilder: pageSlider,
+              );
+            },
+          ),
+          GoRoute(
+            path: 'guestName',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const GuestNameScreen(),
+                transitionsBuilder: pageSlider,
+              );
+            },
+          ),
+        ]
     ),
     GoRoute(
       path: '/home',
@@ -133,18 +133,18 @@ final router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/ruleBook',
-      builder: (context, state){
-        return RuleBookScreen();
-      },
-      routes: [
-        GoRoute(
-          path: 'miniAuctionLiteRuleBook',
-          builder: (context, state){
-            return const MiniAuctionLiteRuleBookScreen();
-          },
-        ),
-      ]
+        path: '/ruleBook',
+        builder: (context, state){
+          return RuleBookScreen();
+        },
+        routes: [
+          GoRoute(
+            path: 'miniAuctionLiteRuleBook',
+            builder: (context, state){
+              return const MiniAuctionLiteRuleBookScreen();
+            },
+          ),
+        ]
     ),
     GoRoute(
       path: '/loading',

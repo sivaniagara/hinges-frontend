@@ -49,7 +49,9 @@ class ResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 GestureDetector(
-                  onTap: () => context.go('/home'),
+                  onTap: () {
+                    context.go('/home');
+                  },
                   child: Image.asset(AppImages.homeMenuIcon, width: 50),
                 )
               ],
@@ -84,7 +86,7 @@ class ResultScreen extends StatelessWidget {
                               itemCount: sortedList.length,
                               itemBuilder: (context, index) {
                                 final user = sortedList[index];
-                                final franchise = getFranchiseEnum(user.teamId);
+                                final franchise = context.read<GameBloc>().getFranchiseEnum(user.teamId);
 
                                 return _AnimatedRow(
                                   delay: index * 120,
@@ -300,20 +302,6 @@ class ResultScreen extends StatelessWidget {
       fontSize: size,
       fontWeight: FontWeight.bold,
     );
-  }
-
-  MiniAuctionFranchiseEnum getFranchiseEnum(String teamId) {
-    if (teamId == MiniAuctionFranchiseEnum.csk.teamId()) {
-      return MiniAuctionFranchiseEnum.csk;
-    } else if (teamId == MiniAuctionFranchiseEnum.mi.teamId()) {
-      return MiniAuctionFranchiseEnum.mi;
-    } else if (teamId == MiniAuctionFranchiseEnum.rcb.teamId()) {
-      return MiniAuctionFranchiseEnum.rcb;
-    } else if (teamId == MiniAuctionFranchiseEnum.kkr.teamId()) {
-      return MiniAuctionFranchiseEnum.kkr;
-    } else {
-      return MiniAuctionFranchiseEnum.srh;
-    }
   }
 }
 

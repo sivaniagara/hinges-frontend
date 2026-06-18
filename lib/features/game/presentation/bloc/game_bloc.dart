@@ -477,13 +477,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     for(int i = 0; i < currentState.gameData.auctionPlayersStatusList.length;i++){
       final player = currentState.gameData.auctionPlayersStatusList[i];
       if(player.teamId == getTeamId(userId) && (player.playerAuctionStatus == PlayerAuctionStatusEnum.buy || player.playerAuctionStatus == PlayerAuctionStatusEnum.sold)){
-        if(player.playerRoleId == batsmanRoleId){
+        if(player.playerRole == batsmanRoleId){
           batsmanList.add(player);
-        }else if(player.playerRoleId == bowlerRoleId){
+        }else if(player.playerRole == bowlerRoleId){
           bowlerList.add(player);
-        }else if(player.playerRoleId == allRounderRoleId){
+        }else if(player.playerRole == allRounderRoleId){
           allRounderList.add(player);
-        }else if(player.playerRoleId == wicketKeeperRoleId){
+        }else if(player.playerRole == wicketKeeperRoleId){
           wicketKeeperList.add(player);
         }
       }
@@ -507,10 +507,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     return mySquad;
   }
 
-  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerCountryId = '';
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerCountryId = categoryAndItemsEntity.countryCategoryId.firstWhere((e) => e.id == playerEntity.countryId).id;
+  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
+    String playerCountryId = player.countryId;
     Map<String, String> flagMap = {
       '6880d715f960074f0cf61be7': '\u{1F1EE}\u{1F1F3}', // India 🇮🇳
       '6880d71ef960074f0cf61be8': '\u{1F1E6}\u{1F1FA}', // Australia 🇦🇺
@@ -532,10 +530,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  String getPlayerRoleImage(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerRoleId = '';
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
+  String getPlayerRoleImage(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
+    String playerRoleId = player.playerRole;
     Map<String, String> roleCategory = {
       '6881ba0f36213beb0017be9c': AppImages.bat,
       '6881ba3936213beb0017be9d': AppImages.wicketKeepingGloves,
@@ -550,10 +546,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  String getPlayerRoleName(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    String playerRoleId = '';
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    playerRoleId = categoryAndItemsEntity.playerRoleCategoryId.firstWhere((e) => e.id == playerEntity.playerRole).id;
+  String getPlayerRoleName(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
+    String playerRoleId = player.playerRole;
     Map<String, String> roleCategory = {
       '6881ba0f36213beb0017be9c': 'BATSMEN',
       '6881ba3936213beb0017be9d': 'WICKET-KEEPER',
@@ -657,6 +651,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return MiniAuctionFranchiseEnum.kkr;
     }else if(MiniAuctionFranchiseEnum.srh.teamId() == teamId) {
       return MiniAuctionFranchiseEnum.srh;
+    }else if(MiniAuctionFranchiseEnum.gt.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.gt;
+    }else if(MiniAuctionFranchiseEnum.rr.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.rr;
+    }else if(MiniAuctionFranchiseEnum.lsg.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.lsg;
+    }else if(MiniAuctionFranchiseEnum.dc.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.dc;
+    }else if(MiniAuctionFranchiseEnum.pk.teamId() == teamId) {
+      return MiniAuctionFranchiseEnum.pk;
     }else{
       return MiniAuctionFranchiseEnum.rcb;
     }
@@ -673,9 +677,33 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return MiniAuctionFranchiseEnum.srh;
     }else if(MiniAuctionFranchiseEnum.rcb.teamId() == teamId){
       return MiniAuctionFranchiseEnum.rcb;
+    }else if(MiniAuctionFranchiseEnum.dc.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.dc;
+    }else if(MiniAuctionFranchiseEnum.pk.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.pk;
+    }else if(MiniAuctionFranchiseEnum.rr.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.rr;
+    }else if(MiniAuctionFranchiseEnum.gt.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.gt;
+    }else if(MiniAuctionFranchiseEnum.lsg.teamId() == teamId){
+      return MiniAuctionFranchiseEnum.lsg;
     }else{
       return MiniAuctionFranchiseEnum.empty;
     }
+  }
+
+  MiniAuctionFranchiseEnum getFranchiseEnum(String teamId){
+    if(teamId == MiniAuctionFranchiseEnum.csk.teamId()) return MiniAuctionFranchiseEnum.csk;
+    if(teamId == MiniAuctionFranchiseEnum.mi.teamId()) return MiniAuctionFranchiseEnum.mi;
+    if(teamId == MiniAuctionFranchiseEnum.rcb.teamId()) return MiniAuctionFranchiseEnum.rcb;
+    if(teamId == MiniAuctionFranchiseEnum.kkr.teamId()) return MiniAuctionFranchiseEnum.kkr;
+    if(teamId == MiniAuctionFranchiseEnum.srh.teamId()) return MiniAuctionFranchiseEnum.srh;
+    if(teamId == MiniAuctionFranchiseEnum.gt.teamId()) return MiniAuctionFranchiseEnum.gt;
+    if(teamId == MiniAuctionFranchiseEnum.lsg.teamId()) return MiniAuctionFranchiseEnum.lsg;
+    if(teamId == MiniAuctionFranchiseEnum.dc.teamId()) return MiniAuctionFranchiseEnum.dc;
+    if(teamId == MiniAuctionFranchiseEnum.pk.teamId()) return MiniAuctionFranchiseEnum.pk;
+    if(teamId == MiniAuctionFranchiseEnum.rr.teamId()) return MiniAuctionFranchiseEnum.rr;
+    return MiniAuctionFranchiseEnum.empty;
   }
 
   UserStatusEntity findTheUserWhoBuyThePlayer(List<UserStatusEntity> userList, List<String> teamList, String teamId){

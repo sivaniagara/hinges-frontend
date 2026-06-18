@@ -80,6 +80,7 @@ class AppImages {
   static const String termsAndCondition = '${base}terms_and_condition.png';
   static const String whatsapp = '${base}whatsapp.png';
   static const String enterRoomIcon = '${base}enter_room_icon.png';
+  static const String watchAds = '${base}watch_ads.png';
 
   /// game
   static const String gameBase = '${base}game/';
@@ -146,8 +147,7 @@ class AppImages {
   static const String rrLogo = '${base}rr_logo.png';
 
   /// players
-  static const String playerBase = '${gameBase}players';
-  static const String virat = '${playerBase}virat.png';
+  static const String playerBase = '${gameBase}players/';
 
 
   /// medals

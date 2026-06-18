@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hinges_frontend/core/utils/so_loud.dart';
 import 'core/di/dependency_injection.dart' as di;
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/warm_up_sound.dart';
 import 'features/ads/bloc/ad_bloc.dart';
+import 'features/ads/bloc/ad_event.dart';
 import 'features/home/presentation/bloc/home_bloc.dart';
 import 'features/login/presentation/bloc/user_auth_bloc.dart';
 import 'firebase_options.dart';
@@ -14,9 +17,11 @@ void main() async {
   // Ensure Flutter binding is initialized before using platform channels
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
-
   // Initialize dependency injection
   await di.init();
+  // warmUpSound();
+  await initSoLoud();
+
 
   // Initialize Firebase
   await Firebase.initializeApp(
@@ -32,7 +37,8 @@ void main() async {
           value: di.sl<HomeBloc>(),
         ),
         BlocProvider(
-          create: (_) => di.sl<AdBloc>(),
+          lazy: false,
+          create: (_) => di.sl<AdBloc>()..add(LoadRewardedAd()),
         ),
       ],
       child: const MyApp(),

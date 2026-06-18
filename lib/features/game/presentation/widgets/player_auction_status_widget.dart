@@ -69,12 +69,12 @@ class PlayerAuctionStatusWidget extends StatelessWidget {
                 context.read<GameBloc>().getPlayerRoleImage(
                     playerData,
                     userState.userData.categoryAndItsItem,
-                    userState.userData.players),
+                ),
                 width: 18,
                 height: 18,
               ),
 
-              if (isCappedPlayer(playerData, userState.userData.players))
+              if (isCappedPlayer(playerData))
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
                   child: Image.asset(
@@ -90,7 +90,7 @@ class PlayerAuctionStatusWidget extends StatelessWidget {
                 context.read<GameBloc>().getPlayerCountryFlag(
                     playerData,
                     userState.userData.categoryAndItsItem,
-                    userState.userData.players),
+                ),
                 style: const TextStyle(fontSize: 14),
               ),
             ],),
@@ -187,8 +187,7 @@ class PlayerAuctionStatusWidget extends StatelessWidget {
     );
   }
 
-  bool isCappedPlayer(AuctionPlayerStatusEntity player, List<PlayerEntity> playerList){
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    return playerEntity.playerCategory == AppIds.indianCappedPlayerId;
+  bool isCappedPlayer(AuctionPlayerStatusEntity player){
+    return player.playerCategory == AppIds.indianCappedPlayerId;
   }
 }

@@ -175,7 +175,9 @@ class _Header extends StatelessWidget {
       children: [
         TopUserBar(loading: false, userData: userData),
         GestureDetector(
-          onTap: () => context.pop(),
+          onTap: () {
+            context.pop();
+          },
           child: Column(
             children: [
               Image.asset(AppImages.homeMenuIcon, width: 50),
@@ -218,7 +220,9 @@ class _ArenaSelection extends StatelessWidget {
               image: item.image,
               fee: item.fee.toString(),
               isLocked: item.locked,
-              onTap: () => onSelect(item),
+              onTap: () {
+                onSelect(item);
+              },
               miniAuctionItem: item,
             );
           }).toList(),
@@ -258,11 +262,13 @@ class _ModeSelection extends StatelessWidget {
           children: [
             GameCard(
               image: AppImages.playOnline,
-              onTap: () => context.go('/game', extra: {
-                "mode": mode,
-                "matchType": MatchTypeEnum.normalMatch,
-                "id": mode.miniAuctionItem.id
-              }),
+              onTap: () {
+                context.go('/game', extra: {
+                  "mode": mode,
+                  "matchType": MatchTypeEnum.normalMatch,
+                  "id": mode.miniAuctionItem.id
+                });
+              },
               size: size,
             ),
             const SizedBox(width: 20),

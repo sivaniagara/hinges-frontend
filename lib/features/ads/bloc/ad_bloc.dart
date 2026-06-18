@@ -7,8 +7,10 @@ class AdBloc extends Bloc<AdEvent, AdState> {
   final AdService adService;
 
   AdBloc(this.adService) : super(AdInitial()) {
-    on<LoadInterstitialAd>((event, emit) {
-      adService.loadInterstitial();
+    on<LoadInterstitialAd>((event, emit) async {
+      emit(InterstitialAdLoading());
+      final loaded = await adService.loadInterstitial();
+      emit(loaded ? InterstitialAdReady() : InterstitialAdFailedToLoad());
     });
 
     on<ShowInterstitialAd>((event, emit) {
@@ -17,8 +19,10 @@ class AdBloc extends Bloc<AdEvent, AdState> {
       );
     });
 
-    on<LoadRewardedAd>((event, emit) {
-      adService.loadRewarded();
+    on<LoadRewardedAd>((event, emit) async {
+      emit(RewardedAdLoading());
+      final loaded = await adService.loadRewarded();
+      emit(loaded ? RewardedAdReady() : RewardedAdFailedToLoad());
     });
 
     on<ShowRewardedAd>((event, emit) {

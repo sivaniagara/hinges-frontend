@@ -47,7 +47,7 @@ class TopUserBar extends StatelessWidget {
 
         CurrencyBar(
           icon: AppImages.diamondMenuIcon,
-          value: userData?.coinWon ?? 0,
+          value: 0,
           onAddTap: () {
             // handle diamond add
           },

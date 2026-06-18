@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +37,10 @@ import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_au
 import 'package:hinges_frontend/features/game/domain/entities/auction_player_status_entity.dart';
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/domain/entities/user_status_entity.dart';
+import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../bloc/game_bloc.dart';
 import '../widgets/chat_buddle.dart';
 
@@ -107,6 +110,9 @@ class _GameScreenState extends State<GameScreen> {
     } else if (state is GameExitError) {
       showGameInfoDialog(context, message: state.message);
     }else if (state is GameLoaded) {
+      if(state.gameData.breakStatus == BreakStatusEnum.strategicBreak){
+
+      }
       if(!state.gameData.lastMessage.isShowed){
         if (ModalRoute.of(context)?.isCurrent ?? false) {
           final userIndex = state.gameData.usersStatusList.indexWhere((e)=> e.userId == state.gameData.lastMessage.userId);
@@ -170,6 +176,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildGameContent(GameLoaded state) {
     final homeState = context.read<HomeBloc>().state as HomeLoaded;
     final gameData = state.gameData;
+    print("gameData.auctionPlayersStatusList : ${gameData.auctionPlayersStatusList}");
     final playerData = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex];
 
     return RefreshIndicator(
@@ -191,11 +198,11 @@ class _GameScreenState extends State<GameScreen> {
                   if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! > 5)
                     StrategicBreakWidget(mode: widget.mode)
                   else if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! <= 5)
-                    PlayerRoundStartsIn(playerList: homeState.userData.players, categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                    PlayerRoundStartsIn(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
                   else if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
                       AcceleratedRoundIntro()
                     else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
-                        PlayerSetBreakWidget(playerList: homeState.userData.players, categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                        PlayerSetBreakWidget(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
                       else
                         _buildPlayerAuctionContent(state, homeState, gameData, playerData),
                   _buildTeamRow(state, gameData),
@@ -223,7 +230,7 @@ class _GameScreenState extends State<GameScreen> {
       children: [
         Row(
           children: [
-            _buildPlayerImage(playerData.playerId),
+            _buildPlayerImage(playerData.imageId.toString()),
             Expanded(child: _buildPlayerInfo(state, homeState, gameData, playerData)),
           ],
         ),
@@ -260,7 +267,6 @@ class _GameScreenState extends State<GameScreen> {
               context.read<GameBloc>().getPlayerRoleImage(
                 playerData,
                 homeState.userData.categoryAndItsItem,
-                homeState.userData.players,
               ),
             ),
           ],
@@ -303,8 +309,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildCappedPlayerInfo(dynamic playerData) {
-    final homeState = context.read<HomeBloc>().state as HomeLoaded;
-    final cappedInfo = _getCappedPlayerInfo(playerData, homeState.userData.players);
+    final cappedInfo = _getCappedPlayerInfo(playerData);
     return Column(
       children: [
         Image.asset(width: 30, height: 30, cappedInfo.$1),
@@ -319,7 +324,6 @@ class _GameScreenState extends State<GameScreen> {
       context.read<GameBloc>().getPlayerCountryFlag(
         playerData,
         homeState.userData.categoryAndItsItem,
-        homeState.userData.players,
       ),
       style: const TextStyle(fontSize: 20),
     );
@@ -451,6 +455,7 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     GestureDetector(
                       onTap: (){
+                        playTap();
                         // print("userList[index].userId : ${userList[index].userId}");
                         context.push('/game/mySquad?userId=${userList[index].userId}');
                       },
@@ -644,13 +649,25 @@ class _GameScreenState extends State<GameScreen> {
             ],
           ),
           // _buildSideMenu(image: AppImages.playerSet, t1: 'PLAYER SET'),
-          _buildSideMenu(image: AppImages.bat, t1: 'BATSMEN', onTap: () => _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN')),
+          _buildSideMenu(image: AppImages.bat, t1: 'BATSMEN', onTap: () {
+            playTap();
+            _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN');
+          }),
           _buildSideMenu(image: AppImages.wicketKeepingGloves, t1: 'WICKET-', t2: 'KEEPERS',
-              onTap: () => _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET KEEPER')),
+              onTap: () {
+            playTap();
+                _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET KEEPER');
+              }),
           _buildSideMenu(image: AppImages.batBall, t1: 'ALL-', t2: 'ROUNDERS',
-              onTap: () => _navigateToPlayerList(AppIds.allRounderId, 'ALL ROUNDER')),
+              onTap: () {
+            playTap();
+                _navigateToPlayerList(AppIds.allRounderId, 'ALL ROUNDER');
+              }),
           _buildSideMenu(image: AppImages.ball, t1: 'BOWLERS',
-              onTap: () => _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS')),
+              onTap: () {
+            playTap();
+                _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS');
+              }),
           _buildSideMenu(image: AppImages.ruleBookWhite, t1: 'RULE BOOK'),
           SizedBox(
             width: 150,
@@ -677,6 +694,7 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    playTap();
                     final homeState = context.read<HomeBloc>().state;
                     final gameState = context.read<GameBloc>().state;
                     if (homeState is HomeLoaded && gameState is GameLoaded) {
@@ -762,8 +780,14 @@ class _GameScreenState extends State<GameScreen> {
                return  _buildTileCard(image: AppImages.playerRound, t1: 'Round 0/5');
               }
           ),
-          _buildTileCard(image: AppImages.pointsTable, t1: 'POINTS TABLE', onTap: () => context.push('/game/pointsTable')),
-          _buildTileCard(image: AppImages.mySquad, t1: 'MY SQUAD', onTap: () => context.push('/game/mySquad?userId=$userId')),
+          _buildTileCard(image: AppImages.pointsTable, t1: 'POINTS TABLE', onTap: () {
+            playTap();
+            context.push('/game/pointsTable');
+          }),
+          _buildTileCard(image: AppImages.mySquad, t1: 'MY SQUAD', onTap: () {
+            playTap();
+            context.push('/game/mySquad?userId=$userId');
+          }),
           _buildRemainingPurseCard(userId),
           //emoji
           Row(
@@ -810,7 +834,10 @@ class _GameScreenState extends State<GameScreen> {
 
             return GestureDetector(
               onTap: _isThereAmountToBid(currentState.userData.userId) && !isBidDisabled
-                  ? () => context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId))
+                  ? () {
+                playTap();
+                context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
+              }
                   : null,
               child: Opacity(
                 opacity: isBidDisabled ? 0.2 : 1,
@@ -892,11 +919,11 @@ class _GameScreenState extends State<GameScreen> {
   bool controlBid(AuctionPlayerStatusEntity currentPlayer, Map<int, AuctionPlayerStatusEntity?> mySquad, String userId) {
     bool roleCount(String roleId, int limit) {
       return mySquad.values.where((e) =>
-      e != null && e.playerRoleId == roleId && e.playerAuctionStatus == PlayerAuctionStatusEnum.buy
+      e != null && e.playerRole == roleId && e.playerAuctionStatus == PlayerAuctionStatusEnum.buy
       ).length >= limit;
     }
 
-    switch (currentPlayer.playerRoleId) {
+    switch (currentPlayer.playerRole) {
       case AppIds.batsmanId:
         return roleCount(AppIds.batsmanId, AppConstant.batsmanLimit);
       case AppIds.wicketKeeperId:
@@ -908,9 +935,8 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  (String, String) _getCappedPlayerInfo(AuctionPlayerStatusEntity player, List<PlayerEntity> playerList) {
-    final playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    switch (playerEntity.playerCategory) {
+  (String, String) _getCappedPlayerInfo(AuctionPlayerStatusEntity player) {
+    switch (player.playerCategory) {
       case AppIds.indianCappedPlayerId:
         return (AppImages.icp, 'ICP');
       case AppIds.indianUnCappedPlayerId:

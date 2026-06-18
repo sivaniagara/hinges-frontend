@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 
+import '../../di/dependency_injection.dart';
+import '../../utils/app_sounds.dart';
+import '../../utils/audio_manager.dart';
+import '../../utils/so_loud.dart';
+
 class CancelHeader extends StatelessWidget {
   const CancelHeader({super.key});
 
@@ -13,7 +18,10 @@ class CancelHeader extends StatelessWidget {
         children: [
           SizedBox(width: 10,),
           GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () {
+              playTap();
+              Navigator.of(context).pop();
+            },
             child: Image.asset(
                 width: 25,
                 AppImages.cancelIcon

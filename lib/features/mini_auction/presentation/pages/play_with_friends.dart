@@ -6,8 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/presentation/widgets/back_icon.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../home/presentation/widgets/app_background.dart';
 import 'mini_auction_screen.dart';
 
@@ -79,6 +83,7 @@ class PlayWithFriends extends StatelessWidget {
                         GameCard(
                           image: AppImages.createRoom,
                           onTap: () {
+                            playTap();
                             context.push('/createRoom', extra: mode);
                           },
                           size: size,
@@ -87,6 +92,7 @@ class PlayWithFriends extends StatelessWidget {
                         GameCard(
                           image: AppImages.joinRoom,
                           onTap: () {
+                            playTap();
                             context.push('/joinRoom', extra: mode);
                           },
                           size: size,

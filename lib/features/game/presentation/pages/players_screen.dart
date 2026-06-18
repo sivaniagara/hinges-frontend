@@ -9,7 +9,11 @@ import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_sounds.dart';
+import '../../../../core/utils/audio_manager.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
@@ -44,7 +48,7 @@ class PlayersScreen extends StatelessWidget {
               if (state is! GameLoaded) return const SizedBox.shrink();
 
               final userState = context.read<HomeBloc>().state as HomeLoaded;
-              List<AuctionPlayerStatusEntity> playersList = state.gameData.auctionPlayersStatusList.where((e) => e.playerRoleId == playerRole).toList();
+              List<AuctionPlayerStatusEntity> playersList = state.gameData.auctionPlayersStatusList.where((e) => e.playerRole == playerRole).toList();
               List<AuctionPlayerStatusEntity> availableAndNotShown = playersList.where((e) => e.playerAuctionStatus != PlayerAuctionStatusEnum.sold).toList();
               List<AuctionPlayerStatusEntity> unSold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notSold).toList();
               List<AuctionPlayerStatusEntity> sold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.sold).toList();
@@ -120,7 +124,10 @@ class PlayersScreen extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          playTap();
+                          Navigator.pop(context);
+                        },
                         child: Image.asset(AppImages.backMenuIcon, width: 50),
                       ),
                     ],
@@ -155,9 +162,9 @@ class PlayersScreen extends StatelessWidget {
                                   return _buildTableRow(
                                     no: '${index + 1}',
                                     name: player.playerName.toUpperCase(),
-                                    description: getRoleStyle(player, userState.userData.categoryAndItsItem, userState.userData.players),
-                                    category: getPlayerCategory(player, userState.userData.categoryAndItsItem, userState.userData.players),
-                                    flag: getPlayerCountryFlag(player, userState.userData.categoryAndItsItem, userState.userData.players),
+                                    description: getRoleStyle(player, userState.userData.categoryAndItsItem),
+                                    category: getPlayerCategory(player, userState.userData.categoryAndItsItem),
+                                    flag: getPlayerCountryFlag(player, userState.userData.categoryAndItsItem),
                                     basePrice: context.read<GameBloc>().formatPriceShort(player.basePrice),
                                     rating: player.baseRating.toString(),
                                     status: status,
@@ -187,21 +194,17 @@ class PlayersScreen extends StatelessWidget {
 
   List<AuctionPlayerStatusEntity> sortByIcpFpIup(List<AuctionPlayerStatusEntity> auctionPlayerList, BuildContext context){
     final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
-    List<PlayerEntity> playerList = homeLoaded.userData.players;
     List<AuctionPlayerStatusEntity> icpList = [];
     List<AuctionPlayerStatusEntity> fpList = [];
     List<AuctionPlayerStatusEntity> iupList = [];
-    for(var p in playerList){
-      for(var ap in auctionPlayerList){
-        if(p.playerCategory == AppIds.indianCappedPlayerId && p.playerId == ap.playerId){
-          icpList.add(ap);
-        }else if(p.playerCategory == AppIds.foreignPlayerId && p.playerId == ap.playerId){
-          fpList.add(ap);
-        }else if(p.playerCategory == AppIds.indianUnCappedPlayerId && p.playerId == ap.playerId){
-          iupList.add(ap);
-        }
+    for(var ap in auctionPlayerList){
+      if(ap.playerCategory == AppIds.indianCappedPlayerId){
+        icpList.add(ap);
+      }else if(ap.playerCategory == AppIds.foreignPlayerId){
+        fpList.add(ap);
+      }else if(ap.playerCategory == AppIds.indianUnCappedPlayerId){
+        iupList.add(ap);
       }
-
     }
     return [...icpList, ...fpList, ...iupList];
   }
@@ -353,12 +356,16 @@ class PlayersScreen extends StatelessWidget {
     if(MiniAuctionFranchiseEnum.kkr.teamId() == teamId) return MiniAuctionFranchiseEnum.kkr;
     if(MiniAuctionFranchiseEnum.srh.teamId() == teamId) return MiniAuctionFranchiseEnum.srh;
     if(MiniAuctionFranchiseEnum.rcb.teamId() == teamId) return MiniAuctionFranchiseEnum.rcb;
+    if(MiniAuctionFranchiseEnum.gt.teamId() == teamId) return MiniAuctionFranchiseEnum.gt;
+    if(MiniAuctionFranchiseEnum.pk.teamId() == teamId) return MiniAuctionFranchiseEnum.pk;
+    if(MiniAuctionFranchiseEnum.lsg.teamId() == teamId) return MiniAuctionFranchiseEnum.lsg;
+    if(MiniAuctionFranchiseEnum.dc.teamId() == teamId) return MiniAuctionFranchiseEnum.dc;
+    if(MiniAuctionFranchiseEnum.rr.teamId() == teamId) return MiniAuctionFranchiseEnum.rr;
     return MiniAuctionFranchiseEnum.empty;
   }
 
-  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    final countryId = playerEntity.countryId;
+  String getPlayerCountryFlag(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
+    final countryId = player.countryId;
     Map<String, String> flagMap = {
       '6880d715f960074f0cf61be7': '🇮🇳',
       '6880d71ef960074f0cf61be8': '🇦🇺',
@@ -376,23 +383,21 @@ class PlayersScreen extends StatelessWidget {
     return flagMap[countryId] ?? '❓';
   }
 
-  String getPlayerCategory(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
-    return toShortForm(categoryAndItemsEntity.playerCategoryCategoryId.firstWhere((e) => e.id == playerEntity.playerCategory).categoryItemName);
+  String getPlayerCategory(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
+    return toShortForm(categoryAndItemsEntity.playerCategoryCategoryId.firstWhere((e) => e.id == player.playerCategory).categoryItemName);
   }
 
-  String getRoleStyle(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity, List<PlayerEntity> playerList){
-    PlayerEntity playerEntity = playerList.firstWhere((e) => e.playerId == player.playerId);
+  String getRoleStyle(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
     String style = '';
-    if(player.playerRoleId == AppIds.batsmanId){
-      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
-    }else if(player.playerRoleId == AppIds.wicketKeeperId){
-      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
-    }else if(player.playerRoleId == AppIds.allRounderId){
-      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == playerEntity.battingStyle).categoryItemName;
-      style += ' / ' + categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName;
-    }else if(player.playerRoleId == AppIds.bowlerId){
-      style = categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == playerEntity.bowlingStyle).categoryItemName;
+    if(player.playerRole == AppIds.batsmanId){
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == player.battingStyle).categoryItemName;
+    }else if(player.playerRole == AppIds.wicketKeeperId){
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == player.battingStyle).categoryItemName;
+    }else if(player.playerRole == AppIds.allRounderId){
+      style = categoryAndItemsEntity.battingStyleCategoryId.firstWhere((e) => e.id == player.battingStyle).categoryItemName;
+      style += ' / ${categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == player.bowlingStyle).categoryItemName}';
+    }else if(player.playerRole == AppIds.bowlerId){
+      style = categoryAndItemsEntity.bowlingStyleCategoryId.firstWhere((e) => e.id == player.bowlingStyle).categoryItemName;
     }
     return style.toUpperCase();
   }
