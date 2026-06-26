@@ -117,19 +117,20 @@ class AuthRepositoryImp extends AuthRepository {
       final userCredential = await firebaseAuthDataSource.signInWithGoogle();
       return Right(userCredential);
     } catch (e) {
+      debugPrint('Error Google login : $e');
       return Left(ServerFailure(e.toString()));
     }
   }
 
-  @override
-  Future<Either<Failure, UserCredential>> signInWithFacebook() async {
-    try {
-      final userCredential = await firebaseAuthDataSource.signInWithFacebook();
-      return Right(userCredential);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
+  // @override
+  // Future<Either<Failure, UserCredential>> signInWithFacebook() async {
+  //   try {
+  //     final userCredential = await firebaseAuthDataSource.signInWithFacebook();
+  //     return Right(userCredential);
+  //   } catch (e) {
+  //     return Left(ServerFailure(e.toString()));
+  //   }
+  // }
 
   @override
   Future<Either<Failure, UserCredential>> signInAnonymously() async {

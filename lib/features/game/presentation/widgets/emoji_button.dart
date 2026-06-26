@@ -95,7 +95,6 @@ class _EmojiButtonState extends State<EmojiButton> {
     return GestureDetector(
       onTap: () {
         playTap();
-        print("Selected: $emoji");
 
         // 👉 your logic (send to backend / UI update)
 

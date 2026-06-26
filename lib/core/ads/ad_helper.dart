@@ -31,11 +31,11 @@ class AdHelper {
   }
 
   static String get rewardedAdUnitId {
-    if (kDebugMode) {
-      return Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/5224354917'
-          : 'ca-app-pub-3940256099942544/1712485313';
-    }
+    // if (kDebugMode) {
+    //   return Platform.isAndroid
+    //       ? 'ca-app-pub-3940256099942544/5224354917'
+    //       : 'ca-app-pub-3940256099942544/1712485313';
+    // }
     return Platform.isAndroid
         ? 'ca-app-pub-7979959248957095/9755319670' // TODO: real Android rewarded ID
         : 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY'; // TODO: real iOS rewarded ID

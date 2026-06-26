@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../domain/usecase/facebook_sign_in_usecase.dart';
@@ -21,7 +21,7 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
   final SignUpUseCase signUpUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final GoogleSignInUseCase googleSignInUseCase;
-  final FacebookSignInUseCase facebookSignInUseCase;
+  // final FacebookSignInUseCase facebookSignInUseCase;
   final UpdateUserDetailsUseCase updateUserDetailsUseCase;
   final GuestSignInUseCase guestSignInUseCase;
   final RegisterGuestUserUseCase registerGuestUserUseCase;
@@ -34,7 +34,7 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
     required this.signUpUseCase,
     required this.forgotPasswordUseCase,
     required this.googleSignInUseCase,
-    required this.facebookSignInUseCase,
+    // required this.facebookSignInUseCase,
     required this.updateUserDetailsUseCase,
     required this.guestSignInUseCase,
     required this.registerGuestUserUseCase,
@@ -183,56 +183,56 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
       }
     });
 
-    on<FacebookSignInRequested>((event, emit) async {
-      emit(AuthLoading(loading: 'facebook-signIn'));
-
-      try {
-        final result = await facebookSignInUseCase(NoParams());
-
-        if (result.isLeft()) {
-          final failure = result.swap().getOrElse(
-            () => throw Exception('No failure'),
-          );
-          emit(EmailAuthError(failure.message));
-          return;
-        }
-
-        final userCredential = result.getOrElse(
-          () => throw Exception('No credential'),
-        );
-        final user = userCredential.user;
-
-        if (user == null) {
-          emit(EmailAuthError("Facebook sign-in failed – no user"));
-          return;
-        }
-
-        final updateResult = await updateUserDetailsUseCase(
-          UpdateUserDetailsParams(
-            userId: user.uid,
-            userName: user.displayName ?? "User",
-            userEmailId: user.email ?? "",
-            userMobileNumber: user.phoneNumber ?? "",
-            authProvider: 4, // Assuming 4 for Facebook
-            profilePath: user.photoURL ?? "",
-            createdAt: DateTime.now(),
-          ),
-        );
-
-        if (updateResult.isLeft()) {
-          final failure = updateResult.swap().getOrElse(
-            () => throw Exception('No failure'),
-          );
-          emit(EmailAuthError(failure.message));
-          return;
-        }
-
-        emit(FacebookAuthenticated(user: user));
-      } catch (e, stack) {
-        debugPrint("Facebook sign-in error: $e\n$stack");
-        emit(EmailAuthError("Sign-in failed: ${e.toString()}"));
-      }
-    });
+    // on<FacebookSignInRequested>((event, emit) async {
+    //   emit(AuthLoading(loading: 'facebook-signIn'));
+    //
+    //   try {
+    //     final result = await facebookSignInUseCase(NoParams());
+    //
+    //     if (result.isLeft()) {
+    //       final failure = result.swap().getOrElse(
+    //         () => throw Exception('No failure'),
+    //       );
+    //       emit(EmailAuthError(failure.message));
+    //       return;
+    //     }
+    //
+    //     final userCredential = result.getOrElse(
+    //       () => throw Exception('No credential'),
+    //     );
+    //     final user = userCredential.user;
+    //
+    //     if (user == null) {
+    //       emit(EmailAuthError("Facebook sign-in failed – no user"));
+    //       return;
+    //     }
+    //
+    //     final updateResult = await updateUserDetailsUseCase(
+    //       UpdateUserDetailsParams(
+    //         userId: user.uid,
+    //         userName: user.displayName ?? "User",
+    //         userEmailId: user.email ?? "",
+    //         userMobileNumber: user.phoneNumber ?? "",
+    //         authProvider: 4, // Assuming 4 for Facebook
+    //         profilePath: user.photoURL ?? "",
+    //         createdAt: DateTime.now(),
+    //       ),
+    //     );
+    //
+    //     if (updateResult.isLeft()) {
+    //       final failure = updateResult.swap().getOrElse(
+    //         () => throw Exception('No failure'),
+    //       );
+    //       emit(EmailAuthError(failure.message));
+    //       return;
+    //     }
+    //
+    //     emit(FacebookAuthenticated(user: user));
+    //   } catch (e, stack) {
+    //     debugPrint("Facebook sign-in error: $e\n$stack");
+    //     emit(EmailAuthError("Sign-in failed: ${e.toString()}"));
+    //   }
+    // });
 
     on<SignOutRequested>((event, emit) async {
       try {
@@ -256,7 +256,7 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
             await googleSignIn.signOut(); // Clears current session
           }
           if (isFacebook) {
-            await FacebookAuth.instance.logOut();
+            // await FacebookAuth.instance.logOut();
           }
 
           await _auth.signOut();

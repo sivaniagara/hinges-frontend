@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class FirebaseAuthDataSource {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -43,26 +43,26 @@ class FirebaseAuthDataSource {
     return await _auth.signInWithCredential(credential);
   }
 
-  Future<UserCredential> signInWithFacebook() async {
-    // Clear any stale Facebook session before starting a fresh login flow.
-    await FacebookAuth.instance.logOut();
-    final LoginResult result = await FacebookAuth.instance.login(
-      permissions: const ['email', 'public_profile'],
-    );
-
-    if (result.status == LoginStatus.success) {
-      final OAuthCredential credential = FacebookAuthProvider.credential(
-        result.accessToken!.tokenString,
-      );
-      return await _auth.signInWithCredential(credential);
-    } else if (result.status == LoginStatus.cancelled) {
-      throw Exception('Facebook sign in was cancelled by user');
-    } else {
-      throw Exception(
-        'Facebook sign in failed: ${result.message ?? result.status.name}',
-      );
-    }
-  }
+  // Future<UserCredential> signInWithFacebook() async {
+  //   // Clear any stale Facebook session before starting a fresh login flow.
+  //   await FacebookAuth.instance.logOut();
+  //   final LoginResult result = await FacebookAuth.instance.login(
+  //     permissions: const ['email', 'public_profile'],
+  //   );
+  //
+  //   if (result.status == LoginStatus.success) {
+  //     final OAuthCredential credential = FacebookAuthProvider.credential(
+  //       result.accessToken!.tokenString,
+  //     );
+  //     return await _auth.signInWithCredential(credential);
+  //   } else if (result.status == LoginStatus.cancelled) {
+  //     throw Exception('Facebook sign in was cancelled by user');
+  //   } else {
+  //     throw Exception(
+  //       'Facebook sign in failed: ${result.message ?? result.status.name}',
+  //     );
+  //   }
+  // }
 
   Future<UserCredential> signInAnonymously() async {
     return await _auth.signInAnonymously();

@@ -566,7 +566,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     Map<String, String> roleCategory = {
       '6881ba0f36213beb0017be9c': AppImages.bat,
       '6881ba3936213beb0017be9d': AppImages.wicketKeepingGloves,
-      '6881bba636213beb0017be9e': AppImages.allRounderIcon,
+      '6881bba636213beb0017be9e': AppImages.batBall,
       '6881e28cc8d219cd96a5c4b2': AppImages.ball,
     };
 

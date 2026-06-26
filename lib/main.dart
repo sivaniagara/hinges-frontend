@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hinges_frontend/core/utils/so_loud.dart';
@@ -16,6 +17,14 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() async {
   // Ensure Flutter binding is initialized before using platform channels
   WidgetsFlutterBinding.ensureInitialized();
+  if (kDebugMode) {
+    MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(
+        testDeviceIds: ['FD2D1E2F6FFAD5A78E8D71F61E2D9689'],
+      ),
+    );
+  }
+
   await MobileAds.instance.initialize();
   // Initialize dependency injection
   await di.init();

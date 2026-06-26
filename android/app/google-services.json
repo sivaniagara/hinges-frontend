@@ -12,7 +12,20 @@
           "package_name": "com.example.hinges_frontend"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "252373470684-cj17cmu764edu75elb8hqsar6lu9uh3q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hinges_frontend",
+            "certificate_hash": "59502e021fdaa6cc669eebd24a1ffb00ae835063"
+          }
+        },
+        {
+          "client_id": "252373470684-uku6e68a2kd45lgkdg8ci9f2q95je3it.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD7B6FMigj1RTUIB9qrKSL9yJEdxtK3M50"
@@ -20,7 +33,49 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252373470684-204m013kpmobuo28k492m2abv12j231q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252373470684:android:27b38054f3b5ed13c7d319",
+        "android_client_info": {
+          "package_name": "com.hingesgames.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252373470684-oji85kvkg4la18e0k5engb9br0e6uf02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hingesgames.app",
+            "certificate_hash": "6b5c29a7037bea36d8403669c930a8e65c647b20"
+          }
+        },
+        {
+          "client_id": "252373470684-uku6e68a2kd45lgkdg8ci9f2q95je3it.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7B6FMigj1RTUIB9qrKSL9yJEdxtK3M50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252373470684-204m013kpmobuo28k492m2abv12j231q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

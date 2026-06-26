@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -5,10 +8,17 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// ✅ Your Facebook credentials (PUT REAL VALUES HERE)
-val facebookAppId = "1503898344766011"
-val facebookClientToken = "3059a358c8d679e81f0d9d19fc82d757"
-val facebookLoginProtocolScheme = "fb$facebookAppId"
+// ✅ Load keystore properties
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
+// ✅ Facebook credentials
+//val facebookAppId = "1503898344766011"
+//val facebookClientToken = "3059a358c8d679e81f0d9d19fc82d757"
+//val facebookLoginProtocolScheme = "fb$facebookAppId"
 
 android {
     namespace = "com.example.hinges_frontend"
@@ -24,22 +34,34 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    // ✅ Signing config defined BEFORE buildTypes
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
     defaultConfig {
-        applicationId = "com.example.hinges_frontend"
+        applicationId = "com.hingesgames.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // ✅ THIS FIXES YOUR ERROR
-        manifestPlaceholders["facebookAppId"] = facebookAppId
-        manifestPlaceholders["facebookClientToken"] = facebookClientToken
-        manifestPlaceholders["facebookLoginProtocolScheme"] = facebookLoginProtocolScheme
+//        manifestPlaceholders["facebookAppId"] = facebookAppId
+//        manifestPlaceholders["facebookClientToken"] = facebookClientToken
+//        manifestPlaceholders["facebookLoginProtocolScheme"] = facebookLoginProtocolScheme
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            // ✅ Now uses real release signing, not debug
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false  // set true if you want code shrinking
+            isShrinkResources = false
         }
     }
 }
@@ -49,9 +71,6 @@ flutter {
 }
 
 dependencies {
-    // Facebook Android SDK
-    implementation("com.facebook.android:facebook-android-sdk:latest.release")
-
-    // You might also need this for Facebook Login
-    implementation("com.facebook.android:facebook-login:latest.release")
+//    implementation("com.facebook.android:facebook-android-sdk:latest.release")
+//    implementation("com.facebook.android:facebook-login:latest.release")
 }

@@ -20,7 +20,7 @@
         <!-- ✅ AdMob App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7197516581292453~1533988806"/>
+            android:value="ca-app-pub-7979959248957095~9336853981"/>
 
         <!-- ✅ Facebook Activities - FIXED -->
         <activity

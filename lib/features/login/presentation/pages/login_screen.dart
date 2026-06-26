@@ -72,15 +72,15 @@ class LoginScreen extends StatelessWidget {
                           },
                           outlined: true,
                         ),
-                        LongButton(
-                          title: 'Login with Facebook',
-                          prefixIcon: FontAwesomeIcons.facebook,
-                          onPressed: () {
-                            context.read<UserAuthBloc>().add(
-                                FacebookSignInRequested());
-                          },
-                          outlined: true,
-                        ),
+                        // LongButton(
+                        //   title: 'Login with Facebook',
+                        //   prefixIcon: FontAwesomeIcons.facebook,
+                        //   onPressed: () {
+                        //     context.read<UserAuthBloc>().add(
+                        //         FacebookSignInRequested());
+                        //   },
+                        //   outlined: true,
+                        // ),
                         LongButton(
                           title: 'Login as Guest',
                           prefixIcon: Icons.person_outline,

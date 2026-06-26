@@ -46,7 +46,7 @@ Future<void> init() async {
     signUpUseCase: sl(),
     forgotPasswordUseCase: sl(),
     googleSignInUseCase: sl(),
-    facebookSignInUseCase: sl(),
+    // facebookSignInUseCase: sl(),
     updateUserDetailsUseCase: sl(),
     guestSignInUseCase: sl(), registerGuestUserUseCase: sl(),
   ));
@@ -54,7 +54,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignUpUseCase(authRepository: sl()));
   sl.registerLazySingleton(() => ForgotPasswordUseCase(sl()));
   sl.registerLazySingleton(() => GoogleSignInUseCase(sl()));
-  sl.registerLazySingleton(() => FacebookSignInUseCase(sl()));
+  // sl.registerLazySingleton(() => FacebookSignInUseCase(sl()));
   sl.registerLazySingleton(() => UpdateUserDetailsUseCase(sl()));
   sl.registerLazySingleton(() => GuestSignInUseCase(sl()));
   

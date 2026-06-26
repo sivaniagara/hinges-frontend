@@ -176,7 +176,6 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildGameContent(GameLoaded state) {
     final homeState = context.read<HomeBloc>().state as HomeLoaded;
     final gameData = state.gameData;
-    print("gameData.auctionPlayersStatusList : ${gameData.auctionPlayersStatusList}");
     final playerData = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex];
 
     return RefreshIndicator(
@@ -880,7 +879,7 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(t1, maxLines: 1, style: GoogleFonts.cinzel(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                if (val != null) Text(val, style: GoogleFonts.cinzel(color: Colors.lightGreen, fontSize: 14, fontWeight: FontWeight.bold)),
+                if (val != null) Text(val, style: GoogleFonts.cinzel(color: Colors.lightGreen, fontSize: 12, fontWeight: FontWeight.bold)),
               ],
             ),
           ],
