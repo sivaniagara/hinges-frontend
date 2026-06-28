@@ -34,7 +34,7 @@ class CurrencyBar extends StatelessWidget {
           /// VALUE
           Text(
             value.toString(),
-            style: GoogleFonts.cinzel(
+            style: GoogleFonts.rajdhani(
               color: Colors.white,
               fontSize: 13,
               fontWeight: FontWeight.bold,

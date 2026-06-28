@@ -10,29 +10,19 @@ class IconWithCircularBorder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      spacing: 5,
       children: [
-        Container(
-          padding: const EdgeInsets.all(6), // important for spacing
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppTheme.borderGold, // ✅ golden border
-              width: 0.8, // slightly thicker looks premium
-            ),
-          ),
-          child: Image.asset(
-            image,
-            width: 30, // keep icon size consistent
-          ),
+        Image.asset(
+          image,
+          width: 50, // keep icon size consistent
         ),
         const SizedBox(height: 4),
         Text(
           settingName,
-          style: GoogleFonts.cinzel(
+          style: GoogleFonts.rajdhani(
             color: AppTheme.borderGold,
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),

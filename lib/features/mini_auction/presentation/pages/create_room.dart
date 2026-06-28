@@ -92,7 +92,7 @@ class CreateRoom extends StatelessWidget {
 
                       Text(
                         "FAILED TO GENERATE CODE",
-                        style: GoogleFonts.cinzel(
+                        style: GoogleFonts.rajdhani(
                           color: Colors.amber,
                           fontWeight: FontWeight.bold,
                         ),
@@ -197,7 +197,7 @@ class CreateRoom extends StatelessWidget {
                                   } else if (state is RoomCodeLoaded) {
                                     return Text(
                                       state.roomCode,
-                                      style: GoogleFonts.cinzel(
+                                      style: GoogleFonts.rajdhani(
                                         textStyle: const TextStyle(
                                           color: AppTheme.borderGold,
                                           fontWeight: FontWeight.bold,
@@ -211,7 +211,7 @@ class CreateRoom extends StatelessWidget {
                                   }
                                   return Text(
                                     '......',
-                                    style: GoogleFonts.cinzel(
+                                    style: GoogleFonts.rajdhani(
                                       textStyle: const TextStyle(
                                         color: AppTheme.borderGold,
                                         fontWeight: FontWeight.bold,
@@ -253,7 +253,7 @@ class CreateRoom extends StatelessWidget {
                                             color: AppTheme.borderGold),
                                         Text(
                                           'COPY CODE',
-                                          style: GoogleFonts.cinzel(
+                                          style: GoogleFonts.rajdhani(
                                             textStyle: const TextStyle(
                                               color: AppTheme.borderGold,
                                               fontWeight: FontWeight.bold,
@@ -307,7 +307,7 @@ class CreateRoom extends StatelessWidget {
                                   Image.asset(AppImages.whatsapp, width: 30),
                                   Text(
                                     'SHARE CODE VIA WHATSAPP',
-                                    style: GoogleFonts.cinzel(
+                                    style: GoogleFonts.rajdhani(
                                       textStyle: const TextStyle(
                                         color: AppTheme.borderGold,
                                         fontWeight: FontWeight.bold,
@@ -358,7 +358,7 @@ class CreateRoom extends StatelessWidget {
                               Image.asset(AppImages.enterRoomIcon, width: 30),
                               Text(
                                 'ENTER THE ROOM',
-                                style: GoogleFonts.cinzel(
+                                style: GoogleFonts.rajdhani(
                                   textStyle: const TextStyle(
                                     color: AppTheme.borderGold,
                                     fontWeight: FontWeight.bold,
@@ -387,15 +387,15 @@ class CreateRoom extends StatelessWidget {
                           children: [
                             Text(
                               'MINI AUCTION LITE',
-                              style: GoogleFonts.cinzel(
+                              style: GoogleFonts.rajdhani(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.borderGold,
                               ),
                             ),
                             Text(
-                              '  ${mode.miniAuctionItem.name} ROOM  ',
-                              style: GoogleFonts.cinzel(
+                              '  ${mode.miniAuctionItem.name.toUpperCase()} ROOM  ',
+                              style: GoogleFonts.rajdhani(
                                 textStyle: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,

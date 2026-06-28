@@ -66,7 +66,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
               children: [
                 Text(
                   'ENTRY FEE',
-                  style: GoogleFonts.cinzel(
+                  style: GoogleFonts.rajdhani(
                     color: AppTheme.borderGold,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
                     const SizedBox(width: 5),
                     Text(
                       '$fee COIN',
-                      style: GoogleFonts.cinzel(
+                      style: GoogleFonts.rajdhani(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,

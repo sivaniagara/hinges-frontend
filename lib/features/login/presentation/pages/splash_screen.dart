@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
           animateContent: true,
           child: Stack(
             children: [
-              const GoldenRingBackground(),
+              // const GoldenRingBackground(),
 
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -68,10 +68,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
                   const GoldenTitle(
                     title: 'INDIAN BIDDING LEAGUE',
-                    fontSize: 32,
+                    fontSize: 28,
                   ),
 
-                  const StarLine(),
+                  const StarLine(fontSize: 14,),
 
                   Image.asset(
                     AppImages.goldenCrownLine,
@@ -79,27 +79,27 @@ class _SplashScreenState extends State<SplashScreen> {
                     height: 50,
                   ),
 
-                  const GoldenSubtitle(
+                  const SmallGoldenSubtitle(
                     title: 'POWERED BY HINGES GAMES',
-                    fontSize: 13,
+                    fontSize: 12,
                   ),
                 ],
               ),
 
-              const MandalaDecoration(alignment: Alignment.bottomLeft),
-              const MandalaDecoration(
-                alignment: Alignment.bottomRight,
-                rotateY: math.pi,
-              ),
-              const MandalaDecoration(
-                alignment: Alignment.topLeft,
-                rotateX: math.pi,
-              ),
-              const MandalaDecoration(
-                alignment: Alignment.topRight,
-                rotateX: math.pi,
-                rotateY: math.pi,
-              ),
+              // const MandalaDecoration(alignment: Alignment.bottomLeft),
+              // const MandalaDecoration(
+              //   alignment: Alignment.bottomRight,
+              //   rotateY: math.pi,
+              // ),
+              // const MandalaDecoration(
+              //   alignment: Alignment.topLeft,
+              //   rotateX: math.pi,
+              // ),
+              // const MandalaDecoration(
+              //   alignment: Alignment.topRight,
+              //   rotateX: math.pi,
+              //   rotateY: math.pi,
+              // ),
             ],
           ),
         ),

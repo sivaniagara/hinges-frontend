@@ -20,27 +20,20 @@ class PlayerSetBreakWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if((context.read<GameBloc>().state as GameLoaded).remainingSecondsToExpireBreak! > 5){
-      return Column(
+    // if((context.read<GameBloc>().state as GameLoaded).remainingSecondsToExpireBreak! > 5){
+      return Row(
         spacing: 20,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
+          Image.asset(AppImages.indianBiddingLeague, width: 100, height: 100,),
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Image.asset(AppImages.indianBiddingLeague, width: 80, height: 80,),
-              Column(
-                spacing: 10,
-                children: [
-                  Text('ROUND', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)),),
-                  Text('BREAK...!', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)),),
-                ],
-              ),
+              Text('ROUND BREAK...!', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)),),
               Column(
                 spacing: 5,
                 children: [
-                  Text('AUCTION', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
-                  Text('RESUME IN', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                  Text('AUCTION RESUMES IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                   Container(
                     width: 80,
                     height: 60,
@@ -54,12 +47,12 @@ class PlayerSetBreakWidget extends StatelessWidget {
                         BlocBuilder<GameBloc, GameState>(
                             builder: (context, state){
                               if(state is GameLoaded){
-                                return Text('${state.remainingSecondsToExpireBreak?.toInt()}', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 16, fontWeight: FontWeight.bold)));
+                                return Text('${state.remainingSecondsToExpireBreak?.toInt()}', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 16, fontWeight: FontWeight.bold)));
                               }
                               return SizedBox();
                             }
                         ),
-                        Text('Sec', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                        Text('Sec', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                       ],
                     ),
                   )
@@ -67,27 +60,10 @@ class PlayerSetBreakWidget extends StatelessWidget {
               )
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                AppImages.goldenStarLine,
-                width: 30,
-              ),
-              Text('  PLAN YOUR AUCTION STRATEGY  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 16, fontWeight: FontWeight.bold)),),
-              Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.rotationY(math.pi),
-                child: Image.asset(
-                  AppImages.goldenStarLine,
-                  width: 30,
-                ),
-              ),
-            ],
-          ),
+
         ],
       );
-    }
-    return PlayerRoundStartsIn(categoryAndItemsEntity: categoryAndItemsEntity, auctionPlayerList: auctionPlayerList);
+    // }
+    // return PlayerRoundStartsIn(categoryAndItemsEntity: categoryAndItemsEntity, auctionPlayerList: auctionPlayerList);
   }
 }

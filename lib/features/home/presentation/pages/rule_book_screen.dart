@@ -39,6 +39,7 @@ class RuleBookScreen extends StatelessWidget {
                   children: [
                     Center(
                       child: Row(
+                        spacing: 10,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(AppImages.goldenStarLine, width: 50),
@@ -94,6 +95,7 @@ class RuleBookScreen extends StatelessWidget {
                           title1: "MINI AUCTION",
                           title2: "LITE",
                           isLocked: false,
+                          image: AppImages.blueCard,
                           onTap: (){
                             playTap();
                             context.push('/ruleBook/miniAuctionLiteRuleBook');
@@ -103,16 +105,19 @@ class RuleBookScreen extends StatelessWidget {
                           title1: "MINI AUCTION",
                           title2: "PRO",
                           isLocked: true,
+                          image: AppImages.greenCard,
                         ),
                         _buildRuleCard(
                           title1: "MEGA AUCTION",
                           title2: "LITE",
                           isLocked: true,
+                          image: AppImages.violetCard,
                         ),
                         _buildRuleCard(
                           title1: "MEGA AUCTION",
                           title2: "PRO",
                           isLocked: true,
+                          image: AppImages.redCard,
                         ),
                       ],
                     ),
@@ -131,6 +136,7 @@ class RuleBookScreen extends StatelessWidget {
     required String title1,
     required String title2,
     required bool isLocked,
+    required String image,
     void Function()? onTap
   }) {
     return GestureDetector(
@@ -138,7 +144,7 @@ class RuleBookScreen extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(AppImages.goldenChamberFrame),
+            image: AssetImage(image),
             fit: BoxFit.fill,
           ),
         ),
@@ -166,27 +172,33 @@ class RuleBookScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title1,
-                    style: GoogleFonts.cinzel(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    title2,
-                    style: GoogleFonts.cinzel(
-                      color: AppTheme.borderGold,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        title1,
+                        style: GoogleFonts.rajdhani(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        ' $title2',
+                        style: GoogleFonts.rajdhani(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     "RULE BOOK",
-                    style: GoogleFonts.cinzel(
-                      color: Colors.white,
+                    style: GoogleFonts.rajdhani(
+                      color: AppTheme.borderGold,
                       fontSize: 10,
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                 ],

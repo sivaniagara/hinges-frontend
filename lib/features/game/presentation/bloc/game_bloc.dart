@@ -535,7 +535,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     Map<String, String> roleCategory = {
       '6881ba0f36213beb0017be9c': AppImages.bat,
       '6881ba3936213beb0017be9d': AppImages.wicketKeepingGloves,
-      '6881bba636213beb0017be9e': AppImages.allRounderIcon,
+      '6881bba636213beb0017be9e': AppImages.batBall,
       '6881e28cc8d219cd96a5c4b2': AppImages.ball,
     };
 
@@ -549,10 +549,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   String getPlayerRoleName(AuctionPlayerStatusEntity player, CategoryAndItemsEntity categoryAndItemsEntity){
     String playerRoleId = player.playerRole;
     Map<String, String> roleCategory = {
-      '6881ba0f36213beb0017be9c': 'BATSMEN',
-      '6881ba3936213beb0017be9d': 'WICKET-KEEPER',
-      '6881bba636213beb0017be9e': 'ALL-ROUNDER',
-      '6881e28cc8d219cd96a5c4b2': 'BOWLER',
+      '6881ba0f36213beb0017be9c': 'BATSMEN SET',
+      '6881ba3936213beb0017be9d': 'WICKET-KEEPERS SET',
+      '6881bba636213beb0017be9e': 'ALL-ROUNDERS SET',
+      '6881e28cc8d219cd96a5c4b2': 'BOWLERS SET',
     };
 
     if(roleCategory.containsKey(playerRoleId)){
@@ -731,7 +731,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     if (rupees >= 10000000) {
       final cr = rupees / 10000000;
-      return "${format(cr, maxDecimalsForCr)} Cr";
+      return "${format(cr, maxDecimalsForCr)} CR";
     }
     else if (rupees >= 100000) {
       final lakh = rupees / 100000;

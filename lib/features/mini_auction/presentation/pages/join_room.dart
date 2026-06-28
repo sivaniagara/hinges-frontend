@@ -52,7 +52,7 @@ class _JoinRoomState extends State<JoinRoom> {
                             AppImages.goldenStarLine,
                             width: 50,
                           ),
-                          Text('ENTER THE ROOM CODE', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 15, fontWeight: FontWeight.bold)),),
+                          Text('ENTER THE ROOM CODE', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 15, fontWeight: FontWeight.bold)),),
                           Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.rotationY(math.pi),
@@ -68,7 +68,7 @@ class _JoinRoomState extends State<JoinRoom> {
                         child: TextFormField(
                           controller: roomCodeController,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.cinzel(textStyle: TextStyle(fontSize: 14, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
+                          style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold)),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             hintText: 'ENTER ROOM CODE'
@@ -105,7 +105,7 @@ class _JoinRoomState extends State<JoinRoom> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Image.asset(AppImages.enterRoomIcon, width: 30,),
-                                Text('ENTER THE ROOM', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontWeight: FontWeight.bold, fontSize: 16),))
+                                Text('ENTER THE ROOM', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontWeight: FontWeight.bold, fontSize: 16),))
                               ],
                             )
                         ),
@@ -125,13 +125,13 @@ class _JoinRoomState extends State<JoinRoom> {
                           children: [
                             Text(
                               'MINI AUCTION LITE',
-                              style: GoogleFonts.cinzel(
+                              style: GoogleFonts.rajdhani(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.borderGold,
                               ),
                             ),
-                            Text('  ${widget.mode.miniAuctionItem.name} ROOM  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                            Text('  ${widget.mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                           ],
                         ),
                       ),

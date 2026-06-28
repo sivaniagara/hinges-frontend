@@ -17,6 +17,7 @@ import '../../../home/domain/entities/auction_category_item_entity.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../../../home/presentation/widgets/app_background.dart';
+import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../widgets/golden_dialog.dart';
 
 /// ================= MODEL =================
@@ -173,7 +174,7 @@ class _Header extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TopUserBar(loading: false, userData: userData),
+        TopUserBar(loading: false, userData: userData, onAddTap: () {  },),
         GestureDetector(
           onTap: () {
             context.pop();
@@ -183,7 +184,7 @@ class _Header extends StatelessWidget {
               Image.asset(AppImages.homeMenuIcon, width: 50),
               Text(
                 'HOME',
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   color: AppTheme.borderGold,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -210,9 +211,23 @@ class _ArenaSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Column(
+      spacing: 20,
       children: [
-        const CrownTitle(text: 'CHOOSE YOUR ARENA'),
+        Column(
+          spacing: 2,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            StarLine(content: 'CHOOSE YOUR AUCTION ROOM', fontSize: 18,),
+            Image.asset(
+              AppImages.goldenCrownLine,
+              width: 200,
+              height: 20,
+            ),
+          ],
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: items.map((item) {
@@ -246,17 +261,19 @@ class _ModeSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 10,
       children: [
-        CrownTitle(text: '${mode.miniAuctionItem.name} ROOM'),
+        CrownTitle(text: '${mode.miniAuctionItem.name.toUpperCase()} ROOM', fontSize: 24,),
+        SizedBox(height: 20,),
         Row(
+          spacing: 10,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Entry Fee - ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+            Text('Entry Fee - ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),),
             Image.asset(AppImages.coinMenuIcon, width: 20,),
-            Text('${mode.miniAuctionItem.fee} COINS', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+            Text('${mode.miniAuctionItem.fee} COINS', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),),
           ],
         ),
+        SizedBox(height: 20,),
         Row(
           mainAxisAlignment: MainAxisAlignment.center ,
           children: [
@@ -290,18 +307,23 @@ class _ModeSelection extends StatelessWidget {
 
 class CrownTitle extends StatelessWidget {
   final String text;
+  final double fontSize;
 
-  const CrownTitle({super.key, required this.text});
+  const CrownTitle({
+    super.key,
+    required this.text,
+    this.fontSize = 20
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(AppImages.headerGoldenCrown, width: 150, height: 20),
+        // Image.asset(AppImages.headerGoldenCrown, width: 150, height: 20),
         Text(
           text,
-          style: GoogleFonts.cinzel(
-            fontSize: 20,
+          style: GoogleFonts.rajdhani(
+            fontSize: fontSize,
             fontWeight: FontWeight.bold,
             color: AppTheme.borderGold,
           ),
@@ -367,7 +389,7 @@ class _BottomBar extends StatelessWidget {
             ),
             child: Text(
               'MINI AUCTION LITE',
-              style: GoogleFonts.cinzel(
+              style: GoogleFonts.rajdhani(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.borderGold,
@@ -445,7 +467,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
               children: [
                 Text(
                   'ENTRY FEE',
-                  style: GoogleFonts.cinzel(
+                  style: GoogleFonts.rajdhani(
                     color: AppTheme.borderGold,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -457,7 +479,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
                     const SizedBox(width: 5),
                     Text(
                       '$fee COIN',
-                      style: GoogleFonts.cinzel(
+                      style: GoogleFonts.rajdhani(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,

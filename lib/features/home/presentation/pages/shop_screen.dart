@@ -84,6 +84,7 @@ class ShopScreen extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                     color: AppTheme.navyBlue,
+                    borderRadius: BorderRadius.circular(42),
                     image: DecorationImage(
                         image: AssetImage(AppImages.goldenOutline),
                         fit: BoxFit.fill
@@ -105,7 +106,7 @@ class ShopScreen extends StatelessWidget {
                       ),
                       child: Text(
                         'BUY COINS',
-                        style: GoogleFonts.cinzel(
+                        style: GoogleFonts.rajdhani(
                           color: AppTheme.borderGold,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -154,40 +155,43 @@ class ShopScreen extends StatelessWidget {
           )
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(image, width: 50, height: 45),
-          Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    'Rs. ',
-                    style: GoogleFonts.cinzel(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 100,
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      'Rs. ',
+                      style: GoogleFonts.rajdhani(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    price,
-                    style: GoogleFonts.cinzel(
-                      color: AppTheme.borderGold,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      price,
+                      style: GoogleFonts.rajdhani(
+                        color: AppTheme.borderGold,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Image.asset(
-                AppImages.highlightValue,
-                width: 80,
-                height: 10,
-                fit: BoxFit.fitHeight,
-              )
-            ],
+                  ],
+                ),
+                Image.asset(
+                  AppImages.highlightValue,
+                  width: 80,
+                  height: 10,
+                  fit: BoxFit.fitHeight,
+                )
+              ],
+            ),
           ),
           Transform.rotate(
             angle: 90 * 3.1415926535 / 180, // 90 degrees in radians
@@ -197,29 +201,32 @@ class ShopScreen extends StatelessWidget {
             ),
           ),
           // Coins Section
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                coins,
-                style: GoogleFonts.cinzel(
-                  color: AppTheme.borderGold,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  coins,
+                  style: GoogleFonts.rajdhani(
+                    color: AppTheme.borderGold,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                'COINS',
-                style: GoogleFonts.cinzel(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                Text(
+                  'COINS',
+                  style: GoogleFonts.rajdhani(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(width: 40),
+          Icon(Icons.lock, color: AppTheme.borderGold, size: 18),
         ],
       ),
     );

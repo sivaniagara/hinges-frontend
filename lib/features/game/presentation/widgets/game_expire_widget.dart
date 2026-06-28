@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.dart';
 import 'package:hinges_frontend/core/presentation/widgets/dot_circular_loader.dart';
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/pacman_count_down.dart';
 
 import '../../../../core/presentation/widgets/back_icon.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -42,20 +43,21 @@ class GameExpireWidget extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              Text('GAME EXPIRE', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-                              Container(
-                                decoration: const BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
-                                width: 60,
-                                height: 60,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('${state.remainingSecondsToStart.toInt()}',
-                                        style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
-                                    Text('SEC', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
-                                  ],
-                                ),
-                              ),
+                              // Text('GAME EXPIRE', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+                              PacmanCountdown(remaining: state.remainingSecondsToStart.toInt(), total: 120),
+                              // Container(
+                              //   decoration: const BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
+                              //   width: 60,
+                              //   height: 60,
+                              //   child: Column(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     children: [
+                              //       Text('${state.remainingSecondsToStart.toInt()}',
+                              //           style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
+                              //       Text('SEC', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
+                              //     ],
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -81,7 +83,7 @@ class GameExpireWidget extends StatelessWidget {
                               ),
                               child: Text(
                                 'MINI AUCTION LITE',
-                                style: GoogleFonts.cinzel(
+                                style: GoogleFonts.rajdhani(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: AppTheme.borderGold,
@@ -95,7 +97,7 @@ class GameExpireWidget extends StatelessWidget {
                                   AppImages.goldenStarLine,
                                   width: 50,
                                 ),
-                                Text('  ${mode.miniAuctionItem.name} ROOM  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 14, fontWeight: FontWeight.bold)),),
+                                Text('  ${mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 14, fontWeight: FontWeight.bold)),),
                                 Transform(
                                   alignment: Alignment.center,
                                   transform: Matrix4.rotationY(math.pi),
@@ -106,24 +108,7 @@ class GameExpireWidget extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  AppImages.goldenStarLine,
-                                  width: 50,
-                                ),
-                                Text('WAIT FOR THE USERS TO JOIN THE AUCTION TABLE', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
-                                Transform(
-                                  alignment: Alignment.center,
-                                  transform: Matrix4.rotationY(math.pi),
-                                  child: Image.asset(
-                                    AppImages.goldenStarLine,
-                                    width: 50,
-                                  ),
-                                ),
-                              ],
-                            ),
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: List.generate(5, (index){
@@ -142,7 +127,27 @@ class GameExpireWidget extends StatelessWidget {
                                   ),
                                 );
                               }),
-                            )
+                            ),
+                            SizedBox(height: 5,),
+                            Row(
+                              spacing: 20,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  AppImages.goldenStarLine,
+                                  width: 50,
+                                ),
+                                Text('WAIT FOR THE OTHER USERS TO JOIN THE AUCTION ROOM', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                                Transform(
+                                  alignment: Alignment.center,
+                                  transform: Matrix4.rotationY(math.pi),
+                                  child: Image.asset(
+                                    AppImages.goldenStarLine,
+                                    width: 50,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -286,7 +291,7 @@ class _AnimatedCardState extends State<_AnimatedCard>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   color: AppTheme.borderGold,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -300,7 +305,7 @@ class _AnimatedCardState extends State<_AnimatedCard>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: GoogleFonts.cinzel(
+              style: GoogleFonts.rajdhani(
                 color: AppTheme.borderGold,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,

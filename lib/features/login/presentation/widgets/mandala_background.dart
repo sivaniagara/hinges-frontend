@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class MandalaBackground extends StatefulWidget {
   final Widget child;
   final bool animateContent;
+  final bool showParticle;
 
   const MandalaBackground({
     super.key,
     required this.child,
     this.animateContent = true,
+    this.showParticle = true,
   });
 
   @override
@@ -74,7 +76,7 @@ class _MandalaBackgroundState extends State<MandalaBackground>
     _particles = [];
     final random = math.Random();
 
-    for (int i = 0; i < 500; i++) {
+    for (int i = 0; i < 80; i++) {
       _particles.add(
         Particle(
           x: random.nextDouble(),
@@ -100,16 +102,18 @@ class _MandalaBackgroundState extends State<MandalaBackground>
       listenable: Listenable.merge([_bgAnimation, _particlesController]),
       builder: (context, child) {
         return Container(
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              colors: [
-                Color(0xFF023FA8),
-                Color(0xFF010218),
-              ],
-              radius: 0.8,
-              focal: Alignment.center,
-              focalRadius: 0.2,
-            ),
+          decoration: BoxDecoration(
+            color: Color(0xff065387),
+            // gradient: widget.showParticle ? RadialGradient(
+            //   colors: [
+            //     Color(0xFF023FA8),
+            //     // Color(0xFF023FA8),
+            //     Color(0xFF010218),
+            //   ],
+            //   radius: 0.8,
+            //   focal: Alignment.center,
+            //   focalRadius: 0.2,
+            // ) : null,
           ),
           child: Stack(
             children: [
@@ -137,7 +141,8 @@ class _MandalaBackgroundState extends State<MandalaBackground>
               ),
 
               /// Static Golden Particles (with twinkle)
-              ..._buildParticleLayer(context),
+              if(widget.showParticle)
+                ..._buildParticleLayer(context),
 
               /// Content
               if (widget.animateContent && _mainController != null)
@@ -176,28 +181,20 @@ class _MandalaBackgroundState extends State<MandalaBackground>
       return Positioned(
         left: particle.x * MediaQuery.of(context).size.width,
         top: particle.y * MediaQuery.of(context).size.height,
-        child: AnimatedBuilder(
-          animation: _particlesController,
-          builder: (context, child) {
-            final twinkle =
-                (math.sin(_particlesController.value * math.pi * 2 * particle.size * 2) + 1) / 2;
-
-            return Container(
-              width: particle.size,
-              height: particle.size,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFFFD700).withOpacity(
-                  particle.opacity * clampedFade * (0.6 + twinkle * 0.4),
-                ),
-              ),
-            );
-          },
+        child: CustomPaint(
+          size: Size(particle.size * 2, particle.size * 2),
+          painter: StarPainter(
+            color: const Color(0xFFFFD700).withOpacity(
+              (particle.opacity * clampedFade + 0.5).clamp(0.0, 1.0),
+            ),
+          ),
         ),
       );
     });
   }
 }
+
+
 
 class Particle {
   double x;
@@ -211,4 +208,34 @@ class Particle {
     required this.size,
     required this.opacity,
   });
+}
+
+class StarPainter extends CustomPainter {
+  final Color color;
+
+  StarPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final outerRadius = size.width / 2;
+    final innerRadius = outerRadius * 0.4;
+    const points = 4;
+
+    final path = Path();
+    for (int i = 0; i < points * 2; i++) {
+      final angle = (math.pi / points) * i - math.pi / 2;
+      final radius = i.isEven ? outerRadius : innerRadius;
+      final x = cx + radius * math.cos(angle);
+      final y = cy + radius * math.sin(angle);
+      i == 0 ? path.moveTo(x, y) : path.lineTo(x, y);
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(StarPainter oldDelegate) => oldDelegate.color != color;
 }

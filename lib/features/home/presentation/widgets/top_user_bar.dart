@@ -10,17 +10,20 @@ import '../widgets/currency_bar.dart';
 class TopUserBar extends StatelessWidget {
   final bool loading;
   final UserDataEntity? userData;
+  final void Function()? onAddTap;
 
   const TopUserBar({
     super.key,
     required this.loading,
     required this.userData,
+    required this.onAddTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
+        SizedBox(width: 10,),
         GestureDetector(
           onTap: () {
             if (userData != null) {
@@ -38,20 +41,18 @@ class TopUserBar extends StatelessWidget {
         CurrencyBar(
           icon: AppImages.coinMenuIcon,
           value: userData?.coinWon ?? 0,
-          onAddTap: () {
-            // handle coin add
-          },
+          onAddTap: onAddTap,
         ),
 
-        const SizedBox(width: 20),
-
-        CurrencyBar(
-          icon: AppImages.diamondMenuIcon,
-          value: 0,
-          onAddTap: () {
-            // handle diamond add
-          },
-        ),
+        // const SizedBox(width: 20),
+        //
+        // CurrencyBar(
+        //   icon: AppImages.diamondMenuIcon,
+        //   value: 0,
+        //   onAddTap: () {
+        //     // handle diamond add
+        //   },
+        // ),
       ],
     );
   }
@@ -78,7 +79,8 @@ class _ProfileCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.person, color: Colors.amber),
+          Image.asset(AppImages.user, width: 25,),
+          // const Icon(Icons.person, color: Colors.amber),
           const SizedBox(width: 6),
           Text(
             loading ? "..." : name.toUpperCase(),

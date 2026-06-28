@@ -8,17 +8,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// ✅ Load keystore properties
+// Load keystore properties (only if key.properties exists)
 val keystorePropertiesFile = rootProject.file("key.properties")
-val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        load(FileInputStream(keystorePropertiesFile))
+    }
 }
 
-// ✅ Facebook credentials
-//val facebookAppId = "1503898344766011"
-//val facebookClientToken = "3059a358c8d679e81f0d9d19fc82d757"
-//val facebookLoginProtocolScheme = "fb$facebookAppId"
+val hasKeystore = keystorePropertiesFile.exists()
 
 android {
     namespace = "com.example.hinges_frontend"
@@ -34,13 +32,15 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    // ✅ Signing config defined BEFORE buildTypes
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+    // Signing config — only defined when key.properties is present
+    if (hasKeystore) {
+        signingConfigs {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
         }
     }
 
@@ -50,17 +50,17 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-//        manifestPlaceholders["facebookAppId"] = facebookAppId
-//        manifestPlaceholders["facebookClientToken"] = facebookClientToken
-//        manifestPlaceholders["facebookLoginProtocolScheme"] = facebookLoginProtocolScheme
     }
 
     buildTypes {
         release {
-            // ✅ Now uses real release signing, not debug
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false  // set true if you want code shrinking
+            // Use release signing if keystore is available, otherwise fall back to debug signing
+            signingConfig = if (hasKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+            isMinifyEnabled = false
             isShrinkResources = false
         }
     }

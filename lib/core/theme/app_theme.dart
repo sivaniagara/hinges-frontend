@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 
 class AppTheme {
   /// 🎨 Core Colors (Matched to your UI)
-  static const Color primaryGold = Color(0xFFD4AF37); // Rich gold
+  // static const Color primaryGold = Color(0xFFD4AF37); // Rich gold
+  static const Color primaryGold = Color(0xFFEFCD83); // Rich gold
   static const Color darkBlue = Color(0xFF0A1F44); // Main background
   static const Color navyBlue = Color(0xFF08142E); // Deep layer
   static const Color cardBlue = Color(0xFF102A5C); // Cards / buttons
-  static const Color borderGold = Color(0xFFFFD700);
+  static const Color borderGold = Color(0xFFEFCD83);
 
   static const Color white = Colors.white;
   static const Color white70 = Colors.white70;
@@ -136,7 +137,7 @@ class AppTheme {
       /// 💡 Input Fields (Optional but useful)
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: cardBlue,
+        fillColor: white,
         hintStyle: const TextStyle(color: white70),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

@@ -2,6 +2,13 @@ class AppImages {
   static const String base = 'assets/images/png/';
 
   static const String bgEffect = '${base}bg_effect.png';
+  static const String user = '${base}user.png';
+  static const String dialogFrame = '${base}dialog_frame.png';
+  static const String cancel = '${base}cancel.png';
+  static const String blueCard = '${base}blue_card.png';
+  static const String greenCard = '${base}green_card.png';
+  static const String violetCard = '${base}violet_card.png';
+  static const String redCard = '${base}red_card.png';
   static const String adsFree = '${base}ads_free.png';
   static const String auctionCard = '${base}auction_card.png';
   static const String auctionerBox = '${base}auctioner_box.png';

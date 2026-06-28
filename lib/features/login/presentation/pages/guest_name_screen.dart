@@ -115,25 +115,25 @@ class _GuestNameScreenState extends State<GuestNameScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'YOUR NAME',
-                    hintStyle: GoogleFonts.oxanium(color: Colors.white38),
-                    prefixIcon: const Icon(Icons.person_outline, color: Colors.black),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-
-                    // Explicitly override borders
-                    border: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.black, width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.black, width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0xFF800000), width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                  filled: true,                                    // ← this was missing
+                  fillColor: Colors.transparent,                   // or your dark bg color
+                  hintText: 'YOUR NAME',
+                  hintStyle: GoogleFonts.oxanium(color: Colors.white38),
+                  prefixIcon: const Icon(Icons.person_outline, color: Colors.white),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black, width: 2),
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black, width: 2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF800000), width: 2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                   textCapitalization: TextCapitalization.characters,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {

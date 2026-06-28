@@ -17,14 +17,33 @@ class GoldenTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Text(
+      title,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.rajdhani(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 2,
+        color: AppTheme.borderGold,
+        shadows: [
+          Shadow(
+            offset: const Offset(0, 6),
+            blurRadius: 8,
+            color: Colors.black.withOpacity(0.6),
+          ),
+        ],
+      ),
+    );
     return ShaderMask(
       shaderCallback: (bounds) => const LinearGradient(
         colors: [
-          AppTheme.primaryGold,
-          AppTheme.borderGold,
-          AppTheme.borderGold,
-          AppTheme.borderGold,
-          AppTheme.primaryGold,
+          Color(0xffFFF8A0),
+          Color(0xffF3D654),
+          Color(0xffFFF8A0),
+          // AppTheme.borderGold,
+          // AppTheme.borderGold,
+          // AppTheme.borderGold,
+          // AppTheme.primaryGold,
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -32,7 +51,7 @@ class GoldenTitle extends StatelessWidget {
       child: Text(
         title,
         textAlign: TextAlign.center,
-        style: GoogleFonts.cinzel(
+        style: GoogleFonts.rajdhani(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
@@ -52,15 +71,34 @@ class GoldenTitle extends StatelessWidget {
 class GoldenSubtitle extends StatelessWidget {
   final String title;
   final double fontSize;
+  final Color fontColor;
 
   const GoldenSubtitle({
     super.key,
     required this.title,
     this.fontSize = 20,
+    this.fontColor = AppTheme.borderGold,
   });
 
   @override
   Widget build(BuildContext context) {
+    return Text(
+      title,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.oxanium(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 2,
+        color: fontColor,
+        shadows: [
+          Shadow(
+            offset: const Offset(0, 6),
+            blurRadius: 8,
+            color: Colors.black.withOpacity(0.6),
+          ),
+        ],
+      ),
+    );
     return ShaderMask(
       shaderCallback: (bounds) => const LinearGradient(
         colors: [
@@ -74,7 +112,66 @@ class GoldenSubtitle extends StatelessWidget {
       child: Text(
         title,
         textAlign: TextAlign.center,
-        style: GoogleFonts.cinzel(
+        style: GoogleFonts.rajdhani(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2,
+          shadows: [
+            Shadow(
+              offset: const Offset(0, 6),
+              blurRadius: 8,
+              color: Colors.black.withOpacity(0.6),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SmallGoldenSubtitle extends StatelessWidget {
+  final String title;
+  final double fontSize;
+
+  const SmallGoldenSubtitle({
+    super.key,
+    required this.title,
+    this.fontSize = 20,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.orbitron(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 2,
+        color: AppTheme.borderGold,
+        shadows: [
+          Shadow(
+            offset: const Offset(0, 6),
+            blurRadius: 8,
+            color: Colors.black.withOpacity(0.6),
+          ),
+        ],
+      ),
+    );
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [
+          Color(0xFFFDFFAF),
+          Color(0xFFFDFFAF),
+          AppTheme.borderGold,
+        ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(bounds),
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.rajdhani(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
@@ -93,8 +190,10 @@ class GoldenSubtitle extends StatelessWidget {
 
 class StarLine extends StatelessWidget {
   final double fontSize;
+  final String content;
   const StarLine({super.key,
-    this.fontSize = 20
+    this.fontSize = 20,
+    this.content = 'OWN YOUR DREAM TEAM',
   });
 
   @override
@@ -108,8 +207,9 @@ class StarLine extends StatelessWidget {
           width: 50,
         ),
         GoldenSubtitle(
-          title: 'OWN YOUR DREAM TEAM',
+          title: content,
           fontSize: fontSize,
+          fontColor: Colors.white,
         ),
         Transform(
           alignment: Alignment.center,
@@ -136,7 +236,7 @@ class MandalaDecoration extends StatelessWidget {
     required this.alignment,
     this.rotateX = 0,
     this.rotateY = 0,
-    this.opacity = 0.5,
+    this.opacity = 0.8,
     this.size = 0.35,
   });
 
@@ -168,7 +268,7 @@ class GoldenRingBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Opacity(
-        opacity: 0.5,
+        opacity: 1,
         child: Image.asset(
           AppImages.goldenRingStump,
           height: MediaQuery.of(context).size.height,

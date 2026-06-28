@@ -29,7 +29,7 @@ class AcceleratedRoundIntro extends StatelessWidget {
           ),
           child: Text(
             'Round ${(context.read<GameBloc>().state as GameLoaded).gameData.round}',
-            style: GoogleFonts.cinzel(
+            style: GoogleFonts.rajdhani(
               fontSize: 25,
               fontWeight: FontWeight.bold,
               color: AppTheme.borderGold,
@@ -51,7 +51,7 @@ class AcceleratedRoundIntro extends StatelessWidget {
             children: [
               Text(
                 'ACCELERATED SET',
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -72,16 +72,16 @@ class AcceleratedRoundIntro extends StatelessWidget {
               AppImages.goldenStarLine,
               width: 50,
             ),
-            Text('  STARTS IN', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+            Text('  STARTS IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
             BlocBuilder<GameBloc, GameState>(
                 builder: (context, state){
                   if(state is GameLoaded){
-                    return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
+                    return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
                   }
                   return SizedBox();
                 }
             ),
-            Text('..!  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+            Text('..!  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
             Transform(
               alignment: Alignment.center,
               transform: Matrix4.rotationY(math.pi),

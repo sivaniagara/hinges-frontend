@@ -123,33 +123,31 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Column(
                               children: [
-                                Row(
-                                  spacing: 10,
+                                Column(
+                                  spacing: 2,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image.asset(
                                       AppImages.indianBiddingLeague,
                                       height: size.height * 0.15,
                                     ),
-                                    Text(
-                                      'INDIAN BIDDING LEAGUE',
-                                      style: GoogleFonts.cinzel(
-                                        fontSize: size.height * 0.07,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.borderGold,
-                                      ),
+                                    StarLine(content: 'CHOOSE YOUR ARENA', fontSize: 18,),
+                                    Image.asset(
+                                      AppImages.goldenCrownLine,
+                                      width: 200,
+                                      height: 20,
                                     ),
                                   ],
                                 ),
-                                Image.asset(
-                                  AppImages.goldenCrownLine,
-                                  width: 200,
-                                  height: 30,
-                                ),
-                                const StarLine(fontSize: 16),
+                                // Image.asset(
+                                //   AppImages.goldenCrownLine,
+                                //   width: 200,
+                                //   height: 30,
+                                // ),
+                                // const StarLine(fontSize: 16),
                               ],
                             ),
-
+                            SizedBox(height: 5,),
                             Row(
                               mainAxisAlignment:
                               MainAxisAlignment.spaceEvenly,
@@ -308,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     Text(
                       'EARN REWARDS',
-                      style: GoogleFonts.cinzel(
+                      style: GoogleFonts.rajdhani(
                         color: AppTheme.borderGold,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -327,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 10),
                         Text(
                           '200 COINS',
-                          style: GoogleFonts.cinzel(
+                          style: GoogleFonts.rajdhani(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -361,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(width: 10),
                             Text(
                               'WATCH AD',
-                              style: GoogleFonts.cinzel(
+                              style: GoogleFonts.rajdhani(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -392,7 +390,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          TopUserBar(loading: loading, userData: userData),
+          TopUserBar(
+            loading: loading,
+            userData: userData,
+            onAddTap: () {
+              playTap();
+              context.push('/shop');
+            },
+          ),
           /// ACTION BUTTONS
           Row(
             spacing: 20,
@@ -414,14 +419,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap:  () {
                   playTap();
                   context.push('/shop');
-                },
-                iconSize: 40,
-              ),
-              TopActionButton(
-                icon: AppImages.mailMenuIcon,
-                title: 'MAIL',
-                onTap: () {
-                  playTap();
                 },
                 iconSize: 40,
               ),
@@ -545,7 +542,7 @@ class TopActionButton extends StatelessWidget {
           Image.asset(icon, width: iconSize),
           Text(
             title,
-            style: GoogleFonts.cinzel(
+            style: GoogleFonts.rajdhani(
               color: AppTheme.borderGold,
               fontSize: 11,
               fontWeight: FontWeight.bold,
@@ -575,7 +572,7 @@ class BottomButton extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Image.asset(icon, width: 40),
+          Image.asset(icon, width: 50),
           const SizedBox(width: 5),
           Text(
             title,

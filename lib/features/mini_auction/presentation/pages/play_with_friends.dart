@@ -52,7 +52,7 @@ class PlayWithFriends extends StatelessWidget {
                       ),
                       child: Text(
                         'MINI AUCTION LITE',
-                        style: GoogleFonts.cinzel(
+                        style: GoogleFonts.rajdhani(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.borderGold,
@@ -66,7 +66,7 @@ class PlayWithFriends extends StatelessWidget {
                           AppImages.goldenStarLine,
                           width: 50,
                         ),
-                        Text('  ${mode.miniAuctionItem.name} ROOM  ', style: GoogleFonts.cinzel(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                        Text('  ${mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                         Transform(
                           alignment: Alignment.center,
                           transform: Matrix4.rotationY(math.pi),

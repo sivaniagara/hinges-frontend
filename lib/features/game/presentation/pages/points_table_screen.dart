@@ -14,19 +14,19 @@ class PointsTableScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            colors: [
-              Color(0xFF001F4D), // Dark blue center glow
-              Color(0xFF000511), // Deep black edges
-            ],
-            radius: 1.2,
-            center: Alignment.center,
-          ),
+          color: Color(0xff065387),
+          // gradient: RadialGradient(
+          //   colors: [
+          //     Color(0xFF001F4D), // Dark blue center glow
+          //     Color(0xFF000511), // Deep black edges
+          //   ],
+          //   radius: 1.2,
+          //   center: Alignment.center,
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -102,7 +102,7 @@ class PointsTableScreen extends StatelessWidget {
                                   return _buildTeamRow(
                                     rank: index + 1,
                                     userName: user.userName.toUpperCase(),
-                                    franchiseName: franchise.shortName(),
+                                    franchiseName: franchise.fullName(),
                                     franchiseLogo: franchise.image(),
                                     remainingPurse: context.read<GameBloc>().formatPriceShort(user.balanceAmount),
                                     totalRating: rating.toStringAsFixed(1),
@@ -183,13 +183,13 @@ class PointsTableScreen extends StatelessWidget {
           Expanded(
             flex: 4,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(franchiseLogo, height: 35),
                 const SizedBox(width: 8),
                 Text(
                   franchiseName,
-                  style: GoogleFonts.oxanium(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.oxanium(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ],
             ),

@@ -14,6 +14,7 @@ import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
+import '../../../login/presentation/widgets/mandala_background.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../../domain/entities/user_status_entity.dart';
@@ -25,19 +26,19 @@ class MySquadScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            colors: [
-              AppTheme.navyBlue,
-              Color(0xFF000511), // Deep black edges
-            ],
-            radius: 1.2,
-            center: Alignment.center,
-          ),
+          color: Color(0xff065387),
+          // gradient: RadialGradient(
+          //   colors: [
+          //     AppTheme.navyBlue,
+          //     Color(0xFF000511), // Deep black edges
+          //   ],
+          //   radius: 1.2,
+          //   center: Alignment.center,
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -69,7 +70,7 @@ class MySquadScreen extends StatelessWidget {
                         child: Center(
                           child: Text(
                             'MY SQUAD',
-                            style: GoogleFonts.cinzel(
+                            style: GoogleFonts.rajdhani(
                               color: const Color(0xFFD4AF37),
                               fontSize: 15,
                               fontWeight: FontWeight.w900,
@@ -79,18 +80,17 @@ class MySquadScreen extends StatelessWidget {
                         ),
                       ),
                       // Team Logo
-                      Column(
+                      Row(
                         children: [
-                          Image.asset(franchise.image(), height: 40),
+                          Image.asset(franchise.image(), height: 60),
                           Text(
-                            franchise.shortName().toUpperCase(),
-                            style: GoogleFonts.cinzel(
+                            franchise.fullName().toUpperCase(),
+                            style: GoogleFonts.rajdhani(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
                         ],
                       ), // Team Name
 
@@ -99,14 +99,14 @@ class MySquadScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       _buildHeaderStat(
                         'PURSE REM',
-                        context.read<GameBloc>().formatPriceShort(userStatus.balanceAmount), 
+                        context.read<GameBloc>().formatPriceShort(userStatus.balanceAmount),
                         AppImages.purseRem,
                         valueColor: const Color(0xFF00FF00)
                       ),
                       const SizedBox(width: 10),
                       _buildHeaderStat(
-                        'TOTAL RATING', 
-                        getSquadRating(mySquad).toStringAsFixed(1), 
+                        'TOTAL RATING',
+                        getSquadRating(mySquad).toStringAsFixed(1),
                         AppImages.rating,
                         valueColor: const Color(0xFFFFD700)
                       ),
@@ -147,14 +147,14 @@ class MySquadScreen extends StatelessWidget {
                                   final key = index + 1;
                                   final player = mySquad[key];
                                   final role = context.read<GameBloc>().getRole(key);
-                                  
+
                                   // Slot labeling to match image: BAT 1, BAT 2, BAT 3, WK 1, WK 2, ALR 1-4, BOWL 1-3
                                   int subIndex = 0;
                                   if (key <= 3) subIndex = key;
                                   else if (key <= 5) subIndex = key - 3;
                                   else if (key <= 9) subIndex = key - 5;
                                   else subIndex = key - 9;
-                                  
+
                                   final slotLabel = "$role";
 
                                   if (player != null) {
@@ -261,8 +261,8 @@ class MySquadScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(label, style: GoogleFonts.cinzel(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold)),
-              Text(value, style: GoogleFonts.cinzel(fontSize: 16, color: valueColor, fontWeight: FontWeight.w900)),
+              Text(label, style: GoogleFonts.rajdhani(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold)),
+              Text(value, style: GoogleFonts.rajdhani(fontSize: 16, color: valueColor, fontWeight: FontWeight.w900)),
             ],
           ),
         ],
@@ -312,11 +312,11 @@ class MySquadScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildCell(slot, flex: 1, color: Colors.white),
+          _buildCell(slot, flex: 1, color: Colors.white, isBold: true),
           _buildCell(name, flex: 2, isBold: true, color: Colors.white),
-          _buildCell(description, flex: 2, fontSize: 10, color: Colors.white70),
+          _buildCell(description, flex: 2, fontSize: 12, color: Colors.white, isBold: true),
           _buildCell(category, flex: 1, color: categoryColor, isBold: true),
-          _buildCell(basePrice, flex: 1, color: Colors.white),
+          _buildCell(basePrice, flex: 1, color: Colors.white, isBold: true),
           _buildCell(rating, flex: 1, color: const Color(0xFFFFD700), isBold: true),
           _buildCell(soldPrice, flex: 1, color: const Color(0xFF00FF00), isBold: true),
         ],
@@ -324,15 +324,15 @@ class MySquadScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 11}) {
+  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 12}) {
     return Expanded(
       flex: flex,
       child: Center(
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: GoogleFonts.cinzel(
-            fontSize: isHeader ? 10 : fontSize,
+          style: GoogleFonts.rajdhani(
+            fontSize: isHeader ? 13 : fontSize,
             fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
             color: isHeader ? AppTheme.borderGold : color,
           ),
@@ -383,7 +383,7 @@ class MySquadScreen extends StatelessWidget {
   Widget _buildNumberedSquaresRow(String label, List<bool> dots) {
     return Row(
       children: [
-        SizedBox(width: 45, child: Text(label, style: GoogleFonts.cinzel(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white))),
+        SizedBox(width: 45, child: Text(label, style: GoogleFonts.rajdhani(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white))),
         const SizedBox(width: 10),
         ...List.generate(dots.length, (index) {
           return Container(
@@ -406,7 +406,7 @@ class MySquadScreen extends StatelessWidget {
             child: Center(
               child: Text(
                 '${index + 1}',
-                style: GoogleFonts.cinzel(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold),
+                style: GoogleFonts.rajdhani(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           );
@@ -418,7 +418,7 @@ class MySquadScreen extends StatelessWidget {
   Widget _buildBowlingSquareRow(String label, bool isAvailable) {
     return Row(
       children: [
-        Expanded(child: Text(label, style: GoogleFonts.cinzel(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white))),
+        Expanded(child: Text(label, style: GoogleFonts.rajdhani(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white))),
         Container(
           width: 20,
           height: 14,
@@ -438,7 +438,7 @@ class MySquadScreen extends StatelessWidget {
           child: Center(
             child: Text(
               '1',
-              style: GoogleFonts.cinzel(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.rajdhani(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         ),

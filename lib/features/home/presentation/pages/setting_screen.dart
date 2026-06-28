@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
@@ -26,6 +27,30 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   bool isSoundOn = true;
   bool isVibrateOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isSoundOn = prefs.getBool('isSoundOn') ?? true;
+      isVibrateOn = prefs.getBool('isVibrateOn') ?? true;
+    });
+  }
+
+  Future<void> _saveSoundSetting(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isSoundOn', value);
+  }
+
+  Future<void> _saveVibrateSetting(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isVibrateOn', value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +135,10 @@ class _SettingScreenState extends State<SettingScreen> {
                       offLabel: 'MUTE',
                       onIcon: Icons.volume_up,
                       offIcon: Icons.volume_off,
-                      onToggle: (val) => setState(() => isSoundOn = val),
+                      onToggle: (val) {
+                        setState(() => isSoundOn = val);
+                        _saveSoundSetting(val);
+                      },
                     ),
                     // Vibrate
                     _buildToggleRow(
@@ -122,7 +150,10 @@ class _SettingScreenState extends State<SettingScreen> {
                       offLabel: 'OFF',
                       onIcon: Icons.vibration,
                       offIcon: Icons.phone_android,
-                      onToggle: (val) => setState(() => isVibrateOn = val),
+                      onToggle: (val) {
+                        setState(() => isVibrateOn = val);
+                        _saveVibrateSetting(val);
+                      },
                     ),
                     _buildNavigationTile(
                       image: AppImages.termsAndCondition,
@@ -183,7 +214,7 @@ class _SettingScreenState extends State<SettingScreen> {
           Expanded(
             child: Text(
               title,
-              style: GoogleFonts.cinzel(
+              style: GoogleFonts.rajdhani(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -228,7 +259,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           const SizedBox(width: 5),
                           Text(
                             onLabel,
-                            style: GoogleFonts.cinzel(
+                            style: GoogleFonts.rajdhani(
                               color: isActive ? Colors.black : Colors.white38,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -268,7 +299,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           const SizedBox(width: 5),
                           Text(
                             offLabel,
-                            style: GoogleFonts.cinzel(
+                            style: GoogleFonts.rajdhani(
                               color: !isActive ? Colors.black : Colors.white38,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -311,7 +342,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

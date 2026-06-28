@@ -8,6 +8,7 @@ import 'package:hinges_frontend/features/game/presentation/pages/player_round_st
 import 'package:hinges_frontend/features/game/presentation/pages/player_set_break_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/emoji_button.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/quick_reaction_button.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 import 'package:square_progress_indicator/square_progress_indicator.dart';
 
 import 'package:hinges_frontend/core/theme/app_theme.dart';
@@ -128,23 +129,25 @@ class _GameScreenState extends State<GameScreen> {
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(AppImages.cricketStadium),
-              fit: BoxFit.fill,
-              opacity: 0.5,
+        body: MandalaBackground(
+          child: Container(
+            // decoration: BoxDecoration(
+            //   image: DecorationImage(
+            //     image: AssetImage(AppImages.cricketStadium),
+            //     fit: BoxFit.fill,
+            //     opacity: 0.5,
+            //   ),
+            // ),
+            child: Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildFirstColumn(),
+                Expanded(child: _buildMainContent()),
+                _buildThirdColumn(),
+              ],
             ),
-          ),
-          child: Row(
-            spacing: 10,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildFirstColumn(),
-              Expanded(child: _buildMainContent()),
-              _buildThirdColumn(),
-            ],
           ),
         ),
       ),
@@ -177,6 +180,8 @@ class _GameScreenState extends State<GameScreen> {
     final homeState = context.read<HomeBloc>().state as HomeLoaded;
     final gameData = state.gameData;
     final playerData = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex];
+    double screenHeight = MediaQuery.of(context).size.height;
+
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -192,19 +197,30 @@ class _GameScreenState extends State<GameScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! > 5)
-                    StrategicBreakWidget(mode: widget.mode)
-                  else if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! <= 5)
-                    PlayerRoundStartsIn(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
-                  else if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
-                      AcceleratedRoundIntro()
-                    else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
-                        PlayerSetBreakWidget(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
-                      else
-                        _buildPlayerAuctionContent(state, homeState, gameData, playerData),
-                  _buildTeamRow(state, gameData),
+                  SizedBox(
+                    height: screenHeight * 0.7,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! > 5)
+                          StrategicBreakWidget(mode: widget.mode)
+                        else if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! <= 5)
+                          PlayerRoundStartsIn(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                        else if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
+                            AcceleratedRoundIntro()
+                          else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
+                              PlayerSetBreakWidget(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                            else
+                              _buildPlayerAuctionContent(state, homeState, gameData, playerData),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 130,
+                      child: _buildTeamRow(state, gameData)
+                  ),
                 ],
               ),
             ),
@@ -251,7 +267,7 @@ class _GameScreenState extends State<GameScreen> {
       children: [
         Text(
           playerData.playerName,
-          style: GoogleFonts.cinzel(
+          style: GoogleFonts.rajdhani(
             textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
@@ -294,10 +310,10 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildStatColumn(String label, dynamic value) {
     return Column(
       children: [
-        Text(label, style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+        Text(label, style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
         Text(
           value is double ? context.read<GameBloc>().formatPriceShort(value) : value.toString(),
-          style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 16, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
+          style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 16, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
         ),
       ],
     );
@@ -312,7 +328,7 @@ class _GameScreenState extends State<GameScreen> {
     return Column(
       children: [
         Image.asset(width: 30, height: 30, cappedInfo.$1),
-        Text(cappedInfo.$2, style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 16, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
+        Text(cappedInfo.$2, style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 16, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
       ],
     );
   }
@@ -331,7 +347,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildPlayerStats(GameLoaded state, dynamic playerData) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(width: 1, color: Colors.cyanAccent.shade100.withValues(alpha: 0.6)),
+        border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.6)),
         borderRadius: BorderRadius.circular(20),
       ),
       width: double.infinity,
@@ -357,7 +373,7 @@ class _GameScreenState extends State<GameScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('TIMER', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+        Text('TIMER', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
         Container(
           decoration: BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
           width: 60,
@@ -366,8 +382,8 @@ class _GameScreenState extends State<GameScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}',
-                  style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
-              Text('SEC', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
+                  style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
+              Text('SEC', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
             ],
           ),
         ),
@@ -392,7 +408,7 @@ class _GameScreenState extends State<GameScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('CURRENT PRICE',
-            style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+            style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
         Row(
           children: [
             Image.asset(AppImages.shockWaves, width: 50, height: 20),
@@ -400,7 +416,7 @@ class _GameScreenState extends State<GameScreen> {
               context.read<GameBloc>().formatPriceShort(
                   state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].currentPrice.toDouble()
               ),
-              style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 25, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
+              style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 25, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
             ),
             Image.asset(AppImages.shockWaves, width: 50, height: 20),
           ],
@@ -416,9 +432,9 @@ class _GameScreenState extends State<GameScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('BIDING BY', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+        Text('BIDING BY', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
         Image.asset(franchise.image(), width: 50, height: 50),
-        Text(franchise.shortName(), style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
+        Text(franchise.shortName(), style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
       ],
     );
   }
@@ -513,7 +529,7 @@ class _GameScreenState extends State<GameScreen> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   color: AppTheme.borderGold,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -627,25 +643,26 @@ class _GameScreenState extends State<GameScreen> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(width: 1, color: Colors.cyanAccent.shade100.withValues(alpha: 0.4)),
+        border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildSideMenu(image: AppImages.hammer, t1: 'CLASSIC', t2: 'ROOM'),
-          Row(
-            children: [
-              const SizedBox(width: 10),
-              Image.asset(width: 20, height: 20, AppImages.playerSet),
-              const SizedBox(width: 10),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('PLATER SET', maxLines: 1, style: GoogleFonts.cinzel(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ],
+          Container(
+            decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: AppTheme.borderGold.withValues(alpha: 0.4)))),
+            width: 150,
+            height: 49,
+            child: Row(
+              spacing: 10,
+              children: [
+                const SizedBox(width: 10),
+                Image.asset(width: 30, height: 30, AppImages.user),
+                Text('PLAYER SET', maxLines: 1, style: GoogleFonts.rajdhani(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
+
+              ],
+            ),
           ),
           // _buildSideMenu(image: AppImages.playerSet, t1: 'PLAYER SET'),
           _buildSideMenu(image: AppImages.bat, t1: 'BATSMEN', onTap: () {
@@ -655,12 +672,12 @@ class _GameScreenState extends State<GameScreen> {
           _buildSideMenu(image: AppImages.wicketKeepingGloves, t1: 'WICKET-', t2: 'KEEPERS',
               onTap: () {
             playTap();
-                _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET KEEPER');
+                _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS');
               }),
           _buildSideMenu(image: AppImages.batBall, t1: 'ALL-', t2: 'ROUNDERS',
               onTap: () {
             playTap();
-                _navigateToPlayerList(AppIds.allRounderId, 'ALL ROUNDER');
+                _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS');
               }),
           _buildSideMenu(image: AppImages.ball, t1: 'BOWLERS',
               onTap: () {
@@ -686,7 +703,7 @@ class _GameScreenState extends State<GameScreen> {
                       spacing: 5,
                       children: [
                         Image.asset(width: 20, height: 20, AppImages.setting),
-                        Text('SETTINGS', maxLines: 1, style: GoogleFonts.cinzel(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        Text('SETTINGS', maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -716,7 +733,7 @@ class _GameScreenState extends State<GameScreen> {
                       spacing: 5,
                       children: [
                         Image.asset(width: 20, height: 20, AppImages.exit),
-                        Text('EXIT', maxLines: 1, style: GoogleFonts.cinzel(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        Text('EXIT', maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -739,7 +756,7 @@ class _GameScreenState extends State<GameScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Colors.cyanAccent.shade100.withValues(alpha: 0.4)))),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: AppTheme.borderGold.withValues(alpha: 0.4)))),
         width: 150,
         height: 49,
         child: Row(
@@ -750,8 +767,8 @@ class _GameScreenState extends State<GameScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(t1, maxLines: 1, style: GoogleFonts.cinzel(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                if (t2 != null) Text(t2, maxLines: 1, style: GoogleFonts.cinzel(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(t1, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                if (t2 != null) Text(t2, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
               ],
             ),
           ],
@@ -765,7 +782,7 @@ class _GameScreenState extends State<GameScreen> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(width: 1, color: Colors.cyanAccent.shade100.withValues(alpha: 0.4)),
+        border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.4)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -813,7 +830,7 @@ class _GameScreenState extends State<GameScreen> {
         final user = state.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
         return context.read<GameBloc>().formatPriceShort(user.balanceAmount);
       },
-      builder: (context, balance) => _buildTileCard(image: AppImages.purseRem, t1: 'MY PURSE', val: '$balance / 60 CR'),
+      builder: (context, balance) => _buildTileCard(image: AppImages.coinMenuIcon, imageSize: 25,t1: 'MY PURSE', val: '$balance / 60 CR'),
     );
   }
 
@@ -859,14 +876,20 @@ class _GameScreenState extends State<GameScreen> {
         || gameData.breakStatus == BreakStatusEnum.auctionPlayerBreak;
   }
 
-  Widget _buildTileCard({required String image, required String t1, String? val, void Function()? onTap}) {
+  Widget _buildTileCard({
+    required String image,
+    double imageSize = 30,
+    required String t1,
+    String? val,
+    void Function()? onTap
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 1),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.cyanAccent.shade100.withValues(alpha: 0.4)),
+          border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.4)),
           borderRadius: BorderRadius.circular(6),
         ),
         width: 165,
@@ -874,12 +897,12 @@ class _GameScreenState extends State<GameScreen> {
           spacing: 10,
           children: [
             const SizedBox(width: 10),
-            Image.asset(width: 30, height: 30, image),
+            Image.asset(width: imageSize, height: imageSize, image),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(t1, maxLines: 1, style: GoogleFonts.cinzel(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                if (val != null) Text(val, style: GoogleFonts.cinzel(color: Colors.lightGreen, fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(t1, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                if (val != null) Text(val, style: GoogleFonts.rajdhani(color: Colors.lightGreen, fontSize: 12, fontWeight: FontWeight.bold)),
               ],
             ),
           ],

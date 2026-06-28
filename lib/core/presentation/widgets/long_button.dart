@@ -7,17 +7,33 @@ class LongButton extends StatelessWidget {
   final String title;
   final void Function()? onPressed;
   final bool outlined;
-  IconData? prefixIcon;
-  LongButton({super.key, required this.title, required this.onPressed, required this.outlined, this.prefixIcon});
+  final dynamic prefixIcon; // supports both IconData and FaIconData
+
+  const LongButton({
+    super.key,
+    required this.title,
+    required this.onPressed,
+    required this.outlined,
+    this.prefixIcon,
+  });
+
+  Widget _buildIcon() {
+    if (prefixIcon is FaIconData) {
+      return FaIcon(prefixIcon, color: AppTheme.borderGold);
+    } else if (prefixIcon is IconData) {
+      return Icon(prefixIcon, color: AppTheme.borderGold);
+    }
+    return const SizedBox.shrink();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.3,
+      width: MediaQuery.of(context).size.width * 0.35,
       decoration: BoxDecoration(
         color: AppTheme.cardBlue,
         borderRadius: BorderRadius.circular(10),
-        border: outlined ? Border.all(color: AppTheme.borderGold, width: 1) : null
+        border: outlined ? Border.all(color: AppTheme.borderGold, width: 1) : null,
       ),
       child: MaterialButton(
         onPressed: onPressed,
@@ -26,8 +42,7 @@ class LongButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: 20,
           children: [
-            if(prefixIcon != null)
-              FaIcon(prefixIcon, color: AppTheme.borderGold,),
+            if (prefixIcon != null) _buildIcon(),
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [

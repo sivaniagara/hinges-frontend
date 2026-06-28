@@ -47,24 +47,32 @@ class LoginScreen extends StatelessWidget {
           animateContent: false,
           child: Stack(
             children: [
-              const GoldenRingBackground(),
+              // const GoldenRingBackground(),
               Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Image.asset(
-                      AppImages.indianBiddingLeague,
-                      height: 100,
+
+                    Column(
+                      children: [
+                        Image.asset(
+                          AppImages.indianBiddingLeague,
+                          height: 100,
+                        ),
+                        const GoldenTitle(
+                          title: 'INDIAN BIDDING LEAGUE',
+                          fontSize: 28,
+                        ),
+                        SizedBox(height: 8,),
+                        StarLine(fontSize: 16,)
+                      ],
                     ),
-                    const GoldenTitle(
-                      title: 'INDIAN BIDDING LEAGUE',
-                      fontSize: 32,
-                    ),
+
                     Column(
                       spacing: 8,
                       children: [
                         LongButton(
-                          title: 'Login with Google',
+                          title: 'Continue with Google',
                           prefixIcon: FontAwesomeIcons.google,
                           onPressed: () {
                             context.read<UserAuthBloc>().add(
@@ -82,7 +90,7 @@ class LoginScreen extends StatelessWidget {
                         //   outlined: true,
                         // ),
                         LongButton(
-                          title: 'Login as Guest',
+                          title: 'Continue as Guest',
                           prefixIcon: Icons.person_outline,
                           onPressed: () {
                             showGuestNameBottomSheet(
@@ -101,20 +109,20 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const MandalaDecoration(alignment: Alignment.bottomLeft),
-              const MandalaDecoration(
-                alignment: Alignment.bottomRight,
-                rotateY: math.pi,
-              ),
-              const MandalaDecoration(
-                alignment: Alignment.topLeft,
-                rotateX: math.pi,
-              ),
-              const MandalaDecoration(
-                alignment: Alignment.topRight,
-                rotateX: math.pi,
-                rotateY: math.pi,
-              ),
+              // const MandalaDecoration(alignment: Alignment.bottomLeft),
+              // const MandalaDecoration(
+              //   alignment: Alignment.bottomRight,
+              //   rotateY: math.pi,
+              // ),
+              // const MandalaDecoration(
+              //   alignment: Alignment.topLeft,
+              //   rotateX: math.pi,
+              // ),
+              // const MandalaDecoration(
+              //   alignment: Alignment.topRight,
+              //   rotateX: math.pi,
+              //   rotateY: math.pi,
+              // ),
             ],
           ),
         ),

@@ -33,25 +33,25 @@ extension MiniAuctionFranchiseExtension on MiniAuctionFranchiseEnum{
   String fullName(){
     switch(this){
       case MiniAuctionFranchiseEnum.csk:
-        return 'CHENNAI SUPREME KINGS';
+        return 'CHENNAI \nSUPREME KINGS';
       case MiniAuctionFranchiseEnum.mi:
-        return 'MUMBAI IGNITES';
+        return 'MUMBAI \nIGNITES';
       case MiniAuctionFranchiseEnum.kkr:
-        return 'KOLKATA KNIGHT ROCKERS';
+        return 'KOLKATA \nKNIGHT ROCKERS';
       case MiniAuctionFranchiseEnum.srh:
-        return 'STORMRISERS HYDERABAD';
+        return 'STORMRISERS \nHYDERABAD';
       case MiniAuctionFranchiseEnum.rcb:
-        return 'ROYAL CHAMPIONS BENGALURU';
+        return 'ROYAL CHAMPIONS \nBENGALURU';
       case MiniAuctionFranchiseEnum.gt:
-        return 'GUJARAT THUNDERS';
+        return 'GUJARAT \nTHUNDERS';
       case MiniAuctionFranchiseEnum.rr:
-        return 'RAJASTHAN RANGERS';
+        return 'RAJASTHAN \nRANGERS';
       case MiniAuctionFranchiseEnum.dc:
-        return 'DELHI COMBATS';
+        return 'DELHI \nCOMBATS';
       case MiniAuctionFranchiseEnum.lsg:
-        return 'LUCKNOW SUPER GALLANTS';
+        return 'LUCKNOW \nSUPER GALLANTS';
       case MiniAuctionFranchiseEnum.pk:
-        return 'PUNJAB KINETICS';
+        return 'PUNJAB \nKINETICS';
       case MiniAuctionFranchiseEnum.empty:
         return ' - ';
     }

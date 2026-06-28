@@ -48,10 +48,12 @@ class TermsText extends StatelessWidget {
                       _openUrl("https://your-terms-url.com");
                     },
                     child: Text(
-                      "Terms",
+                      "Terms of Service",
                       style: GoogleFonts.roboto(
                           fontSize: 14,
-                          color: AppTheme.borderGold
+                          color: Colors.white,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
                       ),
                     ),
                   ),
@@ -76,7 +78,9 @@ class TermsText extends StatelessWidget {
                       "Privacy Policy",
                       style: GoogleFonts.roboto(
                           fontSize: 14,
-                          color: AppTheme.borderGold
+                          color: Colors.white,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
                       ),
                     ),
                   ),

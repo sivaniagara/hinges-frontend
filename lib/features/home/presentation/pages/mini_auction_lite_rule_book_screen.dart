@@ -42,7 +42,7 @@ class MiniAuctionLiteRuleBookScreen extends StatelessWidget {
                       child: Text(
                         "MINI AUCTION LITE RULE BOOK",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.cinzel(
+                        style: GoogleFonts.rajdhani(
                           color: AppTheme.borderGold,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -193,7 +193,7 @@ class _RuleItem extends StatelessWidget {
         children: [
           Text(
             "$index. $title",
-            style: GoogleFonts.cinzel(
+            style: GoogleFonts.rajdhani(
               color: AppTheme.borderGold,
               fontWeight: FontWeight.bold,
               fontSize: 14,

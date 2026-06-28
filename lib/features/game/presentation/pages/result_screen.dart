@@ -7,6 +7,7 @@ import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 
+import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/auction_category_item_entity.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../domain/entities/user_status_entity.dart';
@@ -18,16 +19,19 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF020B1A),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            /// HEADER
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
+      // backgroundColor: const Color(0xFF020B1A),
+      body: Container(
+        color: Color(0xff065387),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              /// HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     height: 55,
                     decoration: BoxDecoration(
                       border: Border.all(color: const Color(0xFFD4AF37), width: 2),
@@ -37,7 +41,7 @@ class ResultScreen extends StatelessWidget {
                     child: Center(
                       child: Text(
                         "RESULT TABLE",
-                        style: GoogleFonts.cinzel(
+                        style: GoogleFonts.rajdhani(
                           color: const Color(0xFFFFD700),
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -46,69 +50,69 @@ class ResultScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () {
-                    context.go('/home');
-                  },
-                  child: Image.asset(AppImages.homeMenuIcon, width: 50),
-                )
-              ],
-            ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      context.go('/home');
+                    },
+                    child: Image.asset(AppImages.homeMenuIcon, width: 50),
+                  )
+                ],
+              ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            /// TABLE
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFFD4AF37), width: 1.5),
-                  borderRadius: BorderRadius.circular(8),
-                  color: const Color(0xFF04122A),
-                ),
-                child: Column(
-                  children: [
-                    _buildHeader(),
+              /// TABLE
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0xFFD4AF37), width: 1.5),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildHeader(),
 
-                    Expanded(
-                      child: BlocBuilder<GameBloc, GameState>(
-                        builder: (context, state) {
-                          if (state is GameLoaded) {
-                            List<UserStatusEntity> sortedList = List.from(state.gameData.usersStatusList);
-                            sortedList.sort((a, b) {
-                              if (a.rank == 0 && b.rank == 0) return 0;
-                              if (a.rank == 0) return 1;
-                              if (b.rank == 0) return -1;
-                              return a.rank.compareTo(b.rank);
-                            });
-                            return ListView.builder(
-                              itemCount: sortedList.length,
-                              itemBuilder: (context, index) {
-                                final user = sortedList[index];
-                                final franchise = context.read<GameBloc>().getFranchiseEnum(user.teamId);
+                      Expanded(
+                        child: BlocBuilder<GameBloc, GameState>(
+                          builder: (context, state) {
+                            if (state is GameLoaded) {
+                              List<UserStatusEntity> sortedList = List.from(state.gameData.usersStatusList);
+                              sortedList.sort((a, b) {
+                                if (a.rank == 0 && b.rank == 0) return 0;
+                                if (a.rank == 0) return 1;
+                                if (b.rank == 0) return -1;
+                                return a.rank.compareTo(b.rank);
+                              });
+                              return ListView.builder(
+                                itemCount: sortedList.length,
+                                itemBuilder: (context, index) {
+                                  final user = sortedList[index];
+                                  final franchise = context.read<GameBloc>().getFranchiseEnum(user.teamId);
 
-                                return _AnimatedRow(
-                                  delay: index * 120,
-                                  child: _buildRow(
-                                    context,
-                                    user,
-                                    franchise,
-                                    index,
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                          return const SizedBox();
-                        },
+                                  return _AnimatedRow(
+                                    delay: index * 120,
+                                    child: _buildRow(
+                                      context,
+                                      user,
+                                      franchise,
+                                      index,
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                            return const SizedBox();
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -117,7 +121,7 @@ class ResultScreen extends StatelessWidget {
   /// HEADER
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFFD4AF37))),
       ),
@@ -126,7 +130,7 @@ class ResultScreen extends StatelessWidget {
           _HeaderCell("USER NAME", 2),
           _HeaderCell("FRANCHISE", 3),
           _HeaderCell("QUALIFICATION", 3),
-          _HeaderCell("REMAINING PURSE", 2),
+          _HeaderCell("PURSE REMAINING", 2),
           _HeaderCell("FINAL RATING", 2),
           _HeaderCell("RANK", 2),
         ],
@@ -153,7 +157,7 @@ class ResultScreen extends StatelessWidget {
     return _ShimmerWrapper(
       enabled: isTop3,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 5),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: Colors.white.withOpacity(0.1)),
@@ -187,19 +191,25 @@ class ResultScreen extends StatelessWidget {
             /// FRANCHISE
             Expanded(
               flex: 3,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(franchise.image(), height: 26),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Text(
-                      franchise.shortName(),
-                      overflow: TextOverflow.ellipsis,
-                      style: _textStyle(),
+              child: GestureDetector(
+                onTap: (){
+                  playTap();
+                  context.push('/game/mySquad?userId=${user.userId}');
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(franchise.image(), height: 40),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        franchise.fullName(),
+                        overflow: TextOverflow.ellipsis,
+                        style: _textStyle(),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
@@ -296,8 +306,8 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
-  TextStyle _textStyle({Color color = Colors.white, double size = 12}) {
-    return GoogleFonts.cinzel(
+  TextStyle _textStyle({Color color = Colors.white, double size = 13}) {
+    return GoogleFonts.rajdhani(
       color: color,
       fontSize: size,
       fontWeight: FontWeight.bold,
@@ -320,9 +330,9 @@ class _HeaderCell extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: GoogleFonts.cinzel(
+          style: GoogleFonts.rajdhani(
             color: const Color(0xFFFFD700),
-            fontSize: 11,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),

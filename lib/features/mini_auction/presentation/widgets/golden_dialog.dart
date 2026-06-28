@@ -37,8 +37,8 @@ class GoldenDialog extends StatelessWidget {
 
               /// 🔹 TITLE
               Text(
-                "${miniAuctionItem.name} ROOM",
-                style: GoogleFonts.cinzel(
+                "${miniAuctionItem.name.toUpperCase()} ROOM",
+                style: GoogleFonts.rajdhani(
                   color: AppTheme.borderGold,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -83,12 +83,26 @@ class GoldenDialog extends StatelessWidget {
               const SizedBox(height: 15),
 
               /// 🔹 NOTE
-              Text(
-                "NOTE: ONLY QUALIFIED USERS ARE\nELIGIBLE FOR PRIZE REWARDS",
+              RichText(
                 textAlign: TextAlign.center,
-                style: GoogleFonts.roboto(
-                  color: Colors.white,
-                  fontSize: 12,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "NOTE: ",
+                      style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "ONLY QUALIFIED USERS ARE ELIGIBLE FOR PRIZE REWARDS",
+                      style: GoogleFonts.roboto(
+                        color: AppTheme.borderGold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -139,24 +153,27 @@ Widget _infoRow({
     children: [
       SizedBox(
         width: 200,
-        child: Text(
-          title,
-          style: GoogleFonts.cinzel(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+        child: Center(
+          child: Text(
+            title,
+            style: GoogleFonts.rajdhani(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
       SizedBox(
         width: 200,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(AppImages.coinMenuIcon, width: 20),
             const SizedBox(width: 5),
             Text(
               value,
-              style: GoogleFonts.cinzel(
+              style: GoogleFonts.rajdhani(
                 color: AppTheme.borderGold,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -183,12 +200,13 @@ Widget _prizeRow({
         SizedBox(
           width: 200,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(trophy, width: 28),
               const SizedBox(width: 8),
               Text(
                 title,
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -200,12 +218,13 @@ Widget _prizeRow({
         SizedBox(
           width: 200,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(AppImages.coinMenuIcon, width: 20),
               const SizedBox(width: 5),
               Text(
                 value,
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.rajdhani(
                   color: AppTheme.borderGold,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

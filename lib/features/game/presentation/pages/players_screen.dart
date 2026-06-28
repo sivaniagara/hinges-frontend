@@ -32,14 +32,15 @@ class PlayersScreen extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            colors: [
-              Color(0xFF001F4D), // Dark blue center glow
-              Color(0xFF000511), // Deep black edges
-            ],
-            radius: 1.2,
-            center: Alignment.center,
-          ),
+          color: Color(0xff065387),
+          // gradient: RadialGradient(
+          //   colors: [
+          //     Color(0xFF001F4D), // Dark blue center glow
+          //     Color(0xFF000511), // Deep black edges
+          //   ],
+          //   radius: 1.2,
+          //   center: Alignment.center,
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -78,7 +79,8 @@ class PlayersScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             border: Border.all(width: 0.8, color: AppTheme.borderGold),
-                            borderRadius: BorderRadius.circular(5)
+                            borderRadius: BorderRadius.circular(5),
+                            color: Color(0xFF0A1F44)
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -93,7 +95,7 @@ class PlayersScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     playerRoleName.toUpperCase(),
-                                    style: GoogleFonts.cinzel(
+                                    style: GoogleFonts.rajdhani(
                                       color: AppTheme.borderGold,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w900,
@@ -102,7 +104,7 @@ class PlayersScreen extends StatelessWidget {
                                   ),
                                   Text(
                                     'SET',
-                                    style: GoogleFonts.cinzel(
+                                    style: GoogleFonts.rajdhani(
                                       color: AppTheme.borderGold,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w900,
@@ -114,9 +116,9 @@ class PlayersScreen extends StatelessWidget {
                               getStartDivider(),
                               _buildHeaderStat('TOTAL PLAYERS', '$totalCount', AppImages.mySquad, Colors.white),
                               getStartDivider(),
-                              _buildHeaderStat('PLAYERS SOLD', '$soldCount', AppImages.playerSold, Colors.green),
-                              getStartDivider(),
                               _buildHeaderStat('PLAYERS IN AUCTION', '$auctionCount', AppImages.hammer, Colors.yellow),
+                              getStartDivider(),
+                              _buildHeaderStat('PLAYERS SOLD', '$soldCount', AppImages.playerSold, Colors.green),
                               getStartDivider(),
                               _buildHeaderStat('PLAYERS UNSOLD', '$unsoldCount', AppImages.playerUnsold, Colors.red),
                             ],
@@ -226,14 +228,14 @@ class PlayersScreen extends StatelessWidget {
   Widget _buildHeaderStat(String label, String value, String image, Color color) {
     return Column(
       children: [
-        Text(label, style: GoogleFonts.cinzel(fontSize: 9, color: color, fontWeight: FontWeight.bold)),
+        Text(label, style: GoogleFonts.rajdhani(fontSize: 9, color: color, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(image, width: 30, height: 30,),
             const SizedBox(width: 8),
-            Text(value, style: GoogleFonts.cinzel(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w900)),
+            Text(value, style: GoogleFonts.rajdhani(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w900)),
           ],
         ),
       ],
@@ -262,13 +264,13 @@ class PlayersScreen extends StatelessWidget {
           _buildCell('NO', flex: 1, isHeader: true),
           _buildCell('PLAYER NAME', flex: 3, isHeader: true, textAlign: TextAlign.start),
           _buildCell('DESCRIPTION', flex: 3, isHeader: true),
-          _buildCell('CATEGORY', flex: 2, isHeader: true),
-          _buildCell('COUNTRY', flex: 2, isHeader: true),
-          _buildCell('BASE PRICE', flex: 2, isHeader: true),
-          _buildCell('RATING', flex: 1, isHeader: true),
+          _buildCell('CAT.', flex: 1, isHeader: true),
+          _buildCell('CTRY.', flex: 1, isHeader: true),
+          _buildCell('BASE \nPRICE', flex: 2, isHeader: true),
+          _buildCell('RATING', flex: 2, isHeader: true),
           _buildCell('STATUS', flex: 2, isHeader: true),
-          _buildCell('SOLD PRICE', flex: 2, isHeader: true),
-          _buildCell('FRANCHISE', flex: 2, isHeader: true),
+          _buildCell('SOLD \nPRICE', flex: 2, isHeader: true),
+          _buildCell('FR.', flex: 1, isHeader: true),
         ],
       ),
     );
@@ -304,21 +306,21 @@ class PlayersScreen extends StatelessWidget {
       child: Row(
         children: [
           _buildCell(no, flex: 1, color: Colors.white),
-          _buildCell(name, flex: 3, isBold: true, color: Colors.white, textAlign: TextAlign.start, fontSize: 10),
-          _buildCell(description, flex: 3, fontSize: 10, color: Colors.white),
-          _buildCell(category, flex: 2, color: categoryColor, isBold: true),
-          _buildCell(flag, flex: 2, fontSize: 18),
-          _buildCell(basePrice, flex: 2, color: Colors.white),
-          _buildCell(rating, flex: 1, color: AppTheme.borderGold, isBold: true),
+          _buildCell(name, flex: 3, isBold: true, color: Colors.white, textAlign: TextAlign.start, fontSize: 13),
+          _buildCell(description, flex: 3, fontSize: 12, color: Colors.white, isBold: true),
+          _buildCell(category, flex: 1, color: categoryColor, isBold: true),
+          _buildCell(flag, flex: 1, fontSize: 18),
+          _buildCell(basePrice, flex: 2, color: Colors.white, isBold: true),
+          _buildCell(rating, flex: 2, color: AppTheme.borderGold, isBold: true),
           _buildCell(status, flex: 2, color: statusColor, isBold: true),
           _buildCell(soldPrice, flex: 2),
-          _buildCell(franchise, flex: 2, color: AppTheme.borderGold, isBold: true),
+          _buildCell(franchise, flex: 1, color: AppTheme.borderGold, isBold: true),
         ],
       ),
     );
   }
 
-  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 11, TextAlign textAlign = TextAlign.center}) {
+  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 13, TextAlign textAlign = TextAlign.center}) {
     return Expanded(
       flex: flex,
       child: Padding(
@@ -328,8 +330,8 @@ class PlayersScreen extends StatelessWidget {
           textAlign: textAlign,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.cinzel(
-            fontSize: isHeader ? 10 : fontSize,
+          style: GoogleFonts.rajdhani(
+            fontSize: isHeader ? 12 : fontSize,
             fontWeight: isHeader || isBold ? FontWeight.bold : FontWeight.normal,
             color: isHeader ? AppTheme.borderGold : color,
           ),
