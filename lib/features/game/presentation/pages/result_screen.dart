@@ -8,20 +8,34 @@ import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
 
 import '../../../../core/utils/so_loud.dart';
+import '../../../ads/bloc/ad_bloc.dart';
+import '../../../ads/bloc/ad_event.dart';
 import '../../../home/domain/entities/auction_category_item_entity.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../domain/entities/user_status_entity.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   final String auctionCategoryId;
   const ResultScreen({super.key, required this.auctionCategoryId});
+
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Preload Interstitial Ad when the screen opens
+    context.read<AdBloc>().add(LoadInterstitialAd());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: const Color(0xFF020B1A),
       body: Container(
-        color: Color(0xff065387),
+        color: const Color(0xff065387),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -53,7 +67,15 @@ class ResultScreen extends StatelessWidget {
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      context.go('/home');
+                      playTap();
+                      // Show Interstitial Ad then go home
+                      context.read<AdBloc>().add(ShowInterstitialAd(
+                        onAdClosed: () {
+                          if (mounted) {
+                            context.go('/home');
+                          }
+                        },
+                      ));
                     },
                     child: Image.asset(AppImages.homeMenuIcon, width: 50),
                   )
@@ -142,7 +164,7 @@ class ResultScreen extends StatelessWidget {
   Widget _buildRow(BuildContext context, UserStatusEntity user,
       MiniAuctionFranchiseEnum franchise, int index) {
     final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
-    AuctionCategoryItemEntity auctionCategoryItemEntity = homeLoaded.userData.auctionCategoryItem.firstWhere((e) => e.id == auctionCategoryId);
+    AuctionCategoryItemEntity auctionCategoryItemEntity = homeLoaded.userData.auctionCategoryItem.firstWhere((e) => e.id == widget.auctionCategoryId);
     final isQualified =
         user.matchWinStatusEnum == MatchWinStatusEnum.qualified;
 
@@ -269,27 +291,27 @@ class ResultScreen extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.emoji_events, color: Colors.amber, size: 18),
-          SizedBox(width: 4),
-          Text("1  ₹${auctionCategoryItemEntity.coinsFirstPrize}", style: TextStyle(color: Colors.amber)),
+          const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
+          const SizedBox(width: 4),
+          Text("1  ₹${auctionCategoryItemEntity.coinsFirstPrize}", style: const TextStyle(color: Colors.amber)),
         ],
       );
     } else if (rank == 2) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.emoji_events, color: Colors.grey, size: 18),
-          SizedBox(width: 4),
-          Text("2  ₹${auctionCategoryItemEntity.coinsSecondPrize}", style: TextStyle(color: Colors.grey)),
+          const Icon(Icons.emoji_events, color: Colors.grey, size: 18),
+          const SizedBox(width: 4),
+          Text("2  ₹${auctionCategoryItemEntity.coinsSecondPrize}", style: const TextStyle(color: Colors.grey)),
         ],
       );
     } else if (rank == 3) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.emoji_events, color: Colors.brown, size: 18),
-          SizedBox(width: 4),
-          Text("3  ₹${auctionCategoryItemEntity.coinsThirdPrize}", style: TextStyle(color: Colors.brown)),
+          const Icon(Icons.emoji_events, color: Colors.brown, size: 18),
+          const SizedBox(width: 4),
+          Text("3  ₹${auctionCategoryItemEntity.coinsThirdPrize}", style: const TextStyle(color: Colors.brown)),
         ],
       );
     }
@@ -371,6 +393,12 @@ class _ShimmerWrapperState extends State<_ShimmerWrapper>
     if (widget.enabled) {
       _controller.repeat();
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

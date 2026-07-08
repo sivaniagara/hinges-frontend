@@ -435,8 +435,8 @@ class MiniAuctionLiteCard extends StatelessWidget {
         children: [
           Image.asset(
             image,
-            height: size.height * 0.38,
-            width: size.width / 6,
+            height: 170,
+            width: 150,
             fit: BoxFit.fill,
           ),
 
@@ -445,7 +445,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
             const Positioned(
               top: 10,
               right: 10,
-              child: Icon(Icons.lock, color: Colors.red),
+              child: Icon(Icons.lock, color: AppTheme.borderGold, size: 18),
             ),
 
           /// INFO ICON
@@ -462,7 +462,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
           ),
 
           Positioned(
-            bottom: 28,
+            bottom: 10,
             child: Column(
               children: [
                 Text(

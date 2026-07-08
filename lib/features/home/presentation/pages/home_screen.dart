@@ -20,6 +20,7 @@ import '../../../login/presentation/bloc/user_auth_bloc.dart';
 import '../../domain/entities/user_data_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/app_background.dart';
+import '../widgets/currency_burst_overlay.dart';
 
 enum AuctionModeEnum{miniAuctionLite, miniAuctionPro, megaAuctionLite, megaAuctionPro}
 class AuctionItem {
@@ -44,6 +45,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// Marks the CurrencyBar's on-screen position so the coin-burst
+  /// animation knows exactly where to fly the coins to.
+  final GlobalKey _currencyBarKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -260,10 +265,25 @@ class _HomeScreenState extends State<HomeScreen> {
       ShowRewardedAd(
         onRewardEarned: () {
           // Increase user coins after ad is watched
-
           homeBloc.add(IncreaseUserCoins(userId: userId, coins: 200));
+
+          // Fly coins from the middle of the screen into the CurrencyBar.
+          // Guard with `mounted` since this callback fires asynchronously
+          // (after the user finishes watching the ad), so the HomeScreen
+          // could theoretically be gone by the time it runs.
+
         },
         onAdClosed: () {
+          print("show animation..");
+          if (!mounted) return;
+          final size = MediaQuery.of(context).size;
+          CoinBurstOverlay.show(
+            context,
+            targetKey: _currencyBarKey,
+            startPosition: Offset(size.width / 2, size.height / 2),
+            coinAsset: AppImages.coinMenuIcon,
+            coinCount: 12,
+          );
           // Optional: anything you want to run once the ad is dismissed.
         },
       ),
@@ -275,7 +295,17 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.8),
-      builder: (context) => Center(
+      // NOTE: renamed the builder's parameter to `dialogContext` so it
+      // doesn't shadow the outer (HomeScreen State) `context`. The old
+      // code reused the name `context` here, then passed *that* shadowed
+      // dialog context into `_onRewardsTap`, which stores it and uses it
+      // later inside `onRewardEarned` — by which point the dialog (and
+      // its context) had already been popped/deactivated. That silently
+      // broke `MediaQuery.of(context)` / `Overlay.of(context)` inside
+      // CoinBurstOverlay.show, so the coin count still updated (no
+      // context needed for that) but the flying-coin animation never
+      // appeared.
+      builder: (dialogContext) => Center(
         child: Material(
           color: Colors.transparent,
           child: Container(
@@ -295,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GestureDetector(
                     onTap: () {
                       playTap();
-                      Navigator.pop(context);
+                      Navigator.pop(dialogContext);
                     },
                     child: Image.asset(AppImages.cancelIcon, width: 35),
                   ),
@@ -337,7 +367,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     GestureDetector(
                       onTap: () {
                         playTap();
-                        Navigator.pop(context);
+                        // Pop the dialog using ITS OWN context...
+                        Navigator.pop(dialogContext);
+                        // ...then continue using the stable outer
+                        // (HomeScreen State) context, which stays valid
+                        // for as long as the screen itself is mounted.
                         _onRewardsTap(context);
                       },
                       child: Container(
@@ -393,6 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
           TopUserBar(
             loading: loading,
             userData: userData,
+            currencyBarKey: _currencyBarKey,
             onAddTap: () {
               playTap();
               context.push('/shop');

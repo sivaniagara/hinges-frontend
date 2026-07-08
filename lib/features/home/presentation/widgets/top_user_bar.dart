@@ -12,11 +12,17 @@ class TopUserBar extends StatelessWidget {
   final UserDataEntity? userData;
   final void Function()? onAddTap;
 
+  /// Optional key placed around the CurrencyBar so callers (e.g.
+  /// HomeScreen) can locate its exact on-screen position and target
+  /// it with the coin-burst / "coins flying in" animation.
+  final GlobalKey? currencyBarKey;
+
   const TopUserBar({
     super.key,
     required this.loading,
     required this.userData,
     required this.onAddTap,
+    this.currencyBarKey,
   });
 
   @override
@@ -38,21 +44,16 @@ class TopUserBar extends StatelessWidget {
 
         const SizedBox(width: 20),
 
-        CurrencyBar(
-          icon: AppImages.coinMenuIcon,
-          value: userData?.coinWon ?? 0,
-          onAddTap: onAddTap,
+        // KeyedSubtree just carries the key without affecting layout,
+        // so we can find CurrencyBar's RenderBox later.
+        KeyedSubtree(
+          key: currencyBarKey,
+          child: CurrencyBar(
+            icon: AppImages.coinMenuIcon,
+            value: userData?.coinWon ?? 0,
+            onAddTap: onAddTap,
+          ),
         ),
-
-        // const SizedBox(width: 20),
-        //
-        // CurrencyBar(
-        //   icon: AppImages.diamondMenuIcon,
-        //   value: 0,
-        //   onAddTap: () {
-        //     // handle diamond add
-        //   },
-        // ),
       ],
     );
   }

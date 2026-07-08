@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -81,66 +80,90 @@ class _LoadingScreenState extends State<LoadingScreen>
     return Scaffold(
       body: MandalaBackground(
         animateContent: false,
-        child: Stack(
-          children: [
-            // const GoldenRingBackground(),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              /// ◀ LEFT COLUMN — team logos + names
+              Positioned(
+                left: 28,
+                top: 0,
+                bottom: 0,
+                child: _TeamColumn(teams: _leftTeams),
+              ),
 
-            /// 🌟 CENTER CONTENT
-            Center(
-              child: FadeTransition(
-                opacity: _fade,
-                child: ScaleTransition(
-                  scale: _scale,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      /// 🔁 ROTATING TEAM CIRCLE
-                      FranchiseCircle(),
+              /// ▶ RIGHT COLUMN — team logos + names
+              Positioned(
+                right: 28,
+                top: 0,
+                bottom: 0,
+                child: _TeamColumn(teams: _rightTeams),
+              ),
 
-                      /// 🟡 GOLD PROGRESS BAR (LIKE YOUR IMAGE)
-                      _buildGoldenProgressBar(),
+              /// 🌟 CENTER CONTENT
+              Center(
+                child: FadeTransition(
+                  opacity: _fade,
+                  child: ScaleTransition(
+                    scale: _scale,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        /// 🏆 CENTER SHIELD BADGE
+                        Image.asset(
+                          AppImages.indianBiddingLeague,
+                          width: 220,
+                          fit: BoxFit.contain,
+                        ),
 
+                        const SizedBox(height: 36),
 
-                      /// ✨ TEXT
-                      GoldenSubtitle(
-                        title: 'CONNECTING TO THE ARENA...',
-                        fontSize: 14,
-                        fontColor: Colors.white,
-                      ),
-                    ],
+                        /// 🟡 GOLD PROGRESS BAR
+                        _buildGoldenProgressBar(),
+
+                        const SizedBox(height: 14),
+
+                        /// ✨ TEXT
+                        GoldenSubtitle(
+                          title: 'CONNECTING TO THE ARENA...',
+                          fontSize: 14,
+                          fontColor: Colors.white,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-
-            /// ✨ CORNER DECORATIONS (same as login)
-            // const MandalaDecoration(alignment: Alignment.bottomLeft),
-            // const MandalaDecoration(
-            //   alignment: Alignment.bottomRight,
-            //   rotateY: math.pi,
-            // ),
-            // const MandalaDecoration(
-            //   alignment: Alignment.topLeft,
-            //   rotateX: math.pi,
-            // ),
-            // const MandalaDecoration(
-            //   alignment: Alignment.topRight,
-            //   rotateX: math.pi,
-            //   rotateY: math.pi,
-            // ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
+  /// Team data — logo asset + two-line display name
+  static final List<_TeamData> _leftTeams = [
+    _TeamData(AppImages.miLogo, 'MUMBAI', 'IGNITES'),
+    _TeamData(AppImages.cskLogo, 'CHENNAI', 'SUPREME KINGS'),
+    _TeamData(AppImages.kkrLogo, 'KOLKATA', 'KNIGHT ROCKERS'),
+    _TeamData(AppImages.rcbLogo, 'ROYAL CHAMPIONS', 'BENGALURU'),
+    _TeamData(AppImages.pkLogo, 'PUNJAB', 'KINETICS'),
+  ];
+
+  static final List<_TeamData> _rightTeams = [
+    _TeamData(AppImages.srhLogo, 'STORMRISERS', 'HYDERABAD'),
+    _TeamData(AppImages.rrLogo, 'RAJASTHAN', 'RANGERS'),
+    _TeamData(AppImages.gtLogo, 'GUJARAT', 'THUNDERS'),
+    _TeamData(AppImages.lsgLogo, 'LUCKNOW', 'SUPER GALLANTS'),
+    _TeamData(AppImages.dcLogo, 'DELHI', 'COMBATS'),
+  ];
+
   /// 🔥 PREMIUM GOLD PROGRESS BAR
   Widget _buildGoldenProgressBar() {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.45,
+      width: MediaQuery.of(context).size.width * 0.32,
       height: 18,
       decoration: BoxDecoration(
-        // borderRadius: BorderRadius.circular(30),
         border: Border.all(color: const Color(0xFFFFD700), width: 1.5),
         color: const Color(0xFF0F5C8F),
         boxShadow: [
@@ -152,7 +175,6 @@ class _LoadingScreenState extends State<LoadingScreen>
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
         child: Stack(
           children: [
             /// 🔥 Animated Gold Fill with Glow
@@ -160,16 +182,13 @@ class _LoadingScreenState extends State<LoadingScreen>
               widthFactor: _progress,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
                   gradient: const LinearGradient(
                     colors: [
-                      Color(0xFF06162E),
-                      Color(0xFF06162E),
-                      Color(0xFF0A2548),
-                      Color(0xFF06162E),
-                      Color(0xFF06162E),
+                      Color(0xFFFFD700),
+                      Color(0xFFFFF3C4),
+                      Color(0xFFFFD700),
                     ],
-                    stops: [0.0, 0.2, 0.5, 0.75, 1.0],
+                    stops: [0.0, 0.5, 1.0],
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -213,7 +232,8 @@ class _LoadingScreenState extends State<LoadingScreen>
               height: 7,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                  borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(30)),
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -225,299 +245,88 @@ class _LoadingScreenState extends State<LoadingScreen>
                 ),
               ),
             ),
-
-            /// 🔴 Leading Edge Glow Dot
-            // if (_progress > 0.03)
-            //   Positioned(
-            //     top: 0,
-            //     bottom: 0,
-            //     left: (MediaQuery.of(context).size.width * 0.45 - 2) * _progress - 6,
-            //     child: Center(
-            //       child: AnimatedBuilder(
-            //         animation: _pulseController,
-            //         builder: (_, __) {
-            //           final pulse = (math.sin(_pulseController.value * math.pi * 2) + 1) / 2;
-            //           return Container(
-            //             width: 10,
-            //             height: 10,
-            //             decoration: BoxDecoration(
-            //               shape: BoxShape.circle,
-            //               color: Colors.white,
-            //               boxShadow: [
-            //                 BoxShadow(
-            //                   color: const Color(0xFFFFD700).withOpacity(0.6 + pulse * 0.4),
-            //                   blurRadius: 8 + pulse * 6,
-            //                   spreadRadius: 2,
-            //                 ),
-            //               ],
-            //             ),
-            //           );
-            //         },
-            //       ),
-            //     ),
-            //   ),
           ],
         ),
       ),
     );
   }
-
 }
 
-class FranchiseCircle extends StatelessWidget {
-  const FranchiseCircle({super.key});
+/// Holds a team's logo + its two display lines (matches reference UI)
+class _TeamData {
+  final String logo;
+  final String line1;
+  final String line2;
+  const _TeamData(this.logo, this.line1, this.line2);
+}
+
+/// A straight vertical column of team rows (logo + name), evenly spaced
+/// top-to-bottom — matches the reference screenshot exactly.
+class _TeamColumn extends StatelessWidget {
+  final List<_TeamData> teams;
+  const _TeamColumn({required this.teams});
 
   @override
   Widget build(BuildContext context) {
-    final leftLogos = [
-      AppImages.miLogo,
-      AppImages.cskLogo,
-      AppImages.kkrLogo,
-      AppImages.rcbLogo,
-      AppImages.pkLogo,
-    ];
-
-    final rightLogos = [
-      AppImages.srhLogo,
-      AppImages.rrLogo,
-      AppImages.gtLogo,
-      AppImages.lsgLogo,
-      AppImages.dcLogo,
-    ];
-
-    const double logoSize = 60;
-    const double containerW = 580;
-    const double containerH = 260;
-
-    /// LEFT: Diamond/chevron shape — alternates near/far from center
-    /// Like: far, near, far, near, far  (zigzag horizontally)
-    final leftPlacements = [
-      _Placement(left: 0.02, top: 0.00, angle: -20, scale: 0.80), // top — far
-      _Placement(left: 0.12, top: 0.22, angle:  -8, scale: 0.95), // upper — near
-      _Placement(left: 0.03, top: 0.44, angle:   0, scale: 0.88), // mid — far
-      _Placement(left: 0.13, top: 0.66, angle:   8, scale: 0.95), // lower — near
-      _Placement(left: 0.02, top: 0.84, angle:  20, scale: 0.80), // bottom — far
-    ];
-
-    /// RIGHT: mirror of left (mathematically exact)
-    const double logoFraction = logoSize / containerW;
-    final rightPlacements = leftPlacements.map((p) => _Placement(
-      left: 1.0 - p.left - logoFraction,
-      top: p.top,
-      angle: -p.angle,
-      scale: p.scale,
-    )).toList();
-
-    return SizedBox(
-      width: containerW,
-      height: containerH,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          /// ✨ Curved connector lines
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _CurvedLinePainter(
-                leftPlacements: leftPlacements,
-                rightPlacements: rightPlacements,
-                containerW: containerW,
-                containerH: containerH,
-                logoSize: logoSize,
-              ),
-            ),
-          ),
-
-          /// 🌟 Center Glow
-          Positioned(
-            left: containerW * 0.5 - 75,
-            top: containerH * 0.5 - 55,
-            child: Container(
-              width: 150,
-              height: 110,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x40FFD700),
-                    blurRadius: 90,
-                    spreadRadius: 35,
-                  ),
-                  BoxShadow(
-                    color: Color(0x15FFFFFF),
-                    blurRadius: 50,
-                    spreadRadius: 15,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          /// 🏏 IBL Logo — dead center
-          Positioned(
-            left: containerW * 0.5 - 65,
-            top: containerH * 0.5 - 42,
-            child: Image.asset(
-              AppImages.indianBiddingLeague,
-              width: 130,
-              fit: BoxFit.contain,
-            ),
-          ),
-
-          /// ◀ Left logos
-          ...List.generate(leftLogos.length, (i) {
-            final p = leftPlacements[i];
-            return Positioned(
-              left: p.left * containerW,
-              top: p.top * containerH,
-              child: Transform.scale(
-                scale: p.scale,
-                child: _LogoCard(
-                  logo: leftLogos[i],
-                  size: logoSize,
-                  isNear: i % 2 == 1, // near ones get extra glow
-                ),
-              ),
-            );
-          }),
-
-          /// ▶ Right logos
-          ...List.generate(rightLogos.length, (i) {
-            final p = rightPlacements[i];
-            return Positioned(
-              left: p.left * containerW,
-              top: p.top * containerH,
-              child: Transform.scale(
-                scale: p.scale,
-                child: _LogoCard(
-                  logo: rightLogos[i],
-                  size: logoSize,
-                  isNear: i % 2 == 1,
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: teams.map((t) => _TeamRow(team: t)).toList(),
     );
   }
 }
 
-/// Draws curved bezier lines from each logo to center
-class _CurvedLinePainter extends CustomPainter {
-  final List<_Placement> leftPlacements;
-  final List<_Placement> rightPlacements;
-  final double containerW;
-  final double containerH;
-  final double logoSize;
-
-  const _CurvedLinePainter({
-    required this.leftPlacements,
-    required this.rightPlacements,
-    required this.containerW,
-    required this.containerH,
-    required this.logoSize,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(containerW / 2, containerH / 2);
-    final allPlacements = [...leftPlacements, ...rightPlacements];
-
-    for (int i = 0; i < allPlacements.length; i++) {
-      final p = allPlacements[i];
-      final logoCenter = Offset(
-        p.left * containerW + logoSize / 2,
-        p.top * containerH + logoSize / 2,
-      );
-
-      final dist = (logoCenter - center).distance;
-      final opacity = (1.0 - dist / (containerW * 0.55)).clamp(0.06, 0.22);
-
-      final paint = Paint()
-        ..color = const Color(0xFFFFD700).withOpacity(opacity)
-        ..strokeWidth = 1.0
-        ..style = PaintingStyle.stroke;
-
-      // Curved bezier: control point offset slightly upward for elegance
-      final mid = Offset(
-        (logoCenter.dx + center.dx) / 2,
-        (logoCenter.dy + center.dy) / 2 - 18,
-      );
-
-      final path = Path()
-        ..moveTo(logoCenter.dx, logoCenter.dy)
-        ..quadraticBezierTo(mid.dx, mid.dy, center.dx, center.dy);
-
-      // Dash the path
-      _drawDashedPath(canvas, path, paint, dist);
-    }
-  }
-
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint, double totalLen) {
-    const dashLen = 5.0;
-    const gapLen = 5.0;
-    final metrics = path.computeMetrics();
-    for (final metric in metrics) {
-      double distance = logoSize / 2 + 6;
-      while (distance < metric.length - logoSize * 0.6) {
-        final end = (distance + dashLen).clamp(0.0, metric.length);
-        canvas.drawPath(metric.extractPath(distance, end), paint);
-        distance += dashLen + gapLen;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_CurvedLinePainter old) => false;
-}
-
-class _Placement {
-  final double left;
-  final double top;
-  final double angle;
-  final double scale;
-  const _Placement({
-    required this.left,
-    required this.top,
-    required this.angle,
-    required this.scale,
-  });
-}
-
-class _LogoCard extends StatelessWidget {
-  final String logo;
-  final double size;
-  final bool isNear;
-
-  const _LogoCard({required this.logo, required this.size, this.isNear = false});
+/// A single "logo + two-line name" row
+class _TeamRow extends StatelessWidget {
+  final _TeamData team;
+  const _TeamRow({required this.team});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      // decoration: BoxDecoration(
-      //   shape: BoxShape.circle,
-      //   border: Border.all(
-      //     color: const Color(0xFFFFD700).withOpacity(isNear ? 0.95 : 0.55),
-      //     width: isNear ? 2.0 : 1.2,
-      //   ),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.black.withOpacity(0.55),
-      //       blurRadius: 10,
-      //       offset: const Offset(2, 4),
-      //     ),
-      //     BoxShadow(
-      //       color: const Color(0xFFFFD700).withOpacity(isNear ? 0.35 : 0.12),
-      //       blurRadius: isNear ? 18 : 10,
-      //       spreadRadius: isNear ? 3 : 1,
-      //     ),
-      //   ],
-      // ),
-      child: ClipOval(
-        child: Image.asset(logo, fit: BoxFit.cover),
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        /// Logo — kept at native shape (no circular crop), just a subtle
+        /// drop shadow so it lifts off the background.
+        SizedBox(
+          width: 52,
+          height: 52,
+          child: Image.asset(
+            team.logo,
+            fit: BoxFit.contain,
+          ),
+        ),
+        const SizedBox(width: 14),
+
+        /// Two-line team name, gold, bold, uppercase — as in reference
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              team.line1,
+              style: const TextStyle(
+                color: Color(0xFFFFD700),
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+                letterSpacing: 0.6,
+                height: 1.25,
+              ),
+            ),
+            Text(
+              team.line2,
+              style: const TextStyle(
+                color: Color(0xFFFFD700),
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+                letterSpacing: 0.6,
+                height: 1.25,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
