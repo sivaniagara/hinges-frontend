@@ -103,7 +103,7 @@ class _MandalaBackgroundState extends State<MandalaBackground>
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            color: Color(0xff065387),
+            color: Color(0xff012255),
             // gradient: widget.showParticle ? RadialGradient(
             //   colors: [
             //     Color(0xFF023FA8),
@@ -141,9 +141,8 @@ class _MandalaBackgroundState extends State<MandalaBackground>
               ),
 
               /// Static Golden Particles (with twinkle)
-              if(widget.showParticle)
-                ..._buildParticleLayer(context),
-
+              // if(widget.showParticle)
+              //   ..._buildParticleLayer(context),
               /// Content
               if (widget.animateContent && _mainController != null)
                 Center(

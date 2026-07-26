@@ -82,6 +82,11 @@ class _StrategicBreakWidgetState extends State<StrategicBreakWidget>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
 
+    // Signal that strategic break audio sequence has started
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<GameBloc>().add(UpdateStrategicAudioPlaying(true));
+    });
+
     _playNext();
   }
 
@@ -145,7 +150,12 @@ class _StrategicBreakWidgetState extends State<StrategicBreakWidget>
     final lastInstruction = _slides.last.instructions.first;
     playInstruction(
       lastInstruction.audioIndex,
-      onComplete: () {}, // nothing to do after
+      onComplete: () {
+        if (mounted) {
+          // Signal that strategic break audio sequence has finished
+          context.read<GameBloc>().add(UpdateStrategicAudioPlaying(false));
+        }
+      },
     );
   }
 

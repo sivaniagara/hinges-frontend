@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/player_round_starts_in.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/player_set_break_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/emoji_button.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/exit_dialog.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/quick_reaction_button.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 import 'package:square_progress_indicator/square_progress_indicator.dart';
@@ -138,15 +138,19 @@ class _GameScreenState extends State<GameScreen> {
             //     opacity: 0.5,
             //   ),
             // ),
-            child: Row(
-              spacing: 10,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildFirstColumn(),
-                Expanded(child: _buildMainContent()),
-                _buildThirdColumn(),
-              ],
+            child: BlocBuilder<GameBloc, GameState>(
+              builder: (context, state) {
+                return Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildFirstColumn(),
+                    Expanded(child: _buildMainContent(state)),
+                    _buildThirdColumn(),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -154,26 +158,22 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildMainContent() {
-    return BlocBuilder<GameBloc, GameState>(
-      builder: (context, state) {
-        if (state is GameError) {
-          return _buildRetryWidget(context, state.message);
-        }
-        if (state is GameInitial || state is GameLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.amber),
-          );
-        }
-        if (state is! GameLoaded) {
-          return Container();
-        }
-        if (state.isReconnecting) {
-          return _buildRetryWidget(context, "Connection unstable. Trying to reconnect...");
-        }
-        return _buildGameContent(state);
-      },
-    );
+  Widget _buildMainContent(GameState state) {
+    if (state is GameError) {
+      return _buildRetryWidget(context, state.message);
+    }
+    if (state is GameInitial || state is GameLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.amber),
+      );
+    }
+    if (state is! GameLoaded) {
+      return Container();
+    }
+    if (state.isReconnecting) {
+      return _buildRetryWidget(context, "Connection unstable. Trying to reconnect...");
+    }
+    return _buildGameContent(state);
   }
 
   Widget _buildGameContent(GameLoaded state) {
@@ -359,7 +359,7 @@ class _GameScreenState extends State<GameScreen> {
               playerData.playerAuctionStatus == PlayerAuctionStatusEnum.notShown)
             _buildTimer(state)
           else
-            _buildStatusImage(playerData.playerAuctionStatus),
+            _buildStatusImage(playerData.playerAuctionStatus, playerData.playerId.toString()),
           _buildVerticalDividerWithThickness(),
           _buildCurrentBid(state),
           _buildVerticalDividerWithThickness(),
@@ -370,32 +370,34 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildTimer(GameLoaded state) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('TIMER', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-        Container(
-          decoration: BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
-          width: 60,
-          height: 60,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}',
-                  style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
-              Text('SEC', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
-            ],
+    return SizedBox(
+      width: 70,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('TIMER', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+          Container(
+            decoration: BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
+            width: 60,
+            height: 60,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}',
+                    style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
+                Text('SEC', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildStatusImage(PlayerAuctionStatusEnum status) {
-    return Image.asset(
-      status == PlayerAuctionStatusEnum.buy ? AppImages.sold : AppImages.unsold,
-      width: 80,
-      height: 80,
+  Widget _buildStatusImage(PlayerAuctionStatusEnum status, String playerId) {
+    return _HammerStatusWidget(
+      key: ValueKey('hammer_$playerId'),
+      status: status,
     );
   }
 
@@ -427,15 +429,18 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildBiddingBy(dynamic playerData) {
     final franchise = context.read<GameBloc>().getFranchiseByTeamId(playerData.teamId);
-    if (franchise == MiniAuctionFranchiseEnum.empty) return const SizedBox.shrink();
+    if (franchise == MiniAuctionFranchiseEnum.empty) return const SizedBox(width: 70,);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('BIDING BY', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-        Image.asset(franchise.image(), width: 50, height: 50),
-        Text(franchise.shortName(), style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
-      ],
+    return SizedBox(
+      width: 70,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('BIDING BY', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+          Image.asset(franchise.image(), width: 50, height: 50),
+          Text(franchise.shortName(), style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
+        ],
+      ),
     );
   }
 
@@ -640,6 +645,12 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildFirstColumn() {
+    final currentContext = context.read<GameBloc>().state;
+    bool isAcceleratedRoundStarted = false;
+    if(currentContext is GameLoaded){
+      print("currentContext.gameData.round : ${currentContext.gameData.round}");
+      isAcceleratedRoundStarted = currentContext.gameData.round == 5;
+    }
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -665,26 +676,43 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           // _buildSideMenu(image: AppImages.playerSet, t1: 'PLAYER SET'),
-          _buildSideMenu(image: AppImages.bat, t1: 'BATSMEN', onTap: () {
+          _buildSideMenu(image: AppImages.bat, t1: isAcceleratedRoundStarted ? 'ACCELERATED': 'BATSMEN', onTap: () {
             playTap();
-            _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN');
+            _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', isAcceleratedRoundStarted ? '1' : '0');
           }),
-          _buildSideMenu(image: AppImages.wicketKeepingGloves, t1: 'WICKET-', t2: 'KEEPERS',
-              onTap: () {
-            playTap();
-                _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS');
-              }),
-          _buildSideMenu(image: AppImages.batBall, t1: 'ALL-', t2: 'ROUNDERS',
-              onTap: () {
-            playTap();
-                _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS');
-              }),
-          _buildSideMenu(image: AppImages.ball, t1: 'BOWLERS',
-              onTap: () {
-            playTap();
-                _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS');
-              }),
+          if(!isAcceleratedRoundStarted)
+            ...[
+              _buildSideMenu(image: AppImages.wicketKeepingGloves, t1: 'WICKET-', t2: 'KEEPERS',
+                  onTap: () {
+                    playTap();
+                    _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS', '0');
+                  }),
+              _buildSideMenu(image: AppImages.batBall, t1: 'ALL-', t2: 'ROUNDERS',
+                  onTap: () {
+                    playTap();
+                    _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS', '0');
+                  }),
+              _buildSideMenu(image: AppImages.ball, t1: 'BOWLERS',
+                  onTap: () {
+                    playTap();
+                    _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS', '0');
+                  }),
+            ],
+
           _buildSideMenu(image: AppImages.ruleBookWhite, t1: 'RULE BOOK'),
+          if(isAcceleratedRoundStarted)
+            Expanded(
+              child: SizedBox(
+                width: 150,
+                child: Center(
+                  child: Image.asset(
+                    height: 100,
+                      AppImages.indianBiddingLeague
+                  )
+                ),
+              ),
+            ),
+
           SizedBox(
             width: 150,
             child: Row(
@@ -710,17 +738,7 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    playTap();
-                    final homeState = context.read<HomeBloc>().state;
-                    final gameState = context.read<GameBloc>().state;
-                    if (homeState is HomeLoaded && gameState is GameLoaded) {
-                      context.read<GameBloc>().add(
-                        ExitMatch(
-                          userId: homeState.userData.userId,
-                          matchId: gameState.gameData.matchId,
-                        ),
-                      );
-                    }
+                    showExitDialog(context);
                   },
                   child: Container(
                     width: 60,
@@ -747,9 +765,32 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  void _navigateToPlayerList(String playerRoleId, String roleName) {
+  void showExitDialog(BuildContext context) {
+    final gameBloc = context.read<GameBloc>();
+    final homeBloc = context.read<HomeBloc>();
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: gameBloc),
+            BlocProvider.value(value: homeBloc),
+          ],
+          child: Dialog(
+            backgroundColor: AppTheme.navyBlue,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ExitDialog(),
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToPlayerList(String playerRoleId, String roleName, String acceleratedSet) {
     final homeLoadedState = context.read<HomeBloc>().state as HomeLoaded;
-    context.push('/game/playerList?userId=${homeLoadedState.userData.userId}&playerRole=$playerRoleId&playerRoleName=$roleName');
+    context.push('/game/playerList?userId=${homeLoadedState.userData.userId}&playerRole=$playerRoleId&playerRoleName=$roleName&acceleratedSet=$acceleratedSet');
   }
 
   Widget _buildSideMenu({required String image, required String t1, String? t2, void Function()? onTap}) {
@@ -973,6 +1014,7 @@ class _GameScreenState extends State<GameScreen> {
     final user = currentState.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
     return user.matchWinStatusEnum == MatchWinStatusEnum.disqualified;
   }
+
 }
 
 class _GlowAuctioneer extends StatefulWidget {
@@ -986,6 +1028,7 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _glow;
+  bool audioPlayed = false;
 
   @override
   void initState() {
@@ -1007,35 +1050,115 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
     super.dispose();
   }
 
+  bool showAnnounceSoldGif() {
+    final state = context.read<GameBloc>().state;
+    if (state is! GameLoaded) return false;
+    return state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+            .playerAuctionStatus ==
+        PlayerAuctionStatusEnum.buy || state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
+        .playerAuctionStatus ==
+        PlayerAuctionStatusEnum.unSold || state.isStrategicAudioPlaying;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _glow,
-      builder: (context, child) {
-        return Container(
-          width: 110,
-          height: 110,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFFD700).withValues(alpha: 0.2),
-                blurRadius: _glow.value,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: child,
-        );
+    return BlocListener<GameBloc, GameState>(
+      listener: (context, state) {
+        if (state is GameLoaded) {
+          final playerData = state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
+          print('audioPlayed : $audioPlayed');
+          if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy && !audioPlayed) {
+            print("state.gameData.currentAuctionPlayerIndex : ${state.gameData.currentAuctionPlayerIndex}");
+            // Plays a voice instruction once when player is sold
+            playSoldAudio();
+            audioPlayed = !audioPlayed;
+          }else if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.unSold && !audioPlayed) {
+            print("state.gameData.currentAuctionPlayerIndex : ${state.gameData.currentAuctionPlayerIndex}");
+            // Plays a voice instruction once when player is sold
+            playUnSoldAudio();
+            audioPlayed = !audioPlayed;
+          } else if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.notShown && audioPlayed) {
+            audioPlayed = !audioPlayed;
+          }
+        }
       },
-      child: ClipOval(
-        child: Image.asset(
-          AppImages.welcomeAuctioner,
-          width: 100,
-          height: 100,
-          fit: BoxFit.fitHeight,
+      child: AnimatedBuilder(
+        animation: _glow,
+        builder: (context, child) {
+          return Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                  blurRadius: _glow.value,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: child,
+          );
+        },
+        child: ClipOval(
+          child: BlocBuilder<GameBloc, GameState>(
+            builder: (context, state) {
+              return Image.asset(
+                showAnnounceSoldGif() ? AppImages.announceSold : AppImages.welcomeAuctioner,
+                width: 100,
+                height: 100,
+                fit: BoxFit.fitHeight,
+              );
+            },
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _HammerStatusWidget extends StatefulWidget {
+  final PlayerAuctionStatusEnum status;
+
+  const _HammerStatusWidget({super.key, required this.status});
+
+  @override
+  State<_HammerStatusWidget> createState() => _HammerStatusWidgetState();
+}
+
+class _HammerStatusWidgetState extends State<_HammerStatusWidget> {
+  bool _showHammer = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        setState(() {
+          _showHammer = false;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_showHammer) {
+      return Image.asset(
+        AppImages.hammerAnimate,
+        width: 70,
+        height: 80,
+      );
+    }
+    
+    final bool isSold = widget.status == PlayerAuctionStatusEnum.buy || 
+                       widget.status == PlayerAuctionStatusEnum.sold;
+                       
+    return Image.asset(
+      isSold ? AppImages.sold : AppImages.unsold,
+      width: 70,
+      height: 80,
     );
   }
 }

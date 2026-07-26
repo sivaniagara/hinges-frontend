@@ -7,6 +7,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
     required super.playerRole,
     required super.teamId,
     required super.imageId,
+    required super.acceleratedSet,
     required super.basePrice,
     required super.currentPrice,
     required super.baseRating,
@@ -25,6 +26,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
       playerRole: json['player_role_id'] ?? '',
       teamId: json['team_id'] ?? '',
       imageId: json['image_id'] ?? 0,
+      acceleratedSet: json['accelerated_set'] ?? 0,
       basePrice: json['base_price'] ?? 0,
       currentPrice: json['current_price'] ?? 0,
       baseRating: json['base_rating'] ?? 0,
@@ -43,7 +45,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
     }else if(playerStatus == 'buy'){
       return PlayerAuctionStatusEnum.buy;
     }else if(playerStatus == 'not_sold'){
-      return PlayerAuctionStatusEnum.notSold;
+      return PlayerAuctionStatusEnum.unSold;
     }else if(playerStatus == 'not_shown'){
       return PlayerAuctionStatusEnum.notShown;
     }else{
@@ -58,6 +60,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
         playerRole: entity.playerRole,
         teamId: entity.teamId,
         imageId: entity.imageId,
+        acceleratedSet: entity.acceleratedSet,
         basePrice: entity.basePrice,
         currentPrice: entity.currentPrice,
         baseRating: entity.baseRating,
@@ -77,6 +80,7 @@ class AuctionPlayerStatusModel extends AuctionPlayerStatusEntity {
         playerRole: playerRole,
         teamId: teamId,
         imageId: imageId,
+        acceleratedSet: acceleratedSet,
         basePrice: basePrice,
         currentPrice: currentPrice,
         baseRating: baseRating,

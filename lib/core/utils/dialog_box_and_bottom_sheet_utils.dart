@@ -418,75 +418,165 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFFFF4D2),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0B1220),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+            border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.7),
+                blurRadius: 30,
+                offset: const Offset(0, -6),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Welcome, Guest!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Please enter your name to continue.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black54),
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: nameController,
-                  style: GoogleFonts.oxanium(
-                    color: Colors.black, // <-- text color inside the field
-                    fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  /// DRAG HANDLE
+                  Container(
+                    width: 36,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
-                  decoration: InputDecoration(
-                    hintText: 'YOUR NAME',
-                    hintStyle: GoogleFonts.oxanium(color: Colors.white38),
-                    prefixIcon: const Icon(Icons.person_outline, color: Colors.black),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
 
-                    // Border styles
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.black, width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0xFF800000), width: 2),
-                      borderRadius: BorderRadius.circular(8),
+                  /// LOGO
+                  Image.asset(AppImages.indianBiddingLeague, height: 40),
+                  const SizedBox(height: 8),
+
+                  Text(
+                    'WELCOME, GUEST',
+                    style: GoogleFonts.rajdhani(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber.shade300,
+                      letterSpacing: 1.2,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        Navigator.pop(context);
-                        onContinue(nameController.text);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF800000),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Enter your name to join the auction room',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.oxanium(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
-                    child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+
+                  /// THEMED INPUT FIELD — black fill, black icon
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 1.2,
+                      ),
+                    ),
+                    child: TextFormField(
+                      controller: nameController,
+                      cursorColor: Colors.amber,
+                      textCapitalization: TextCapitalization.characters,
+                      style: GoogleFonts.oxanium(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
+                        fontSize: 14,
+                      ),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: 'ENTER YOUR NAME',
+                        hintStyle: GoogleFonts.oxanium(color: Colors.white38, fontSize: 13),
+                        prefixIcon: const Icon(Icons.person_outline, color: Colors.black, size: 20),
+                        prefixIconColor: Colors.black,
+                        filled: true,
+                        fillColor: Colors.black,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.amber.shade300, width: 1.5),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorStyle: GoogleFonts.oxanium(fontSize: 11),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  /// CONTINUE BUTTON
+                  SizedBox(
+                    width: double.infinity,
+                    child: GestureDetector(
+                      onTap: () {
+                        playTap();
+                        if (formKey.currentState!.validate()) {
+                          Navigator.pop(context);
+                          onContinue(nameController.text);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.amber.shade600,
+                              Colors.amber.shade300,
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.amber.withOpacity(0.4),
+                              blurRadius: 12,
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'CONTINUE',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            letterSpacing: 1.2,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -494,8 +584,6 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
     },
   );
 }
-
-
 
 void showGameInfoDialog(BuildContext context, {required String message}) {
   showGeneralDialog(

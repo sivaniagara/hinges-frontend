@@ -88,6 +88,7 @@ class AppImages {
   static const String whatsapp = '${base}whatsapp.png';
   static const String enterRoomIcon = '${base}enter_room_icon.png';
   static const String watchAds = '${base}watch_ads.png';
+  static const String miniAuctionLiteBackground = '${base}mini_action_lite_background.png';
 
   /// game
   static const String gameBase = '${base}game/';
@@ -162,4 +163,9 @@ class AppImages {
   static const String medal2 = '${gameBase}2nd_medal.png';
   static const String medal3 = '${gameBase}3rd_medal.png';
 
+
+  /// gif
+  static const String gifBase = 'assets/gif/';
+  static const String announceSold = '${gifBase}announce_sold.gif';
+  static const String hammerAnimate = '${gifBase}hammer_animate.gif';
 }

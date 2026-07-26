@@ -40,16 +40,19 @@ class _SettingScreenState extends State<SettingScreen> {
       isSoundOn = prefs.getBool('isSoundOn') ?? true;
       isVibrateOn = prefs.getBool('isVibrateOn') ?? true;
     });
+    updateFeedbackSettings(sound: isSoundOn, vibration: isVibrateOn);
   }
 
   Future<void> _saveSoundSetting(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isSoundOn', value);
+    updateFeedbackSettings(sound: value);
   }
 
   Future<void> _saveVibrateSetting(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isVibrateOn', value);
+    updateFeedbackSettings(vibration: value);
   }
 
   @override
@@ -233,8 +236,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      playTap();
                       onToggle(true);
+                      playTap();
                     },
                     child: Container(
                       height: 30,
@@ -273,8 +276,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      playTap();
                       onToggle(false);
+                      playTap();
                     },
                     child: Container(
                       height: 30,

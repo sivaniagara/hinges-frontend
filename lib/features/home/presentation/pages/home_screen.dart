@@ -475,41 +475,96 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 /// ================= AUCTION CARD =================
-class AuctionCard extends StatelessWidget {
+class AuctionCard extends StatefulWidget {
   final String image;
   final bool locked;
   final VoidCallback onTap;
 
   const AuctionCard({
+    super.key,
     required this.image,
     required this.locked,
     required this.onTap,
   });
 
   @override
+  State<AuctionCard> createState() => _AuctionCardState();
+}
+
+class _AuctionCardState extends State<AuctionCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shakeController;
+  late final Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
+    // Damped oscillation: a few back-and-forth wiggles that settle down.
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: -12), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -12, end: 10), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10, end: -8), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -8, end: 6), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 6, end: -3), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -3, end: 0), weight: 1),
+    ]).animate(
+      CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    if (widget.locked) {
+      // Give feedback that this card is locked instead of doing nothing.
+      HapticFeedback.mediumImpact();
+      _shakeController.forward(from: 0);
+      return;
+    }
+    widget.onTap();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return InkWell(
-      onTap: locked ? null : onTap,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(
-            image,
-            height: size.height * 0.4,
-          ),
-
-          if (locked)
-            const Positioned(top: 0, right: 5, child: LockIcon()),
-
-          Positioned(
-            bottom: 0,
-            child: InfoIcon(
-              isLocked: locked,
+      onTap: _handleTap,
+      child: AnimatedBuilder(
+        animation: _shakeAnimation,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: Offset(_shakeAnimation.value, 0),
+            child: child,
+          );
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              widget.image,
+              height: size.height * 0.4,
             ),
-          ),
-        ],
+
+            if (widget.locked)
+              const Positioned(top: 0, right: 5, child: LockIcon()),
+
+            Positioned(
+              bottom: 0,
+              child: InfoIcon(
+                isLocked: widget.locked,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

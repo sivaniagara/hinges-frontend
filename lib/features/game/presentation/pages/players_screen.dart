@@ -22,7 +22,8 @@ class PlayersScreen extends StatelessWidget {
   final String userId;
   final String playerRole;
   final String playerRoleName;
-  const PlayersScreen({super.key, required this.userId, required this.playerRole, required this.playerRoleName});
+  final String acceleratedSet;
+  const PlayersScreen({super.key, required this.userId, required this.playerRole, required this.playerRoleName, required this.acceleratedSet});
 
   @override
   Widget build(BuildContext context) {
@@ -49,24 +50,47 @@ class PlayersScreen extends StatelessWidget {
               if (state is! GameLoaded) return const SizedBox.shrink();
 
               final userState = context.read<HomeBloc>().state as HomeLoaded;
-              List<AuctionPlayerStatusEntity> playersList = state.gameData.auctionPlayersStatusList.where((e) => e.playerRole == playerRole).toList();
+              List<AuctionPlayerStatusEntity> playersList = state.gameData.auctionPlayersStatusList
+                  .where((e) => acceleratedSet == '1' ? e.acceleratedSet == 1 : e.playerRole == playerRole)
+                  .toList();
+              if(acceleratedSet == '1'){
+                Map<String, List<AuctionPlayerStatusEntity>> playerRoleOrder = {};
+                for (var i in playersList) {
+                  if (!playerRoleOrder.containsKey(i.playerRole)) {
+                    playerRoleOrder[i.playerRole] = [];
+                    playerRoleOrder[i.playerRole]!.add(i);
+                  }else{
+                    playerRoleOrder[i.playerRole]!.add(i);
+                  }
+                }
+                for(var key in playerRoleOrder.keys){
+                  playerRoleOrder[key] = sortByIcpFpIup(playerRoleOrder[key]!, context);
+                }
+                playersList = [
+                  for(var value in playerRoleOrder.values)
+                    ...value
+                ];
+              }
+
               List<AuctionPlayerStatusEntity> availableAndNotShown = playersList.where((e) => e.playerAuctionStatus != PlayerAuctionStatusEnum.sold).toList();
-              List<AuctionPlayerStatusEntity> unSold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notSold).toList();
+              List<AuctionPlayerStatusEntity> unSold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.unSold).toList();
               List<AuctionPlayerStatusEntity> sold = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.sold).toList();
-              availableAndNotShown = sortByIcpFpIup(availableAndNotShown, context);
+              if(acceleratedSet != '1'){
+                availableAndNotShown = sortByIcpFpIup(availableAndNotShown, context);
+              }
               unSold = sortByIcpFpIup(unSold, context);
               sold = sortByIcpFpIup(sold, context);
               // Sorting logic: Auction players first, then Unsold, then Sold/Buy
               playersList = [
                 ...availableAndNotShown,
-                // ...unSold,
+                //
                 ...sold,
               ];
 
               final totalCount = playersList.length;
               final soldCount = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.sold || e.playerAuctionStatus == PlayerAuctionStatusEnum.buy).length;
               final auctionCount = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.available || e.playerAuctionStatus == PlayerAuctionStatusEnum.notShown).length;
-              final unsoldCount = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.notSold).length;
+              final unsoldCount = playersList.where((e) => e.playerAuctionStatus == PlayerAuctionStatusEnum.unSold).length;
 
               return Column(
                 children: [
@@ -85,15 +109,23 @@ class PlayersScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Image.asset(
-                                width: 25,
-                                height: 25,
-                                context.read<GameBloc>().getPlayerRoleImageById(playerRole),
-                              ),
+                              if(acceleratedSet == '1')
+                                Image.asset(
+                                  width: 30,
+                                  height: 30,
+                                  AppImages.acceleratedRound,
+                                )
+                              else
+                                Image.asset(
+                                  width: 25,
+                                  height: 25,
+                                  context.read<GameBloc>().getPlayerRoleImageById(playerRole),
+                                ),
                               const SizedBox(width: 8),
                               Column(
                                 children: [
                                   Text(
+                                    acceleratedSet == '1'? 'ACCELERATED' :
                                     playerRoleName.toUpperCase(),
                                     style: GoogleFonts.rajdhani(
                                       color: AppTheme.borderGold,
@@ -176,6 +208,7 @@ class PlayersScreen extends StatelessWidget {
                                         : '-',
                                     franchise: franchise != MiniAuctionFranchiseEnum.empty ? franchise.shortName() : '-',
                                     isOdd: index.isOdd,
+                                    roleImage: acceleratedSet == '1' ? context.read<GameBloc>().getPlayerRoleImageById(player.playerRole) : null
                                   );
                                 },
                               ),
@@ -261,7 +294,7 @@ class PlayersScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildCell('NO', flex: 1, isHeader: true),
+          _buildCell(acceleratedSet == '1' ? 'CAT.' : 'NO', flex: 1, isHeader: true),
           _buildCell('PLAYER NAME', flex: 3, isHeader: true, textAlign: TextAlign.start),
           _buildCell('DESCRIPTION', flex: 3, isHeader: true),
           _buildCell('CAT.', flex: 1, isHeader: true),
@@ -289,6 +322,7 @@ class PlayersScreen extends StatelessWidget {
     required String soldPrice,
     required String franchise,
     required bool isOdd,
+    String? roleImage,
   }) {
     Color categoryColor = const Color(0xFF00BFFF); // ICP blue
     if (category == 'IUP') {
@@ -305,7 +339,7 @@ class PlayersScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildCell(no, flex: 1, color: Colors.white),
+          _buildCell(no, flex: 1, color: Colors.white, roleImage: roleImage),
           _buildCell(name, flex: 3, isBold: true, color: Colors.white, textAlign: TextAlign.start, fontSize: 13),
           _buildCell(description, flex: 3, fontSize: 12, color: Colors.white, isBold: true),
           _buildCell(category, flex: 1, color: categoryColor, isBold: true),
@@ -320,12 +354,12 @@ class PlayersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 13, TextAlign textAlign = TextAlign.center}) {
+  Widget _buildCell(String text, {required int flex, bool isHeader = false, bool isBold = false, Color color = Colors.white, double fontSize = 13, TextAlign textAlign = TextAlign.center, String? roleImage,}) {
     return Expanded(
       flex: flex,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Text(
+        child: roleImage != null ? Image.asset(roleImage, height: 20, ) : Text(
           text,
           textAlign: textAlign,
           maxLines: 2,
@@ -345,7 +379,7 @@ class PlayersScreen extends StatelessWidget {
   (String, Color) getPlayerStatus(AuctionPlayerStatusEntity player){
     if(player.playerAuctionStatus == PlayerAuctionStatusEnum.sold || player.playerAuctionStatus == PlayerAuctionStatusEnum.buy){
       return ('SOLD', Colors.green);
-    }else if(player.playerAuctionStatus == PlayerAuctionStatusEnum.notSold){
+    }else if(player.playerAuctionStatus == PlayerAuctionStatusEnum.unSold){
       return ('UNSOLD', Colors.red);
     }else{
       return ('AUCTION', const Color(0xFF00AFFF));

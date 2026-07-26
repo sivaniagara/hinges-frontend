@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 enum PlayerAuctionStatusEnum {
   sold,
-  notSold,
+  unSold,
   buy,
   notShown,
   available,
@@ -18,6 +18,7 @@ class AuctionPlayerStatusEntity extends Equatable {
   final String countryId;
   final String teamId;
   final int imageId;
+  final int acceleratedSet;
   final int basePrice;
   final int currentPrice;
   final double baseRating;
@@ -30,6 +31,7 @@ class AuctionPlayerStatusEntity extends Equatable {
     required this.playerRole,
     required this.teamId,
     required this.imageId,
+    required this.acceleratedSet,
     required this.basePrice,
     required this.currentPrice,
     required this.baseRating,
@@ -51,6 +53,7 @@ class AuctionPlayerStatusEntity extends Equatable {
       "bowlingStyle" : bowlingStyle,
       "countryId" : countryId,
       "teamId" : teamId,
+      "strategicRound" : acceleratedSet,
       "imageId" : imageId,
       "basePrice" : basePrice,
       "currentPrice" : currentPrice,
