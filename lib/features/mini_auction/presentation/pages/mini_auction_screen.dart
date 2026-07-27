@@ -120,7 +120,7 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _Header(userData: userData),
-
+        
               /// MAIN CONTENT
               selectedMode == null
                   ? _ArenaSelection(
@@ -128,7 +128,7 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
                 onSelect: (item) {
                   setState(() {
                     selectedMode = MiniAuctionLiteMode(
-                      item
+                        item
                     );
                   });
                 },
@@ -137,7 +137,7 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
                 mode: selectedMode!,
                 size: size,
               ),
-
+        
               const _BottomBar(),
             ],
           ),
@@ -408,7 +408,7 @@ class _BottomBar extends StatelessWidget {
 
 /// ================= CARD =================
 
-class MiniAuctionLiteCard extends StatelessWidget {
+class MiniAuctionLiteCard extends StatefulWidget {
   final String image;
   final VoidCallback onTap;
   final String fee;
@@ -425,72 +425,126 @@ class MiniAuctionLiteCard extends StatelessWidget {
   });
 
   @override
+  State<MiniAuctionLiteCard> createState() => _MiniAuctionLiteCardState();
+}
+
+class _MiniAuctionLiteCardState extends State<MiniAuctionLiteCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shakeController;
+  late final Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
+    // Damped oscillation: a few back-and-forth wiggles that settle down.
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: -12), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -12, end: 10), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10, end: -8), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -8, end: 6), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 6, end: -3), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -3, end: 0), weight: 1),
+    ]).animate(
+      CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    if (widget.isLocked) {
+      // Give feedback that this card is locked instead of doing nothing.
+      HapticFeedback.mediumImpact();
+      _shakeController.forward(from: 0);
+      return;
+    }
+    widget.onTap();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
 
     return InkWell(
-      onTap: isLocked ? null : onTap,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(
-            image,
-            height: 170,
-            width: 150,
-            fit: BoxFit.fill,
-          ),
-
-          /// LOCK ICON
-          if (isLocked)
-            const Positioned(
-              top: 10,
-              right: 10,
-              child: Icon(Icons.lock, color: AppTheme.borderGold, size: 18),
+      onTap: _handleTap,
+      child: AnimatedBuilder(
+        animation: _shakeAnimation,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: Offset(_shakeAnimation.value, 0),
+            child: child,
+          );
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              widget.image,
+              height: 170,
+              width: 150,
+              fit: BoxFit.fill,
             ),
 
-          /// INFO ICON
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: InfoIcon(
+            /// LOCK ICON
+            if (widget.isLocked)
+              const Positioned(
+                top: 10,
+                right: 10,
+                child: Icon(Icons.lock, color: AppTheme.borderGold, size: 18),
+              ),
+
+            /// INFO ICON
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: InfoIcon(
                 isLocked: false,
-              onTap: (){
-                  showClassicRoomDialog(context, miniAuctionItem);
-              },
+                onTap: (){
+                  showClassicRoomDialog(context, widget.miniAuctionItem);
+                },
 
+              ),
             ),
-          ),
 
-          Positioned(
-            bottom: 10,
-            child: Column(
-              children: [
-                Text(
-                  'ENTRY FEE',
-                  style: GoogleFonts.rajdhani(
-                    color: AppTheme.borderGold,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Image.asset(AppImages.coinMenuIcon, width: 15),
-                    const SizedBox(width: 5),
-                    Text(
-                      '$fee COIN',
-                      style: GoogleFonts.rajdhani(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+            Positioned(
+              bottom: 10,
+              child: Column(
+                children: [
+                  Text(
+                    'ENTRY FEE',
+                    style: GoogleFonts.rajdhani(
+                      color: AppTheme.borderGold,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  Row(
+                    children: [
+                      Image.asset(AppImages.coinMenuIcon, width: 15),
+                      const SizedBox(width: 5),
+                      Text(
+                        '${widget.fee} COIN',
+                        style: GoogleFonts.rajdhani(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

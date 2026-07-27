@@ -355,6 +355,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         },
       );
     });
+
+    on<UpdateStrategicAudioPlaying>((event, emit) {
+      if (state is GameLoaded) {
+        emit((state as GameLoaded).copyWith(isStrategicAudioPlaying: event.isPlaying));
+      }
+    });
   }
 
   // ================= SOCKET LISTENER =================

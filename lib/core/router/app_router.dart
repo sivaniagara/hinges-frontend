@@ -252,11 +252,14 @@ final router = GoRouter(
                 state.uri.queryParameters['playerRole'] ?? '';
             final playerRoleName =
                 state.uri.queryParameters['playerRoleName'] ?? '';
+            final acceleratedSet =
+                state.uri.queryParameters['acceleratedSet'] ?? '0';
 
             return PlayersScreen(
               userId: userId,
               playerRole: playerRoleId,
               playerRoleName: playerRoleName,
+              acceleratedSet: acceleratedSet,
             );
           },
         ),

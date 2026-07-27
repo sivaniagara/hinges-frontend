@@ -35,6 +35,7 @@ class GameLoaded extends GameState {
   final double? remainingSecondsToExpireAuctionPlayer;
   final double? remainingSecondsToExpireBreak;
   final bool isReconnecting;
+  final bool isStrategicAudioPlaying;
 
   GameLoaded({
     required this.gameData,
@@ -42,6 +43,7 @@ class GameLoaded extends GameState {
     required this.remainingSecondsToExpireAuctionPlayer,
     required this.remainingSecondsToExpireBreak,
     this.isReconnecting = false,
+    this.isStrategicAudioPlaying = false,
   });
 
   GameLoaded copyWith({
@@ -50,6 +52,7 @@ class GameLoaded extends GameState {
     double? remainingSecondsToExpireAuctionPlayer,
     double? remainingSecondsToExpireBreak,
     bool? isReconnecting,
+    bool? isStrategicAudioPlaying,
   }) {
     return GameLoaded(
       gameData: gameData ?? this.gameData,
@@ -62,6 +65,7 @@ class GameLoaded extends GameState {
       remainingSecondsToExpireBreak ??
           this.remainingSecondsToExpireBreak,
       isReconnecting: isReconnecting ?? this.isReconnecting,
+      isStrategicAudioPlaying: isStrategicAudioPlaying ?? this.isStrategicAudioPlaying,
     );
   }
 
@@ -72,6 +76,7 @@ class GameLoaded extends GameState {
     remainingSecondsToExpireAuctionPlayer,
     remainingSecondsToExpireBreak,
     isReconnecting,
+    isStrategicAudioPlaying,
   ];
 }
 

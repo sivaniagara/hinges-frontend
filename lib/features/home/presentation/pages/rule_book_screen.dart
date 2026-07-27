@@ -20,9 +20,14 @@ import '../widgets/app_background.dart';
 /// than fighting it. Each category carries its own accent color — pulled
 /// from the same curated gradients — so tabs and their content read as
 /// distinct sections while staying inside one cohesive gold/blue palette.
-class RuleBookScreen extends StatelessWidget {
+class RuleBookScreen extends StatefulWidget {
   const RuleBookScreen({super.key});
 
+  @override
+  State<RuleBookScreen> createState() => _RuleBookScreenState();
+}
+
+class _RuleBookScreenState extends State<RuleBookScreen> {
   static final List<_RuleCategory> _categories = [
     _RuleCategory(
       label: 'OVERVIEW',
@@ -285,37 +290,123 @@ class RuleBookScreen extends StatelessWidget {
     ),
   ];
 
+  // Scroll-sync plumbing -----------------------------------------------
+  //
+  // All categories now live in ONE continuous scroll view (like a
+  // document). The rail on the left just shows "P1, P2, P3 ..." markers.
+  // - Scrolling the content updates which rail tab is highlighted.
+  // - Tapping a rail tab smooth-scrolls the content to that section.
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _viewportKey = GlobalKey();
+  late final List<GlobalKey> _sectionKeys = List.generate(_categories.length, (_) => GlobalKey());
+
+  int _activeIndex = 0;
+  bool _isProgrammaticScroll = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_syncActiveIndexWithScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_syncActiveIndexWithScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  double? _sectionTopWithinViewport(GlobalKey key) {
+    final viewportBox = _viewportKey.currentContext?.findRenderObject() as RenderBox?;
+    final sectionBox = key.currentContext?.findRenderObject() as RenderBox?;
+    if (viewportBox == null || sectionBox == null || !sectionBox.attached) return null;
+    return sectionBox.localToGlobal(Offset.zero, ancestor: viewportBox).dy;
+  }
+
+  void _syncActiveIndexWithScroll() {
+    if (_isProgrammaticScroll) return;
+    const activationLine = 40.0; // treat a section as "current" once its header nears the top
+    int newIndex = _activeIndex;
+    for (int i = 0; i < _sectionKeys.length; i++) {
+      final top = _sectionTopWithinViewport(_sectionKeys[i]);
+      if (top == null) continue;
+      if (top <= activationLine) {
+        newIndex = i;
+      } else {
+        break;
+      }
+    }
+    if (newIndex != _activeIndex) setState(() => _activeIndex = newIndex);
+  }
+
+  Future<void> _scrollToCategory(int index) async {
+    final top = _sectionTopWithinViewport(_sectionKeys[index]);
+    if (top == null || !_scrollController.hasClients) {
+      setState(() => _activeIndex = index);
+      return;
+    }
+    final target = (_scrollController.offset + top - 6).clamp(0.0, _scrollController.position.maxScrollExtent);
+
+    setState(() {
+      _activeIndex = index;
+      _isProgrammaticScroll = true;
+    });
+    await _scrollController.animateTo(target, duration: const Duration(milliseconds: 420), curve: Curves.easeInOutCubic);
+    _isProgrammaticScroll = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
       child: AppBackground(
         animateContent: false,
-        child: DefaultTabController(
-          length: _categories.length,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Column(
-              children: [
-                const SizedBox(height: 10),
-                _Header(onBack: () {
-                  playTap();
-                  context.pop();
-                }),
-                const SizedBox(height: 6),
-                const _OrnamentDivider(),
-                const SizedBox(height: 10),
-                _CategoryTabs(categories: _categories),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      for (final c in _categories) _CategoryContent(category: c),
-                    ],
-                  ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Column(
+            children: [
+              const SizedBox(height: 10),
+              _Header(onBack: () {
+                playTap();
+                context.pop();
+              }),
+              const SizedBox(height: 6),
+              const _OrnamentDivider(),
+              const SizedBox(height: 10),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _CategoryRail(
+                      categories: _categories,
+                      activeIndex: _activeIndex,
+                      onTap: _scrollToCategory,
+                    ),
+                    Expanded(
+                      child: Container(
+                        key: _viewportKey,
+                        child: ListView(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.fromLTRB(10, 2, 16, 24),
+                          // Large cacheExtent keeps every section's RenderBox laid out even
+                          // when far off-screen, so tapping a page tab can always find and
+                          // animate-scroll to it (not just the sections currently nearby).
+                          cacheExtent: 8000,
+                          children: [
+                            for (int i = 0; i < _categories.length; i++)
+                              _CategorySection(
+                                key: _sectionKeys[i],
+                                category: _categories[i],
+                                isLast: i == _categories.length - 1,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -414,56 +505,107 @@ class _OrnamentDivider extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Tabs
+// Vertical page rail (left side) — "P1", "P2", "P3" ... one per category.
+// Highlights the category currently in view and scrolls to a category when tapped.
 // ---------------------------------------------------------------------------
 
-class _CategoryTabs extends StatelessWidget {
+class _CategoryRail extends StatelessWidget {
   final List<_RuleCategory> categories;
+  final int activeIndex;
+  final ValueChanged<int> onTap;
 
-  const _CategoryTabs({required this.categories});
+  const _CategoryRail({required this.categories, required this.activeIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.only(left: 12, right: 6),
       child: _Glass(
-        borderRadius: 18,
-        opacity: 0.15,
-        borderOpacity: 0.25,
-        padding: const EdgeInsets.all(4),
-        tint: const Color(0xFF08142E),
-        child: TabBar(
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          dividerColor: Colors.transparent,
-          indicatorSize: TabBarIndicatorSize.tab,
-          splashBorderRadius: BorderRadius.circular(16),
-          indicator: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFFFDE08D), Color(0xFFFDC830)]),
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [BoxShadow(color: AppTheme.borderGold.withOpacity(0.45), blurRadius: 12, spreadRadius: 0.5)],
-          ),
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.white70,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 3),
-          labelStyle: GoogleFonts.rajdhani(fontSize: 12.5, fontWeight: FontWeight.bold, letterSpacing: 0.3),
-          unselectedLabelStyle: GoogleFonts.rajdhani(fontSize: 12.5, fontWeight: FontWeight.w600),
-          tabs: [
-            for (final c in categories)
-              Tab(
-                height: 34,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(c.icon, size: 14),
-                      const SizedBox(width: 6),
-                      Text(c.label),
-                    ],
-                  ),
+        borderRadius: 20,
+        opacity: 0.10,
+        borderOpacity: 0.14,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (int i = 0; i < categories.length; i++) ...[
+                _RailTab(
+                  index: i,
+                  category: categories[i],
+                  active: i == activeIndex,
+                  onTap: () => onTap(i),
                 ),
+                if (i != categories.length - 1)
+                  Container(
+                    width: 2,
+                    height: 20,
+                    margin: const EdgeInsets.symmetric(vertical: 3),
+                    decoration: BoxDecoration(
+                      color: (i < activeIndex ? AppTheme.borderGold : Colors.white24).withOpacity(0.55),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RailTab extends StatelessWidget {
+  final int index;
+  final _RuleCategory category;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _RailTab({required this.index, required this.category, required this.active, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        playTap();
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        width: 44,
+        height: 44,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: active
+              ? const LinearGradient(colors: [Color(0xFFFDE08D), Color(0xFFFDC830)])
+              : LinearGradient(colors: [Colors.white.withOpacity(0.06), Colors.white.withOpacity(0.03)]),
+          border: Border.all(
+            color: active ? AppTheme.borderGold.withOpacity(0.9) : category.accent.withOpacity(0.45),
+            width: active ? 1.4 : 1,
+          ),
+          boxShadow: active
+              ? [BoxShadow(color: AppTheme.borderGold.withOpacity(0.5), blurRadius: 12, spreadRadius: 0.5)]
+              : null,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(category.icon, size: 14, color: active ? Colors.black : category.accent.withOpacity(0.9)),
+            const SizedBox(height: 1),
+            Text(
+              'P${index + 1}',
+              style: GoogleFonts.rajdhani(
+                color: active ? Colors.black : Colors.white60,
+                fontSize: 8.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.2,
               ),
+            ),
           ],
         ),
       ),
@@ -472,38 +614,32 @@ class _CategoryTabs extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Content
+// Content — every category renders inline, one after another, inside a
+// single continuous scroll view (like pages in a document).
 // ---------------------------------------------------------------------------
 
-class _CategoryContent extends StatelessWidget {
+class _CategorySection extends StatelessWidget {
   final _RuleCategory category;
+  final bool isLast;
 
-  const _CategoryContent({required this.category});
+  const _CategorySection({super.key, required this.category, required this.isLast});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 2, 16, 4),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (int i = 0; i < category.sections.length; i++)
-          _FadeIn(
-            index: i,
-            child: _RuleCard(
-              section: category.sections[i],
-              accent: category.accent,
-              index: i, // Pass index for odd/even coloring
-            ),
-          ),
+          _FadeIn(index: i, child: _RuleCard(section: category.sections[i], accent: category.accent)),
         if (category.label == 'GLOSSARY')
           Padding(
-            padding: const EdgeInsets.only(top: 2, bottom: 16),
+            padding: const EdgeInsets.only(top: 2, bottom: 8),
             child: _RuleNote(
               text: 'All player names, character images, ratings, attributes, and other in-game content are entirely fictional and created solely for entertainment and gameplay purposes.',
               accent: category.accent,
             ),
-          )
-        else
-          const SizedBox(height: 10),
+          ),
+        SizedBox(height: isLast ? 4 : 20),
       ],
     );
   }
@@ -546,36 +682,25 @@ class _Glass extends StatelessWidget {
   const _Glass({
     required this.child,
     this.borderRadius = 14,
-    this.opacity = 0.12,
-    this.borderOpacity = 0.25,
+    this.opacity = 0.08,
+    this.borderOpacity = 0.18,
     this.padding = EdgeInsets.zero,
     this.tint,
   });
 
   @override
   Widget build(BuildContext context) {
-    final base = tint ?? const Color(0xFF08142E);
+    final base = tint ?? Colors.white;
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: base,
+            color: base.withOpacity(opacity),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(
-              color: (tint ?? const Color(0xFF08142E)).withOpacity(borderOpacity),
-              width: 1.2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: (tint ?? AppTheme.borderGold).withOpacity(borderOpacity), width: 1),
           ),
           child: child,
         ),
@@ -640,18 +765,8 @@ class _RuleSection {
 class _RuleCard extends StatelessWidget {
   final _RuleSection section;
   final Color accent;
-  final int index;
 
-  const _RuleCard({
-    required this.section,
-    required this.accent,
-    required this.index,
-  });
-
-  Color _getCardColor() {
-    // Odd/Even pattern: even indices get Color(0xFF08142E), odd get Color(0xFF08142E)
-    return  const Color(0xFF08142E);
-  }
+  const _RuleCard({required this.section, required this.accent});
 
   @override
   Widget build(BuildContext context) {
@@ -661,23 +776,21 @@ class _RuleCard extends StatelessWidget {
         section.table != null ||
         section.footnote != null;
 
-    final cardColor = _getCardColor();
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _Glass(
         borderRadius: 16,
-        opacity: 0.3, // Higher opacity for better visibility of the card color
-        borderOpacity: 0.35,
+        opacity: 0.09,
+        borderOpacity: 0.16,
         padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
-        tint: cardColor,
         child: Stack(
           children: [
-             if (section.icon != null)
+            // faint watermark icon, purely decorative
+            if (section.icon != null)
               Positioned(
                 right: -6,
                 top: -6,
-                child: Icon(section.icon, size: 54, color: accent.withOpacity(0.12)),
+                child: Icon(section.icon, size: 54, color: accent.withOpacity(0.07)),
               ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -694,28 +807,13 @@ class _RuleCard extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [accent, accent.withOpacity(0.7)],
+                          colors: [accent, accent.withOpacity(0.75)],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: accent.withOpacity(0.5),
-                            blurRadius: 10,
-                            spreadRadius: 1,
-                          ),
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        boxShadow: [BoxShadow(color: accent.withOpacity(0.45), blurRadius: 8, spreadRadius: 0.5)],
                       ),
                       child: Text(
                         section.number,
-                        style: GoogleFonts.rajdhani(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                        ),
+                        style: GoogleFonts.rajdhani(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -727,13 +825,6 @@ class _RuleCard extends StatelessWidget {
                           fontSize: 14.5,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.2,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
                         ),
                       ),
                     ),
@@ -742,11 +833,9 @@ class _RuleCard extends StatelessWidget {
                 if (hasBody) ...[
                   const SizedBox(height: 9),
                   Container(
-                    height: 1.5,
+                    height: 1,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [accent.withOpacity(0.5), accent.withOpacity(0.1)],
-                      ),
+                      gradient: LinearGradient(colors: [accent.withOpacity(0.35), Colors.transparent]),
                     ),
                   ),
                   const SizedBox(height: 9),
@@ -756,17 +845,7 @@ class _RuleCard extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 5),
                     child: Text(
                       p,
-                      style: GoogleFonts.rajdhani(
-                        color: Colors.white.withOpacity(0.92),
-                        fontSize: 12.5,
-                        height: 1.45,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 2,
-                          ),
-                        ],
-                      ),
+                      style: GoogleFonts.rajdhani(color: Colors.white.withOpacity(0.85), fontSize: 12, height: 1.42),
                     ),
                   ),
                 if (section.statTiles.isNotEmpty)
@@ -791,33 +870,14 @@ class _RuleCard extends StatelessWidget {
                                   child: Container(
                                     width: 5,
                                     height: 5,
-                                    decoration: BoxDecoration(
-                                      color: accent,
-                                      borderRadius: BorderRadius.circular(2),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: accent.withOpacity(0.5),
-                                          blurRadius: 4,
-                                        ),
-                                      ],
-                                    ),
+                                    decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2)),
                                   ),
                                 ),
                                 const SizedBox(width: 9),
                                 Expanded(
                                   child: Text(
                                     b,
-                                    style: GoogleFonts.rajdhani(
-                                      color: Colors.white.withOpacity(0.92),
-                                      fontSize: 12.5,
-                                      height: 1.38,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 2,
-                                        ),
-                                      ],
-                                    ),
+                                    style: GoogleFonts.rajdhani(color: Colors.white.withOpacity(0.85), fontSize: 12, height: 1.35),
                                   ),
                                 ),
                               ],
@@ -875,50 +935,18 @@ class _StatTileView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withOpacity(0.04),
         borderRadius: BorderRadius.circular(9),
-        border: Border.all(
-          color: tile.highlight ? accent.withOpacity(0.6) : Colors.white.withOpacity(0.12),
-          width: tile.highlight ? 1.5 : 1,
-        ),
-        boxShadow: tile.highlight
-            ? [
-          BoxShadow(
-            color: accent.withOpacity(0.2),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ]
-            : null,
+        border: Border.all(color: tile.highlight ? accent.withOpacity(0.5) : Colors.white.withOpacity(0.08)),
       ),
       child: Column(
         children: [
-          Text(
-            tile.value,
-            style: GoogleFonts.rajdhani(
-              color: color,
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              shadows: tile.highlight
-                  ? [
-                Shadow(
-                  color: accent.withOpacity(0.3),
-                  blurRadius: 4,
-                ),
-              ]
-                  : null,
-            ),
-          ),
+          Text(tile.value, style: GoogleFonts.rajdhani(color: color, fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 2),
           Text(
             tile.label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.rajdhani(
-              color: tile.highlight ? accent.withOpacity(0.8) : Colors.white60,
-              fontSize: 8.5,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.4,
-            ),
+            style: GoogleFonts.rajdhani(color: Colors.white54, fontSize: 8.5, fontWeight: FontWeight.w700, letterSpacing: 0.4),
           ),
         ],
       ),
@@ -938,45 +966,23 @@ class _RuleTableView extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.15)),
-        color: Colors.white.withOpacity(0.05),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            spreadRadius: 1,
-          ),
-        ],
+        border: Border.all(color: Colors.white.withOpacity(0.10)),
+        color: Colors.white.withOpacity(0.03),
       ),
       clipBehavior: Clip.antiAlias,
       child: Table(
-        border: TableBorder(horizontalInside: BorderSide(color: Colors.white.withOpacity(0.1))),
+        border: TableBorder(horizontalInside: BorderSide(color: Colors.white.withOpacity(0.07))),
         columnWidths: table.headers.length == 2 ? const {0: FlexColumnWidth(1.4), 1: FlexColumnWidth(1)} : null,
         children: [
           TableRow(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [accent.withOpacity(0.25), accent.withOpacity(0.1)],
-              ),
-            ),
+            decoration: BoxDecoration(color: accent.withOpacity(0.14)),
             children: [
               for (final h in table.headers)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
                   child: Text(
                     h.toUpperCase(),
-                    style: GoogleFonts.rajdhani(
-                      color: accent,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 2,
-                        ),
-                      ],
-                    ),
+                    style: GoogleFonts.rajdhani(color: accent, fontSize: 9.5, fontWeight: FontWeight.w700, letterSpacing: 0.4),
                   ),
                 ),
             ],
@@ -990,19 +996,9 @@ class _RuleTableView extends StatelessWidget {
                     child: Text(
                       table.rows[i][j],
                       style: GoogleFonts.rajdhani(
-                        color: table.highlightLastColumn && j == lastIndex
-                            ? accent
-                            : Colors.white.withOpacity(0.9),
+                        color: table.highlightLastColumn && j == lastIndex ? accent : Colors.white.withOpacity(0.86),
                         fontSize: 11.5,
-                        fontWeight: table.highlightLastColumn && j == lastIndex
-                            ? FontWeight.w800
-                            : FontWeight.w600,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 2,
-                          ),
-                        ],
+                        fontWeight: table.highlightLastColumn && j == lastIndex ? FontWeight.w800 : FontWeight.w600,
                       ),
                     ),
                   ),
@@ -1023,25 +1019,13 @@ class _Footnote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = emphasize ? const Color(0xFFFF6F6B) : Colors.white70;
+    final color = emphasize ? const Color(0xFFFF6F6B) : Colors.white60;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
       decoration: BoxDecoration(
-        color: emphasize ? const Color(0xFFFF6F6B).withOpacity(0.12) : Colors.white.withOpacity(0.05),
+        color: emphasize ? const Color(0xFFFF6F6B).withOpacity(0.10) : Colors.white.withOpacity(0.03),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: emphasize ? const Color(0xFFFF6F6B).withOpacity(0.4) : Colors.white.withOpacity(0.1),
-          width: emphasize ? 1.2 : 1,
-        ),
-        boxShadow: emphasize
-            ? [
-          BoxShadow(
-            color: const Color(0xFFFF6F6B).withOpacity(0.15),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ]
-            : null,
+        border: Border.all(color: emphasize ? const Color(0xFFFF6F6B).withOpacity(0.35) : Colors.white.withOpacity(0.08)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1057,14 +1041,6 @@ class _Footnote extends StatelessWidget {
                 fontWeight: emphasize ? FontWeight.w700 : FontWeight.w600,
                 fontStyle: FontStyle.italic,
                 height: 1.3,
-                shadows: emphasize
-                    ? [
-                  Shadow(
-                    color: const Color(0xFFFF6F6B).withOpacity(0.2),
-                    blurRadius: 4,
-                  ),
-                ]
-                    : null,
               ),
             ),
           ),
@@ -1084,29 +1060,17 @@ class _RuleNote extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Glass(
       borderRadius: 12,
-      opacity: 0.15,
-      borderOpacity: 0.25,
+      opacity: 0.06,
+      borderOpacity: 0.12,
       padding: const EdgeInsets.all(14),
-      tint: const Color(0xFF08142E),
       child: Column(
         children: [
-          Icon(Icons.auto_awesome, size: 15, color: accent.withOpacity(0.8)),
+          Icon(Icons.auto_awesome, size: 15, color: accent.withOpacity(0.7)),
           const SizedBox(height: 7),
           Text(
             text,
             textAlign: TextAlign.center,
-            style: GoogleFonts.rajdhani(
-              color: Colors.white70,
-              fontSize: 10.5,
-              fontStyle: FontStyle.italic,
-              height: 1.4,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 2,
-                ),
-              ],
-            ),
+            style: GoogleFonts.rajdhani(color: Colors.white54, fontSize: 10.5, fontStyle: FontStyle.italic, height: 1.4),
           ),
         ],
       ),

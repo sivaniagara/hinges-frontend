@@ -9,12 +9,12 @@ import '../../utils/so_loud.dart';
 
 
 class BackIcon extends StatelessWidget {
-  const BackIcon({super.key});
-
+  void Function()? onTap;
+  BackIcon({super.key, this.onTap});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: onTap ?? (){
         playTap();
         context.pop();
       },

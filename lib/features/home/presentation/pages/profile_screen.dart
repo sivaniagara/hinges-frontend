@@ -101,12 +101,35 @@ class ProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
-                          userData.userName,
-                          style: GoogleFonts.rajdhani(
-                            color: AppTheme.borderGold,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: userData.userName,
+                                style: GoogleFonts.rajdhani(
+                                  color: AppTheme.borderGold,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '  IBL ID : ',
+                                style: GoogleFonts.rajdhani(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              TextSpan(
+                                text: userData.userId.split('').take(6).join('').toUpperCase(),
+                                style: GoogleFonts.rajdhani(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         Container(

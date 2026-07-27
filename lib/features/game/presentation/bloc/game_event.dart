@@ -86,3 +86,12 @@ class ExitMatch extends GameEvent {
 class RefreshGameData extends GameEvent {}
 
 class GetRoomCode extends GameEvent {}
+
+class UpdateStrategicAudioPlaying extends GameEvent {
+  final bool isPlaying;
+
+  UpdateStrategicAudioPlaying(this.isPlaying);
+
+  @override
+  List<Object?> get props => [isPlaying];
+}
