@@ -4,10 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_sounds.dart';
+import 'package:hinges_frontend/core/vibtration/vibration_service.dart';
 import 'package:hinges_frontend/features/home/presentation/widgets/top_user_bar.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/shared_decorations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration_presets.dart';
 
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/di/dependency_injection.dart' as di;
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../ads/bloc/ad_bloc.dart';
 import '../../../ads/bloc/ad_event.dart';
@@ -48,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Marks the CurrencyBar's on-screen position so the coin-burst
   /// animation knows exactly where to fly the coins to.
   final GlobalKey _currencyBarKey = GlobalKey();
+  final vibrationService = di.sl<IVibrationService>();
 
   @override
   void initState() {
@@ -183,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             BottomButton(
                               icon: AppImages.ruleBookMenuIcon,
                               title: "RULE BOOK",
-                              onTap: () {
+                              onTap: () async{
                                 playTap();
                                 context.push('/ruleBook');
                               },
@@ -274,7 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
         },
         onAdClosed: () {
-          print("show animation..");
           if (!mounted) return;
           final size = MediaQuery.of(context).size;
           CoinBurstOverlay.show(

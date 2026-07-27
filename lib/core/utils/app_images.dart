@@ -162,4 +162,9 @@ class AppImages {
   static const String medal2 = '${gameBase}2nd_medal.png';
   static const String medal3 = '${gameBase}3rd_medal.png';
 
+
+  /// gif
+  static const String gifBase = 'assets/gif/';
+  static const String soldGif = '${gifBase}announce_sold.gif';
+
 }

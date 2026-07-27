@@ -22,11 +22,12 @@ import '../network/http_service_impl.dart';
 import '../network/websocket_service.dart';
 import '../network/websocket_service_impl.dart';
 import '../utils/audio_manager.dart';
+import '../vibtration/vibration_service.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-
+  sl.registerLazySingleton<IVibrationService>(() => VibrationService());
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => GoogleSignIn(
     scopes: ['email'],

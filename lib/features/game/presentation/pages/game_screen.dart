@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/player_round_starts_in.dart';
@@ -9,7 +10,8 @@ import 'package:hinges_frontend/features/game/presentation/pages/player_set_brea
 import 'package:hinges_frontend/features/game/presentation/widgets/emoji_button.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/quick_reaction_button.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
-import 'package:square_progress_indicator/square_progress_indicator.dart';
+import 'package:hinges_frontend/core/vibtration/vibration_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:hinges_frontend/core/theme/app_theme.dart';
 import 'package:hinges_frontend/core/utils/app_ids.dart';
@@ -75,6 +77,7 @@ class _GameScreenState extends State<GameScreen> {
   static const _reconnectDelay = Duration(milliseconds: 500);
   static const _playerImageSize = 90.0;
   final List<GlobalKey> _teamKeys = List.generate(5, (_) => GlobalKey());
+  bool _hasVibratedForPause = false;
 
   @override
   void initState() {
@@ -110,13 +113,25 @@ class _GameScreenState extends State<GameScreen> {
       context.pushReplacement('/home');
     } else if (state is GameExitError) {
       showGameInfoDialog(context, message: state.message);
-    }else if (state is GameLoaded) {
-      if(state.gameData.breakStatus == BreakStatusEnum.strategicBreak){
+    } else if (state is GameLoaded) {
+      final remaining = state.remainingSecondsToExpireAuctionPlayer?.round();
+      final isPausedAtNine =
+          state.gameData.breakStatus == BreakStatusEnum.pause && remaining == 9;
 
+      if (isPausedAtNine) {
+        if (!_hasVibratedForPause) {
+          _hasVibratedForPause = true;
+          _triggerVibration();
+        }
+      } else {
+        _hasVibratedForPause = false;
       }
-      if(!state.gameData.lastMessage.isShowed){
+
+      if (state.gameData.breakStatus == BreakStatusEnum.strategicBreak) {}
+      if (!state.gameData.lastMessage.isShowed) {
         if (ModalRoute.of(context)?.isCurrent ?? false) {
-          final userIndex = state.gameData.usersStatusList.indexWhere((e)=> e.userId == state.gameData.lastMessage.userId);
+          final userIndex = state.gameData.usersStatusList
+              .indexWhere((e) => e.userId == state.gameData.lastMessage.userId);
           showChatPopup(_teamKeys[userIndex], state.gameData.lastMessage.message);
         } else {
           context.read<GameBloc>().add(MessageShowed());
@@ -130,24 +145,15 @@ class _GameScreenState extends State<GameScreen> {
       color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
         body: MandalaBackground(
-          child: Container(
-            // decoration: BoxDecoration(
-            //   image: DecorationImage(
-            //     image: AssetImage(AppImages.cricketStadium),
-            //     fit: BoxFit.fill,
-            //     opacity: 0.5,
-            //   ),
-            // ),
-            child: Row(
-              spacing: 10,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildFirstColumn(),
-                Expanded(child: _buildMainContent()),
-                _buildThirdColumn(),
-              ],
-            ),
+          child: Row(
+            spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildFirstColumn(),
+              Expanded(child: _buildMainContent()),
+              _buildThirdColumn(),
+            ],
           ),
         ),
       ),
@@ -189,7 +195,7 @@ class _GameScreenState extends State<GameScreen> {
         await Future.delayed(_reconnectDelay);
       },
       color: Colors.amber,
-      backgroundColor: Colors.red.withOpacity(0.8),
+      backgroundColor: Colors.red.withValues(alpha: 0.8),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -237,6 +243,7 @@ class _GameScreenState extends State<GameScreen> {
     if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak) {
       return const AcceleratedRoundIntro();
     }
+    print("gameData.breakStatus : ${gameData.breakStatus}");
     return _buildPlayerDetails(state, homeState, gameData, playerData);
   }
 
@@ -249,7 +256,7 @@ class _GameScreenState extends State<GameScreen> {
             Expanded(child: _buildPlayerInfo(state, homeState, gameData, playerData)),
           ],
         ),
-        _buildPlayerStats(state, playerData),
+        _buildPlayerStatus(state, playerData),
       ],
     );
   }
@@ -344,7 +351,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildPlayerStats(GameLoaded state, dynamic playerData) {
+  Widget _buildPlayerStatus(GameLoaded state, dynamic playerData) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.6)),
@@ -571,6 +578,16 @@ class _GameScreenState extends State<GameScreen> {
     overlay.insert(entry);
   }
 
+  Future<void> _triggerVibration() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool vibrate = prefs.getBool('isVibrateOn') ?? false;
+    if (vibrate) {
+      final vibrationService = sl<IVibrationService>();
+      vibrationService.hapticFeedback(HapticType.heavy);
+      vibrationService.vibrate(duration: 500);
+    }
+  }
+
   Widget _buildRetryWidget(BuildContext context, String message) {
     return Center(
       child: Container(
@@ -692,6 +709,9 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
+                  onTap: (){
+                    context.push('/settings');
+                  },
                   child: Container(
                     width: 60,
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
@@ -787,7 +807,7 @@ class _GameScreenState extends State<GameScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildAuctionerSection(),
+          _buildAuctionerSection(context),
           BlocBuilder<GameBloc, GameState>(
               builder: (context, state){
                if(state is GameLoaded){
@@ -819,8 +839,20 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildAuctionerSection() {
-    return const _GlowAuctioneer();
+  Widget _buildAuctionerSection(BuildContext context) {
+    return BlocBuilder<GameBloc, GameState>(
+        builder: (context, state){
+          if(state is GameLoaded){
+            final playerData = state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
+            if(playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy){
+              return const _GlowAuctioneer(status: AuctionStatus.sold,);
+            }else {
+              return const _GlowAuctioneer(status: AuctionStatus.idle,);
+            }
+          }
+          return const _GlowAuctioneer(status: AuctionStatus.idle,);
+        }
+    );
   }
 
   Widget _buildRemainingPurseCard(String userId) {
@@ -975,36 +1007,90 @@ class _GameScreenState extends State<GameScreen> {
   }
 }
 
+enum AuctionStatus { idle, sold, unsold }
+
 class _GlowAuctioneer extends StatefulWidget {
-  const _GlowAuctioneer();
+  const _GlowAuctioneer({required this.status});
+
+  final AuctionStatus status;
 
   @override
   State<_GlowAuctioneer> createState() => _GlowAuctioneerState();
 }
 
 class _GlowAuctioneerState extends State<_GlowAuctioneer>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _glow;
+    with TickerProviderStateMixin {
+  late final AnimationController _glowController;
+  late final Animation<double> _glow;
+  late final GifController _gifController;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
+    _glowController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
 
+    _gifController = GifController(vsync: this);
+
     _glow = Tween<double>(begin: 4, end: 20).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
+
+    // No repeat() call here — the Gif widget itself starts the loop
+    // once it has loaded the image and knows the real duration.
+  }
+
+  @override
+  void didUpdateWidget(covariant _GlowAuctioneer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.status == AuctionStatus.sold &&
+        widget.status != AuctionStatus.sold) {
+      // Leaving "sold" — stop and rewind so it's ready next time.
+      _gifController.stop();
+      _gifController.reset();
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _glowController.dispose();
+    _gifController.dispose();
     super.dispose();
+  }
+
+  Color get _glowColor {
+    switch (widget.status) {
+      case AuctionStatus.sold:
+        return const Color(0xFF4CAF50);
+      case AuctionStatus.unsold:
+        return const Color(0xFFE53935);
+      case AuctionStatus.idle:
+        return const Color(0xFFFFD700);
+    }
+  }
+
+  Widget _content() {
+    switch (widget.status) {
+      case AuctionStatus.sold:
+        return Gif(
+          controller: _gifController,
+          autostart: Autostart.loop, // loops on its own once loaded
+          image: AssetImage(AppImages.soldGif),
+          width: 100,
+          height: 100,
+          fit: BoxFit.fitHeight,
+        );
+      default:
+        return Image.asset(
+          AppImages.welcomeAuctioner,
+          width: 100,
+          height: 100,
+          fit: BoxFit.fitHeight,
+        );
+    }
   }
 
   @override
@@ -1019,7 +1105,7 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                color: _glowColor.withValues(alpha: 0.2),
                 blurRadius: _glow.value,
                 spreadRadius: 2,
               ),
@@ -1028,14 +1114,7 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
           child: child,
         );
       },
-      child: ClipOval(
-        child: Image.asset(
-          AppImages.welcomeAuctioner,
-          width: 100,
-          height: 100,
-          fit: BoxFit.fitHeight,
-        ),
-      ),
+      child: ClipOval(child: _content()),
     );
   }
 }

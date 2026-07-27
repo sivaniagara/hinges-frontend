@@ -52,7 +52,6 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-
                     Column(
                       children: [
                         Image.asset(

@@ -7,6 +7,7 @@ import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.da
 import 'package:hinges_frontend/core/presentation/widgets/dot_circular_loader.dart';
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/pacman_count_down.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/pie_count_down_timer.dart';
 
 import '../../../../core/presentation/widgets/back_icon.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -15,6 +16,12 @@ import '../../../home/presentation/widgets/app_background.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../../mini_auction/presentation/pages/mini_auction_screen.dart';
 import '../bloc/game_bloc.dart';
+
+// TODO: point this at whatever field in your GameState/GameData holds the
+// original full duration of the "expire" countdown (e.g.
+// state.gameData.expireDurationSeconds). Using a constant here as a
+// placeholder so the wedge has something to compute its fraction against.
+const int kGameExpireTotalSeconds = 120;
 
 class GameExpireWidget extends StatelessWidget {
   final MiniAuctionLiteMode mode;
@@ -40,11 +47,15 @@ class GameExpireWidget extends StatelessWidget {
                         top: 0,
                         left: 0,
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(12.0),
                           child: Column(
                             children: [
                               // Text('GAME EXPIRE', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-                              PacmanCountdown(remaining: state.remainingSecondsToStart.toInt(), total: 120),
+                              PieCountdownTimer(
+                                remainingSeconds: state.remainingSecondsToStart.toInt(),
+                                totalSeconds: kGameExpireTotalSeconds,
+                                size: 45,
+                              ),
                               // Container(
                               //   decoration: const BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
                               //   width: 60,

@@ -60,6 +60,8 @@ dependencies:
   audioplayers: ^6.1.0
   flutter_soloud: ^4.0.9
   shared_preferences: ^2.3.2
+  vibration: ^3.2.0
+  gif: ^2.3.0
 
 
 dev_dependencies:
@@ -89,6 +91,7 @@ flutter:
     - assets/images/png/
     - assets/images/png/game/
     - assets/audio/
+    - assets/gif/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
