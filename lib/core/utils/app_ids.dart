@@ -23,4 +23,7 @@ class AppIds{
   static const String miniAuctionLitePremiumId = '69d4921424f9d81793bfc413';
   static const String miniAuctionLiteEliteId = '69d4923424f9d81793bfc414';
   static const String miniAuctionLiteRoyalId = '69d4924824f9d81793bfc415';
+
+  static const String teamIdNone = '68835e0e76c87c1cb5aabeab';
+
 }

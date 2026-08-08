@@ -12,16 +12,12 @@ import '../../../game/presentation/pages/game_screen.dart';
 import '../../../home/presentation/widgets/app_background.dart';
 import 'mini_auction_screen.dart';
 
-class JoinRoom extends StatefulWidget {
+class JoinRoom extends StatelessWidget {
   final MiniAuctionLiteMode mode;
-  const JoinRoom({super.key, required this.mode});
+  JoinRoom({super.key, required this.mode});
 
-  @override
-  State<JoinRoom> createState() => _JoinRoomState();
-}
-
-class _JoinRoomState extends State<JoinRoom> {
   TextEditingController roomCodeController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
@@ -78,9 +74,10 @@ class _JoinRoomState extends State<JoinRoom> {
                       GestureDetector(
                         onTap: (){
                           context.go('/game', extra: {
-                            "mode": widget.mode,
+                            "mode": mode,
                             "matchType": MatchTypeEnum.roomMatch,
                             "roomCode": roomCodeController.text.trim(),
+                            "id": mode.miniAuctionItem.id
                           });
                         },
                         child: Container(
@@ -131,7 +128,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                 color: AppTheme.borderGold,
                               ),
                             ),
-                            Text('  ${widget.mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                            Text('  ${mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                           ],
                         ),
                       ),

@@ -10,6 +10,7 @@ import '../../../../core/utils/app_images.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../bloc/game_bloc.dart';
+import '../widgets/pie_count_down_timer.dart';
 
 class PlayerRoundStartsIn extends StatelessWidget {
   final List<AuctionPlayerStatusEntity> auctionPlayerList;
@@ -78,35 +79,22 @@ class PlayerRoundStartsIn extends StatelessWidget {
             ],
           ),
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Image.asset(
-        //       AppImages.goldenStarLine,
-        //       width: 50,
-        //     ),
-        //     Text('  STARTS IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
-        //     BlocBuilder<GameBloc, GameState>(
-        //         builder: (context, state){
-        //           if(state is GameLoaded){
-        //             return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
-        //           }
-        //           return SizedBox();
-        //         }
-        //     ),
-        //     Text('..!  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
-        //     Transform(
-        //       alignment: Alignment.center,
-        //       transform: Matrix4.rotationY(math.pi),
-        //       child: Image.asset(
-        //         AppImages.goldenStarLine,
-        //         width: 50,
-        //       ),
-        //     ),
-        //   ],
-        // ),
+        BlocBuilder<GameBloc, GameState>(
+          builder: (context, state) {
+            if (state is GameLoaded){
+              return SizedBox(
+                width: 40,
+                height: 40,
+                child: PieCountdownTimer(
+                  remainingSeconds: state.remainingSecondsToExpireBreak!.toInt(),
+                  totalSeconds: 5,
+                ),
+              );
+            }
+            return const SizedBox();
+          },
+        ),
       ],
     );
-
   }
 }

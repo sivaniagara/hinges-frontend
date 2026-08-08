@@ -17,6 +17,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _pulseController;
+  late AnimationController _teamsController;
 
   late Animation<double> _fade;
   late Animation<double> _scale;
@@ -43,6 +44,14 @@ class _LoadingScreenState extends State<LoadingScreen>
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
+    /// Drives the "teams fly in from outside" entrance — each row reads
+    /// its own slice of this single controller (see _TeamRow) so the
+    /// whole roster staggers in one-by-one instead of popping at once.
+    _teamsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+
     _fade = CurvedAnimation(
       parent: _fadeController,
       curve: Curves.easeIn,
@@ -53,6 +62,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     );
 
     _fadeController.forward();
+    _teamsController.forward();
     _startLoading();
   }
 
@@ -72,6 +82,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     _timer?.cancel();
     _fadeController.dispose();
     _pulseController.dispose();
+    _teamsController.dispose();
     super.dispose();
   }
 
@@ -80,23 +91,34 @@ class _LoadingScreenState extends State<LoadingScreen>
     return Scaffold(
       body: MandalaBackground(
         animateContent: false,
+        showParticle: false,
         child: SafeArea(
           child: Stack(
             children: [
-              /// ◀ LEFT COLUMN — team logos + names
+              /// ◀ LEFT COLUMN — team logos + names (flies in from left)
               Positioned(
-                left: 28,
+                left: 18,
                 top: 0,
                 bottom: 0,
-                child: _TeamColumn(teams: _leftTeams),
+                child: _TeamColumn(
+                  teams: _leftTeams,
+                  pulseController: _pulseController,
+                  entranceController: _teamsController,
+                  alignRight: false,
+                ),
               ),
 
-              /// ▶ RIGHT COLUMN — team logos + names
+              /// ▶ RIGHT COLUMN — team logos + names (flies in from right)
               Positioned(
-                right: 28,
+                right: 18,
                 top: 0,
                 bottom: 0,
-                child: _TeamColumn(teams: _rightTeams),
+                child: _TeamColumn(
+                  teams: _rightTeams,
+                  pulseController: _pulseController,
+                  entranceController: _teamsController,
+                  alignRight: true,
+                ),
               ),
 
               /// 🌟 CENTER CONTENT
@@ -158,23 +180,25 @@ class _LoadingScreenState extends State<LoadingScreen>
     _TeamData(AppImages.dcLogo, 'DELHI', 'COMBATS'),
   ];
 
-  /// 🔥 PREMIUM GOLD PROGRESS BAR
+  /// 🔥 PREMIUM GOLD PROGRESS BAR (slimmer)
   Widget _buildGoldenProgressBar() {
     return Container(
       width: MediaQuery.of(context).size.width * 0.32,
-      height: 18,
+      height: 10, // was 18
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFFFD700), width: 1.5),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: const Color(0xFFFFD700), width: 1.2),
         color: const Color(0xFF0F5C8F),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFFFD700).withOpacity(0.25),
-            blurRadius: 10,
-            spreadRadius: 1,
+            blurRadius: 8,
+            spreadRadius: 0.5,
           ),
         ],
       ),
       child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
         child: Stack(
           children: [
             /// 🔥 Animated Gold Fill with Glow
@@ -193,8 +217,8 @@ class _LoadingScreenState extends State<LoadingScreen>
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFFFD700).withOpacity(0.6),
-                      blurRadius: 12,
-                      spreadRadius: 2,
+                      blurRadius: 10,
+                      spreadRadius: 1.5,
                     ),
                   ],
                 ),
@@ -229,7 +253,7 @@ class _LoadingScreenState extends State<LoadingScreen>
               top: 0,
               left: 0,
               right: 0,
-              height: 7,
+              height: 4,
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius:
@@ -252,7 +276,6 @@ class _LoadingScreenState extends State<LoadingScreen>
   }
 }
 
-/// Holds a team's logo + its two display lines (matches reference UI)
 class _TeamData {
   final String logo;
   final String line1;
@@ -260,73 +283,188 @@ class _TeamData {
   const _TeamData(this.logo, this.line1, this.line2);
 }
 
-/// A straight vertical column of team rows (logo + name), evenly spaced
-/// top-to-bottom — matches the reference screenshot exactly.
 class _TeamColumn extends StatelessWidget {
   final List<_TeamData> teams;
-  const _TeamColumn({required this.teams});
+  final AnimationController pulseController;
+  final AnimationController entranceController;
+  final bool alignRight;
+  const _TeamColumn({
+    required this.teams,
+    required this.pulseController,
+    required this.entranceController,
+    this.alignRight = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: teams.map((t) => _TeamRow(team: t)).toList(),
+      crossAxisAlignment:
+      alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: teams
+          .asMap()
+          .entries
+          .map((e) => _TeamRow(
+        team: e.value,
+        pulseController: pulseController,
+        entranceController: entranceController,
+        alignRight: alignRight,
+        index: e.key,
+        total: teams.length,
+      ))
+          .toList(),
     );
   }
 }
 
-/// A single "logo + two-line name" row
+/// 🏷️ Redesigned team row — circular glowing logo + a soft glass pill
+/// for the name. No diamond frame, no diagonal corner-cut panel.
 class _TeamRow extends StatelessWidget {
   final _TeamData team;
-  const _TeamRow({required this.team});
+  final AnimationController pulseController;
+  final AnimationController entranceController;
+  final bool alignRight;
+  final int index;
+  final int total;
+
+  const _TeamRow({
+    required this.team,
+    required this.pulseController,
+    required this.entranceController,
+    this.alignRight = false,
+    this.index = 0,
+    this.total = 1,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        /// Logo — kept at native shape (no circular crop), just a subtle
-        /// drop shadow so it lifts off the background.
-        SizedBox(
-          width: 52,
-          height: 52,
-          child: Image.asset(
-            team.logo,
-            fit: BoxFit.contain,
-          ),
-        ),
-        const SizedBox(width: 14),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: AnimatedBuilder(
+        animation: Listenable.merge([pulseController, entranceController]),
+        builder: (context, _) {
+          // stagger the breathing glow per-row so the column feels "live"
+          final t = (pulseController.value + index * 0.15) % 1.0;
+          final glow = 0.28 + 0.4 * (1 - (t - 0.5).abs() * 2);
 
-        /// Two-line team name, gold, bold, uppercase — as in reference
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              team.line1,
-              style: const TextStyle(
-                color: Color(0xFFFFD700),
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-                letterSpacing: 0.6,
-                height: 1.25,
+          // --- entrance: each row owns a slice of entranceController ---
+          final slotStart = (index / total) * 0.65;
+          const slotSpread = 0.45;
+          final slotEnd = (slotStart + slotSpread).clamp(0.0, 1.0);
+          final localT = slotEnd > slotStart
+              ? ((entranceController.value - slotStart) /
+              (slotEnd - slotStart))
+              .clamp(0.0, 1.0)
+              : 1.0;
+          final entrance = Curves.easeOutCubic.transform(localT);
+
+          // slide in from outside: left column from the left (-dx),
+          // right column from the right (+dx)
+          final dx = (1 - entrance) * (alignRight ? 60 : -60);
+
+          return Opacity(
+            opacity: entrance,
+            child: Transform.translate(
+              offset: Offset(dx, 0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                textDirection:
+                alignRight ? TextDirection.rtl : TextDirection.ltr,
+                children: [
+                  /// 🔵 CIRCULAR CREST — soft glow ring, no rotation
+                  Container(
+                    width: 38,
+                    height: 38,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF071B33),
+                      border: Border.all(
+                        color: const Color(0xFFFFD700).withOpacity(0.85),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFFD700).withOpacity(glow),
+                          blurRadius: 10,
+                          spreadRadius: 0.5,
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      team.logo,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  /// 🏷️ NAME PILL — clean rounded glass, no diagonal cut
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 148),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          const Color(0xFF071B33).withOpacity(0.85),
+                          const Color(0xFF0F5C8F).withOpacity(0.35),
+                        ],
+                      ),
+                      border: Border.all(
+                        color: const Color(0xFFFFD700).withOpacity(0.4),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: alignRight
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          team.line1,
+                          textAlign:
+                          alignRight ? TextAlign.right : TextAlign.left,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 10.5,
+                            letterSpacing: 0.5,
+                            height: 1.15,
+                          ),
+                        ),
+                        Text(
+                          team.line2,
+                          textAlign:
+                          alignRight ? TextAlign.right : TextAlign.left,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFFFFD700),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 9,
+                            letterSpacing: 0.6,
+                            height: 1.15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text(
-              team.line2,
-              style: const TextStyle(
-                color: Color(0xFFFFD700),
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-                letterSpacing: 0.6,
-                height: 1.25,
-              ),
-            ),
-          ],
-        ),
-      ],
+          );
+        },
+      ),
     );
   }
 }

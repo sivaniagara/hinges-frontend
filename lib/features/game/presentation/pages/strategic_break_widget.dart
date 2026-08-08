@@ -10,6 +10,7 @@ import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../mini_auction/presentation/pages/mini_auction_screen.dart';
+import '../widgets/pie_count_down_timer.dart';
 
 class _Instruction {
   final String text;
@@ -259,7 +260,7 @@ class _StrategicBreakWidgetState extends State<StrategicBreakWidget>
                 ),
               ),
             ),
-            _starRow('${widget.mode.miniAuctionItem.name} ROOM'),
+            _starRow('${widget.mode.miniAuctionItem.name.toUpperCase()} ROOM'),
             _buildCountdown(),
           ],
         ),
@@ -293,7 +294,7 @@ class _StrategicBreakWidgetState extends State<StrategicBreakWidget>
 
   Widget _buildCountdown() {
     return Column(
-      spacing: 5,
+      spacing: 15,
       children: [
         Text(
           'AUCTION STARTS IN',
@@ -305,46 +306,61 @@ class _StrategicBreakWidgetState extends State<StrategicBreakWidget>
             ),
           ),
         ),
-        Container(
-          width: 80,
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(width: 1, color: Colors.cyan),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              BlocBuilder<GameBloc, GameState>(
-                builder: (context, state) {
-                  if (state is GameLoaded) {
-                    return Text(
-                      '${state.remainingSecondsToExpireBreak!.toInt() - 5}',
-                      style: GoogleFonts.rajdhani(
-                        textStyle: TextStyle(
-                          color: AppTheme.borderGold,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
-              Text(
-                'Sec',
-                style: GoogleFonts.rajdhani(
-                  textStyle: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+        BlocBuilder<GameBloc, GameState>(
+          builder: (context, state) {
+            if (state is GameLoaded){
+              return SizedBox(
+                width: 40,
+                height: 40,
+                child: PieCountdownTimer(
+                  remainingSeconds: state.remainingSecondsToExpireBreak!.toInt() - 5,
+                  totalSeconds: 60,
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+            return const SizedBox();
+          },
         ),
+        // Container(
+        //   width: 80,
+        //   height: 60,
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(10),
+        //     border: Border.all(width: 1, color: Colors.cyan),
+        //   ),
+        //   child: Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       BlocBuilder<GameBloc, GameState>(
+        //         builder: (context, state) {
+        //           if (state is GameLoaded) {
+        //             return Text(
+        //               '${state.remainingSecondsToExpireBreak!.toInt() - 5}',
+        //               style: GoogleFonts.rajdhani(
+        //                 textStyle: TextStyle(
+        //                   color: AppTheme.borderGold,
+        //                   fontSize: 16,
+        //                   fontWeight: FontWeight.bold,
+        //                 ),
+        //               ),
+        //             );
+        //           }
+        //           return const SizedBox();
+        //         },
+        //       ),
+        //       Text(
+        //         'Sec',
+        //         style: GoogleFonts.rajdhani(
+        //           textStyle: const TextStyle(
+        //             color: Colors.white,
+        //             fontSize: 12,
+        //             fontWeight: FontWeight.bold,
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

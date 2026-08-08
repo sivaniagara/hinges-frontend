@@ -53,6 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
       },
       child: Scaffold(
         body: MandalaBackground(
+          showParticle: false,
           animateContent: true,
           child: Stack(
             children: [

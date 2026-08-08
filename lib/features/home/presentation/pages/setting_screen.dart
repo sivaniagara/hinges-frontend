@@ -73,6 +73,11 @@ class _SettingScreenState extends State<SettingScreen> {
                 height: 80,
                 child: Stack(
                   children: [
+                    Positioned(
+                      left: 20,
+                      top: 0,
+                      child: Image.asset(AppImages.settingsMenuIcon, width: 60),
+                    ),
                     Center(
                       child: Row(
                         spacing: 10,

@@ -268,7 +268,7 @@ class _ModeSelection extends StatelessWidget {
           spacing: 10,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Entry Fee - ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),),
+            Text('ENTRY FEE - ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),),
             Image.asset(AppImages.coinMenuIcon, width: 20,),
             Text('${mode.miniAuctionItem.fee} COINS', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),),
           ],
@@ -531,7 +531,7 @@ class _MiniAuctionLiteCardState extends State<MiniAuctionLiteCard>
                       Image.asset(AppImages.coinMenuIcon, width: 15),
                       const SizedBox(width: 5),
                       Text(
-                        '${widget.fee} COIN',
+                        '${widget.fee} COINS',
                         style: GoogleFonts.rajdhani(
                           color: Colors.white,
                           fontSize: 12,

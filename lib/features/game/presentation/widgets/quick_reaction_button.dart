@@ -58,7 +58,7 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
 
           /// 🔹 Popup
           Positioned(
-            left: position.dx - 250,
+            left: position.dx,
             top: position.dy - 180,
             child: Material(
               color: Colors.transparent,
@@ -103,9 +103,6 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
     return GestureDetector(
       onTap: () {
         final message = "$emoji $text";
-
-        print("Selected: $message");
-
         _overlayEntry?.remove();
         _overlayEntry = null;
 
@@ -153,7 +150,7 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
         padding: EdgeInsets.all(5.0),
         child: Text(
           '💬',
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 30),
         ),
       ),
     );

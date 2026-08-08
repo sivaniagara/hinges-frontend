@@ -8,6 +8,7 @@ import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.da
 import 'package:hinges_frontend/core/presentation/widgets/dot_circular_loader.dart';
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/pacman_count_down.dart';
+import 'package:hinges_frontend/features/game/presentation/widgets/pie_count_down_timer.dart';
 
 import '../../../../core/presentation/widgets/back_icon.dart';
 import '../../../../core/presentation/widgets/gradient_text.dart';
@@ -90,10 +91,11 @@ class GameExpireWidget extends StatelessWidget {
                               top: 0,
                               left: 0,
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   children: [
-                                    PacmanCountdown(remaining: state.remainingSecondsToStart.toInt(), total: 120),
+                                    PieCountdownTimer(remainingSeconds: state.remainingSecondsToStart.toInt(), totalSeconds: 120,),
+                                    // PacmanCountdown(remaining: state.remainingSecondsToStart.toInt(), total: 120),
                                   ],
                                 ),
                               ),

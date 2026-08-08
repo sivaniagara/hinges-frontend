@@ -16,6 +16,7 @@ import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../../home/domain/entities/player_entity.dart';
+import '../../../login/presentation/widgets/mandala_background.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 
 class PlayersScreen extends StatelessWidget {
@@ -29,20 +30,9 @@ class PlayersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xff065387),
-          // gradient: RadialGradient(
-          //   colors: [
-          //     Color(0xFF001F4D), // Dark blue center glow
-          //     Color(0xFF000511), // Deep black edges
-          //   ],
-          //   radius: 1.2,
-          //   center: Alignment.center,
-          // ),
-        ),
+      body: MandalaBackground(
+        showParticle: false,
+        animateContent: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: BlocBuilder<GameBloc, GameState>(

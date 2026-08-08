@@ -1,5 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/golden_mandala_painter.dart';
+
+import 'golden_dot_circle.dart';
 
 class MandalaBackground extends StatefulWidget {
   final Widget child;
@@ -139,6 +142,53 @@ class _MandalaBackgroundState extends State<MandalaBackground>
                   ),
                 ),
               ),
+              if(widget.showParticle)
+              ...[
+                Positioned(
+                  left: 0,
+                  top: 40,
+                  child: SizedBox(
+                      width: 120,
+                      height: 120,
+                      child: getMandala()
+                  ),
+                ),
+                Positioned(
+                  left: -10,
+                  top: 155,
+                  child: SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: getMandala()
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 40,
+                  child: SizedBox(
+                      width: 120,
+                      height: 120,
+                      child: getMandala()
+                  ),
+                ),
+                Positioned(
+                  right: -10,
+                  bottom: 155,
+                  child: SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: getMandala()
+                  ),
+                ),
+
+                Positioned.fill(
+                  child: goldenDotCircle(500),
+                ),
+                Positioned.fill(
+                  child: goldenDotCircle(450),
+                ),
+              ],
+
 
               /// Static Golden Particles (with twinkle)
               // if(widget.showParticle)
@@ -160,6 +210,30 @@ class _MandalaBackgroundState extends State<MandalaBackground>
           ),
         );
       },
+    );
+  }
+
+  Widget getMandala() {
+    return Opacity(
+        opacity: 0.5,
+        child: GoldenMandala(seed: 1)
+    );
+  }
+
+  Widget goldenDotCircle(double diameter) {
+    return Opacity(
+      opacity: 0.3,
+      child: Center(
+        child: OverflowBox(
+          maxWidth: diameter,
+          maxHeight: diameter,
+          child: GoldenDotCircle(
+            diameter: diameter,
+            dotCount: 200,
+            dotRadius: 1,
+          ),
+        ),
+      ),
     );
   }
 

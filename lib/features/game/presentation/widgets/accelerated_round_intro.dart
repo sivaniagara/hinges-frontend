@@ -67,7 +67,6 @@ class AcceleratedRoundIntro extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             Image.asset(
               AppImages.goldenStarLine,
               width: 50,

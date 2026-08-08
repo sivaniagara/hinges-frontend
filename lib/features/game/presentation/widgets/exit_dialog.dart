@@ -9,7 +9,14 @@ import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../bloc/game_bloc.dart';
 
 class ExitDialog extends StatelessWidget {
-  const ExitDialog({super.key});
+  final String title;
+  final VoidCallback? onTapYes;
+
+  const ExitDialog({
+    super.key,
+    this.title = 'ARE YOU SURE YOU WANT TO EXIT',
+    this.onTapYes,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +38,17 @@ class ExitDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GoldenTitle(title: 'ARE YOU SURE YOU WANT TO EXIT', fontSize: 18,),
+              GoldenTitle(title: title, fontSize: 18,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   GestureDetector(
                     onTap: () {
                       playTap();
+                      if (onTapYes != null) {
+                        onTapYes!();
+                        return;
+                      }
                       final homeState = context.read<HomeBloc>().state;
                       final gameState = context.read<GameBloc>().state;
                       if (homeState is HomeLoaded && gameState is GameLoaded) {

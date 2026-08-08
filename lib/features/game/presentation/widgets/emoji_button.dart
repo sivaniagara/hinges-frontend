@@ -49,7 +49,7 @@ class _EmojiButtonState extends State<EmojiButton> {
 
           /// 👇 YOUR EMOJI POPUP
           Positioned(
-            left: position.dx - 80,
+            left: position.dx + 20,
             top: position.dy - 100,
             child: Material(
               color: Colors.transparent,
@@ -120,7 +120,7 @@ class _EmojiButtonState extends State<EmojiButton> {
         padding: const EdgeInsets.all(5.0),
         child: Text(
           '😊',
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 30),
         ),
       ),
     );

@@ -325,15 +325,21 @@ class CreateRoom extends StatelessWidget {
                       /// ENTER ROOM
                       GestureDetector(
                         onTap: (){
-                          final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
-                          if(context.read<GameBloc>().state is RoomCodeLoaded){
-                            context.go('/game', extra: {
-                              "mode": mode,
-                              "matchType": MatchTypeEnum.roomMatch,
-                              "roomCode": (context.read<GameBloc>().state as RoomCodeLoaded).roomCode,
-                              "hostId": homeLoaded.userData.userId
-                            });
+                          try{
+                            final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
+                            if(context.read<GameBloc>().state is RoomCodeLoaded){
+                              context.go('/game', extra: {
+                                "mode": mode,
+                                "matchType": MatchTypeEnum.roomMatch,
+                                "roomCode": (context.read<GameBloc>().state as RoomCodeLoaded).roomCode,
+                                "hostId": homeLoaded.userData.userId,
+                                "id": mode.miniAuctionItem.id
+                              });
+                            }
+                          }catch(e){
+                            print(e);
                           }
+
                         },
                         child: Container(
                           width: 400,

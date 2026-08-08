@@ -3,13 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hinges_frontend/core/utils/app_sounds.dart';
 import 'package:hinges_frontend/core/vibtration/vibration_service.dart';
 import 'package:hinges_frontend/features/home/presentation/widgets/top_user_bar.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/shared_decorations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vibration/vibration_presets.dart';
-
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/di/dependency_injection.dart' as di;
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
@@ -20,11 +17,13 @@ import '../../../../core/utils/app_images.dart';
 
 import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
+import '../../../game/presentation/widgets/exit_dialog.dart';
 import '../../../login/presentation/bloc/user_auth_bloc.dart';
 import '../../domain/entities/user_data_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/app_background.dart';
 import '../widgets/currency_burst_overlay.dart';
+import '../widgets/auction_info_dialog.dart';
 
 enum AuctionModeEnum{miniAuctionLite, miniAuctionPro, megaAuctionLite, megaAuctionPro}
 class AuctionItem {
@@ -165,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return AuctionCard(
                                   image: item.image,
                                   locked: item.locked,
+                                  mode: item.auctionModeEnum,
                                   onTap: () {
                                     playTap();
                                     if (!item.locked &&
@@ -198,6 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: "EXIT",
                               onTap: () {
                                 playTap();
+                                _showExitGameDialog(context);
                               },
                             ),
                           ],
@@ -302,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // NOTE: renamed the builder's parameter to `dialogContext` so it
       // doesn't shadow the outer (HomeScreen State) `context`. The old
       // code reused the name `context` here, then passed *that* shadowed
-      // dialog context into `_onRewardsTap`, which stores it and uses it
+      // dialog context into `_onRewardsTap`, reached it and uses it
       // later inside `onRewardEarned` — by which point the dialog (and
       // its context) had already been popped/deactivated. That silently
       // broke `MediaQuery.of(context)` / `Overlay.of(context)` inside
@@ -311,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // appeared.
       builder: (dialogContext) => Center(
         child: Material(
-          color: Colors.transparent,
+          color: AppTheme.navyBlue,
           child: Container(
             width: MediaQuery.of(context).size.width * 0.5,
             height: MediaQuery.of(context).size.height * 0.8,
@@ -324,14 +325,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Stack(
               children: [
                 Positioned(
-                  top: 20,
-                  right: 10,
+                  top: 10,
+                  right: 0,
                   child: GestureDetector(
                     onTap: () {
                       playTap();
                       Navigator.pop(dialogContext);
                     },
-                    child: Image.asset(AppImages.cancelIcon, width: 35),
+                    child: Image.asset(AppImages.cancel, width: 40),
                   ),
                 ),
                 Column(
@@ -417,6 +418,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// ================= EXIT DIALOG =================
+  void _showExitGameDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppTheme.navyBlue,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ExitDialog(
+            title: 'ARE YOU SURE YOU WANT TO EXIT THE GAME?',
+            onTapYes: () {
+              SystemNavigator.pop();
+            },
+          ),
+        );
+      },
+    );
+  }
+
   /// ================= TOP BAR =================
   Widget _buildTopBar({
     required BuildContext context,
@@ -445,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               TopActionButton(
                 icon: AppImages.rewardMenuIcon,
-                title: 'REWARDS',
+                title: 'AD REWARDS',
                 onTap: (){
                   playTap();
                   _showRewardsDialog(context);
@@ -482,12 +504,14 @@ class _HomeScreenState extends State<HomeScreen> {
 class AuctionCard extends StatefulWidget {
   final String image;
   final bool locked;
+  final AuctionModeEnum mode;
   final VoidCallback onTap;
 
   const AuctionCard({
     super.key,
     required this.image,
     required this.locked,
+    required this.mode,
     required this.onTap,
   });
 
@@ -565,6 +589,22 @@ class _AuctionCardState extends State<AuctionCard>
               bottom: 0,
               child: InfoIcon(
                 isLocked: widget.locked,
+                onTap: () {
+                  playTap();
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierColor: Colors.black.withOpacity(0.7),
+                    builder: (context) {
+                      return Dialog(
+                        backgroundColor: AppTheme.navyBlue,
+                        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: AuctionInfoDialog(mode: widget.mode)
+                      );
+                    },
+                  );
+
+                },
               ),
             ),
           ],
@@ -652,12 +692,14 @@ class TopActionButton extends StatelessWidget {
 class BottomButton extends StatelessWidget {
   final String icon;
   final String title;
+  final double opacity;
   final void Function()? onTap;
 
   const BottomButton({
     required this.icon,
     required this.title,
     required this.onTap,
+    this.opacity = 1,
   });
 
   @override

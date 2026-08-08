@@ -77,7 +77,7 @@ class MiniAuctionLiteCard extends StatelessWidget {
                     Image.asset(AppImages.coinMenuIcon, width: 15),
                     const SizedBox(width: 5),
                     Text(
-                      '$fee COIN',
+                      '$fee COINS',
                       style: GoogleFonts.rajdhani(
                         color: Colors.white,
                         fontSize: 12,

@@ -47,6 +47,7 @@ import '../../../../core/vibtration/vibration_service.dart';
 import '../bloc/game_bloc.dart';
 import '../widgets/chat_buddle.dart';
 import '../widgets/exit_dialog.dart';
+import '../widgets/pie_count_down_timer.dart';
 
 enum MatchTypeEnum { normalMatch, roomMatch }
 
@@ -116,8 +117,9 @@ class _GameScreenState extends State<GameScreen> {
       showGameInfoDialog(context, message: state.message);
     } else if (state is GameLoaded) {
       final remaining = state.remainingSecondsToExpireAuctionPlayer?.round();
+      bool freshPlayer = state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].teamId == AppIds.teamIdNone;
       final isPausedAtNine =
-          state.gameData.breakStatus == BreakStatusEnum.pause && remaining == 9;
+          state.gameData.breakStatus == BreakStatusEnum.pause && remaining == 9 && freshPlayer;
 
       if (isPausedAtNine) {
         if (!_hasVibratedForPause) {
@@ -146,6 +148,7 @@ class _GameScreenState extends State<GameScreen> {
       color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
         body: MandalaBackground(
+          showParticle: false,
           child: Container(
             // decoration: BoxDecoration(
             //   image: DecorationImage(
@@ -196,8 +199,6 @@ class _GameScreenState extends State<GameScreen> {
     final homeState = context.read<HomeBloc>().state as HomeLoaded;
     final gameData = state.gameData;
     final playerData = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex];
-    double screenHeight = MediaQuery.of(context).size.height;
-
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -206,42 +207,52 @@ class _GameScreenState extends State<GameScreen> {
       },
       color: Colors.amber,
       backgroundColor: Colors.red.withOpacity(0.8),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: screenHeight * 0.7,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          overscroll: false, // removes the glow/stretch overscroll indicator
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: ClampingScrollPhysics(),
+              ),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: constraints.maxHeight,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! > 5)
-                          StrategicBreakWidget(mode: widget.mode)
-                        else if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! <= 5)
-                          PlayerRoundStartsIn(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
-                        else if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
-                            AcceleratedRoundIntro()
-                          else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
-                              PlayerSetBreakWidget(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
-                            else
-                              _buildPlayerAuctionContent(state, homeState, gameData, playerData),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! > 5)
+                                StrategicBreakWidget(mode: widget.mode)
+                              else if (gameData.breakStatus == BreakStatusEnum.strategicBreak && state.remainingSecondsToExpireBreak! <= 5)
+                                PlayerRoundStartsIn(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                              else if (gameData.breakStatus == BreakStatusEnum.acceleratedBreak)
+                                  AcceleratedRoundIntro()
+                                else if (gameData.breakStatus == BreakStatusEnum.playerSetBreak)
+                                    PlayerSetBreakWidget(categoryAndItemsEntity: homeState.userData.categoryAndItsItem, playerData: playerData, auctionPlayerList: gameData.auctionPlayersStatusList,)
+                                  else
+                                    _buildPlayerAuctionContent(state, homeState, gameData, playerData),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 130,
+                            child: _buildTeamRow(state, gameData)
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 130,
-                      child: _buildTeamRow(state, gameData)
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -375,7 +386,7 @@ class _GameScreenState extends State<GameScreen> {
               playerData.playerAuctionStatus == PlayerAuctionStatusEnum.notShown)
             _buildTimer(state)
           else
-            _buildStatusImage(playerData.playerAuctionStatus),
+            _buildStatusImage(playerData.playerAuctionStatus, playerData.playerId.toString()),
           _buildVerticalDividerWithThickness(),
           _buildCurrentBid(state),
           _buildVerticalDividerWithThickness(),
@@ -386,32 +397,25 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildTimer(GameLoaded state) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('TIMER', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-        Container(
-          decoration: BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
-          width: 60,
-          height: 60,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}',
-                  style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
-              Text('SEC', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
-            ],
+    return SizedBox(
+      width: 70,
+      child: Center(
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: PieCountdownTimer(
+            remainingSeconds: state.remainingSecondsToExpireAuctionPlayer!.toInt(),
+            totalSeconds: 10,
           ),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildStatusImage(PlayerAuctionStatusEnum status) {
-    return Image.asset(
-      status == PlayerAuctionStatusEnum.buy ? AppImages.sold : AppImages.unsold,
-      width: 80,
-      height: 80,
+  Widget _buildStatusImage(PlayerAuctionStatusEnum status, String playerId) {
+    return _HammerStatusWidget(
+      key: ValueKey('hammer_$playerId'),
+      status: status,
     );
   }
 
@@ -420,10 +424,19 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildCurrentBid(GameLoaded state) {
+    final gameState = context.read<GameBloc>().state as GameLoaded;
+    final currentAuctionPlayer = gameState.gameData.auctionPlayersStatusList[gameState.gameData.currentAuctionPlayerIndex];
+    String title = 'BASE PRICE';
+    final isFranchiseBought = gameState.gameData.auctionPlayersStatusList[gameState.gameData.currentAuctionPlayerIndex].playerAuctionStatus == PlayerAuctionStatusEnum.buy;
+    if(currentAuctionPlayer.teamId != AppIds.teamIdNone && !isFranchiseBought){
+      title = 'CURRENT PRICE';
+    }else if(isFranchiseBought){
+      title = 'SOLD PRICE';
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('CURRENT PRICE',
+        Text(title,
             style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
         Row(
           children: [
@@ -443,15 +456,20 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildBiddingBy(dynamic playerData) {
     final franchise = context.read<GameBloc>().getFranchiseByTeamId(playerData.teamId);
-    if (franchise == MiniAuctionFranchiseEnum.empty) return const SizedBox.shrink();
+    final gameState = context.read<GameBloc>().state as GameLoaded;
+    final isFranchiseBought = gameState.gameData.auctionPlayersStatusList[gameState.gameData.currentAuctionPlayerIndex].playerAuctionStatus == PlayerAuctionStatusEnum.buy;
+    if (franchise == MiniAuctionFranchiseEnum.empty) return const SizedBox(width: 70,);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('BIDING BY', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-        Image.asset(franchise.image(), width: 50, height: 50),
-        Text(franchise.shortName(), style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
-      ],
+    return SizedBox(
+      width: 70,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(isFranchiseBought ? 'SOLD TO' : 'BID BY', style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+          Image.asset(franchise.image(), width: 50, height: 50),
+          Text(franchise.shortName(), style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: AppTheme.borderGold, fontWeight: FontWeight.bold))),
+        ],
+      ),
     );
   }
 
@@ -481,7 +499,7 @@ class _GameScreenState extends State<GameScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(5, (index) {
-                final glow = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].teamId == teamList[index];
+                final glow = gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].teamId == teamList[index] && gameData.auctionPlayersStatusList[gameData.currentAuctionPlayerIndex].playerAuctionStatus != PlayerAuctionStatusEnum.buy;
                 return Column(
                   children: [
                     GestureDetector(
@@ -602,7 +620,6 @@ class _GameScreenState extends State<GameScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.amber.withOpacity(0.5), width: 2),
         ),
@@ -619,13 +636,13 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.jost(textStyle: const TextStyle(fontSize: 14, color: Colors.white70)),
-            ),
+            // Text(
+            //   message,
+            //   textAlign: TextAlign.center,
+            //   style: GoogleFonts.jost(textStyle: const TextStyle(fontSize: 14, color: Colors.white70)),
+            // ),
             const SizedBox(height: 24),
-            _buildTag(title: 'TRY AGAIN', tagImage: AppImages.yellowTag, colors: _yellowTagColors, onTap: _handleRetry),
+            _buildTag(title: 'REFRESH', tagImage: AppImages.yellowTag, colors: _yellowTagColors, onTap: _handleRetry),
           ],
         ),
       ),
@@ -666,128 +683,182 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildFirstColumn() {
-    final currentContext = context.read<GameBloc>().state;
-    bool isAcceleratedRoundStarted = false;
-    if(currentContext is GameLoaded){
-      print("currentContext.gameData.round : ${currentContext.gameData.round}");
-      isAcceleratedRoundStarted = currentContext.gameData.round == 5;
-    }
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.4)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildSideMenu(image: AppImages.hammer, t1: 'CLASSIC', t2: 'ROOM'),
-          Container(
-            decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: AppTheme.borderGold.withValues(alpha: 0.4)))),
-            width: 150,
-            height: 49,
-            child: Row(
-              spacing: 10,
-              children: [
-                const SizedBox(width: 10),
-                Image.asset(width: 30, height: 30, AppImages.user),
-                Text('PLAYER SET', maxLines: 1, style: GoogleFonts.rajdhani(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
-
-              ],
-            ),
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (context, state) {
+        bool isAcceleratedRoundStarted = false;
+        String? matchId;
+        if (state is GameLoaded) {
+          isAcceleratedRoundStarted = state.gameData.round == 5;
+          if (state.gameData.matchId.isNotEmpty) {
+            matchId = state.gameData.matchId.length > 6
+                ? '#${state.gameData.matchId.substring(state.gameData.matchId.length - 6).toUpperCase()}'
+                : '#${state.gameData.matchId.toUpperCase()}';
+          }
+        }
+        return Container(
+          width: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.4)),
           ),
-          // _buildSideMenu(image: AppImages.playerSet, t1: 'PLAYER SET'),
-          _buildSideMenu(image: AppImages.bat, t1: isAcceleratedRoundStarted ? 'ACCELERATED': 'BATSMEN', onTap: () {
-            playTap();
-            _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', isAcceleratedRoundStarted ? '1' : '0');
-          }),
-          if(!isAcceleratedRoundStarted)
-            ...[
-              _buildSideMenu(image: AppImages.wicketKeepingGloves, t1: 'WICKET-', t2: 'KEEPERS',
-                  onTap: () {
-                    playTap();
-                    _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS', '0');
-                  }),
-              _buildSideMenu(image: AppImages.batBall, t1: 'ALL-', t2: 'ROUNDERS',
-                  onTap: () {
-                    playTap();
-                    _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS', '0');
-                  }),
-              _buildSideMenu(image: AppImages.ball, t1: 'BOWLERS',
-                  onTap: () {
-                    playTap();
-                    _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS', '0');
-                  }),
-            ],
-
-          _buildSideMenu(image: AppImages.ruleBookWhite, t1: 'RULE BOOK'),
-          if(isAcceleratedRoundStarted)
-            Expanded(
-              child: SizedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSideMenu(image: AppImages.hammer, t1: 'CLASSIC ROOM', t2: matchId),
+              Container(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: AppTheme.borderGold.withValues(alpha: 0.4)))),
                 width: 150,
-                child: Center(
-                  child: Image.asset(
-                    height: 100,
-                      AppImages.indianBiddingLeague
-                  )
+                height: 35,
+                child: Row(
+                  spacing: 10,
+                  children: [
+                    const SizedBox(width: 5),
+                    Image.asset(width: 30, height: 30, AppImages.user),
+                    Text('PLAYER SET', maxLines: 1, style: GoogleFonts.rajdhani(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
+                  ],
                 ),
               ),
-            ),
+              // _buildSideMenu(image: AppImages.playerSet, t1: 'PLAYER SET'),
 
-          SizedBox(
-            width: 150,
-            child: Row(
-              spacing: 20,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: (){
-                    context.push('/settings');
-                  },
-                  child: Container(
+              if (!isAcceleratedRoundStarted) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildSideMenuIcon(
+                        image: AppImages.bat,
+                        onTap: () {
+                          playTap();
+                          _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', isAcceleratedRoundStarted ? '1' : '0');
+                        }),
+                    _buildSideMenuIcon(
+                        image: AppImages.wicketKeepingGloves,
+                        onTap: () {
+                          playTap();
+                          _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS', '0');
+                        }),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildSideMenuIcon(
+                        image: AppImages.batBall,
+                        onTap: () {
+                          playTap();
+                          _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS', '0');
+                        }),
+                    _buildSideMenuIcon(
+                        image: AppImages.ball,
+                        onTap: () {
+                          playTap();
+                          _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS', '0');
+                        }),
+                  ],
+                ),
+              ] else
+                _buildSideMenu(
+                    image: AppImages.acceleratedRound,
+                    t1: 'ACCELERATED',
+                    onTap: () {
+                      playTap();
+                      _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', '1');
+                    }),
+
+              _buildSideMenu(image: AppImages.ruleBookWhite, t1: 'RULE BOOK'),
+              // if(isAcceleratedRoundStarted)
+              //   Expanded(
+              //     child: SizedBox(
+              //       width: 150,
+              //       child: Center(
+              //         child: Image.asset(
+              //           height: 100,
+              //             AppImages.indianBiddingLeague
+              //         )
+              //       ),
+              //     ),
+              //   ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
                     width: 60,
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    height: 50,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.8)),
                     ),
-                    child: Column(
-                      spacing: 5,
-                      children: [
-                        Image.asset(width: 20, height: 20, AppImages.setting),
-                        Text('SETTINGS', maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
-                      ],
+                    child: Center(child: EmojiButton()),
+                  ),
+                  Container(
+                    width: 60,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.8)),
+                    ),
+                    child: Center(child: QuickReactionButton()),
+                  ),
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      context.push('/settings');
+                    },
+                    child: Container(
+                      width: 60,
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))),
+                      child: Column(
+                        spacing: 5,
+                        children: [
+                          Image.asset(width: 20, height: 20, AppImages.setting),
+                          Text('SETTINGS',
+                              maxLines: 1,
+                              style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    showExitDialog(context);
-                  },
-                  child: Container(
-                    width: 60,
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))
-                    ),
-                    child: Column(
-                      spacing: 5,
-                      children: [
-                        Image.asset(width: 20, height: 20, AppImages.exit),
-                        Text('EXIT', maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
-                      ],
+                  GestureDetector(
+                    onTap: () {
+                      showExitDialog(context);
+                    },
+                    child: Container(
+                      width: 60,
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(width: 1, color: Colors.cyan.shade100.withValues(alpha: 0.8))),
+                      child: Column(
+                        spacing: 5,
+                        children: [
+                          Image.asset(width: 20, height: 20, AppImages.exit),
+                          Text('EXIT',
+                              maxLines: 1,
+                              style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              SizedBox(
+                height: 2,
+              )
+            ],
           ),
-          SizedBox(height: 2,)
-        ],
-      ),
+        );
+      },
     );
   }
+
 
   void showExitDialog(BuildContext context) {
     final gameBloc = context.read<GameBloc>();
@@ -817,23 +888,39 @@ class _GameScreenState extends State<GameScreen> {
     context.push('/game/playerList?userId=${homeLoadedState.userData.userId}&playerRole=$playerRoleId&playerRoleName=$roleName&acceleratedSet=$acceleratedSet');
   }
 
+  Widget _buildSideMenuIcon({required String image, void Function()? onTap}){
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 60,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(width: 1, color: AppTheme.borderGold.withValues(alpha: 0.8)),
+        ),
+        child: Center(child: Image.asset(width: 30, height: 30, image)),
+      ),
+    );
+  }
+
   Widget _buildSideMenu({required String image, required String t1, String? t2, void Function()? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: AppTheme.borderGold.withValues(alpha: 0.4)))),
         width: 150,
-        height: 49,
+        height: 40,
         child: Row(
           spacing: 10,
           children: [
-            const SizedBox(width: 10),
+            const SizedBox(width: 5),
             Image.asset(width: 30, height: 30, image),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(t1, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                if (t2 != null) Text(t2, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                if(t2 != null)
+                  Text(t2, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
               ],
             ),
           ],
@@ -856,9 +943,9 @@ class _GameScreenState extends State<GameScreen> {
           BlocBuilder<GameBloc, GameState>(
               builder: (context, state){
                if(state is GameLoaded){
-                 return  _buildTileCard(image: AppImages.playerRound, t1: 'Round ${state.gameData.round}/5');
+                 return  _buildTileCard(image: AppImages.playerRound, t1: 'ROUND ${state.gameData.round}/5');
                 }
-               return  _buildTileCard(image: AppImages.playerRound, t1: 'Round 0/5');
+               return  _buildTileCard(image: AppImages.playerRound, t1: 'ROUND 0/5');
               }
           ),
           _buildTileCard(image: AppImages.pointsTable, t1: 'POINTS TABLE', onTap: () {
@@ -871,13 +958,13 @@ class _GameScreenState extends State<GameScreen> {
           }),
           _buildRemainingPurseCard(userId),
           //emoji
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              EmojiButton(),
-              QuickReactionButton(),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     EmojiButton(),
+          //     QuickReactionButton(),
+          //   ],
+          // ),
           _buildBidButton(),
         ],
       ),
@@ -938,7 +1025,9 @@ class _GameScreenState extends State<GameScreen> {
       userId,
     ) || gameBloc.enableBidButton(userId)
         || gameData.breakStatus == BreakStatusEnum.strategicBreak
-        || gameData.breakStatus == BreakStatusEnum.auctionPlayerBreak;
+        || gameData.breakStatus == BreakStatusEnum.auctionPlayerBreak
+        || gameData.breakStatus == BreakStatusEnum.playerSetBreak
+        || gameData.breakStatus == BreakStatusEnum.acceleratedBreak;
   }
 
   Widget _buildTileCard({
@@ -980,13 +1069,18 @@ class _GameScreenState extends State<GameScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         width: imageSize ?? 130,
-        decoration: BoxDecoration(image: DecorationImage(image: AssetImage(tagImage), fit: BoxFit.fill)),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: GradientText(title: title, colors: colors, fontSize: 16),
-          ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 1, color: AppTheme.borderGold),
+        ),
+        child: Row(
+          spacing: 10,
+          children: [
+            Icon(Icons.refresh, color: AppTheme.borderGold, size: 25),
+            Text(title, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          ],
         ),
       ),
     );
@@ -1027,7 +1121,7 @@ class _GameScreenState extends State<GameScreen> {
       case AppIds.indianCappedPlayerId:
         return (AppImages.icp, 'ICP');
       case AppIds.indianUnCappedPlayerId:
-        return (AppImages.iup, 'IuP');
+        return (AppImages.iup, 'IUP');
       default:
         return (AppImages.fp, 'FP');
     }
