@@ -19,6 +19,7 @@ class _EmojiButtonState extends State<EmojiButton> {
   OverlayEntry? _overlayEntry;
 
   void _toggleEmojiPopup() {
+    playSoundFromList(9);
     if (_overlayEntry == null) {
       _overlayEntry = _createOverlay();
       Overlay.of(context).insert(_overlayEntry!);
@@ -94,7 +95,7 @@ class _EmojiButtonState extends State<EmojiButton> {
   Widget _emoji(String emoji) {
     return GestureDetector(
       onTap: () {
-        playTap();
+        playVibrateOnly(duration: 10);
 
         // 👉 your logic (send to backend / UI update)
 

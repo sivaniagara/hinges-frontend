@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hinges_frontend/core/utils/so_loud.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'core/di/dependency_injection.dart' as di;
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -17,6 +18,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() async {
   // Ensure Flutter binding is initialized before using platform channels
   WidgetsFlutterBinding.ensureInitialized();
+  WakelockPlus.enable();
   if (kDebugMode) {
     MobileAds.instance.updateRequestConfiguration(
       RequestConfiguration(

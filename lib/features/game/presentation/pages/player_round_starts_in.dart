@@ -79,21 +79,21 @@ class PlayerRoundStartsIn extends StatelessWidget {
             ],
           ),
         ),
-        BlocBuilder<GameBloc, GameState>(
-          builder: (context, state) {
-            if (state is GameLoaded){
-              return SizedBox(
-                width: 40,
-                height: 40,
-                child: PieCountdownTimer(
-                  remainingSeconds: state.remainingSecondsToExpireBreak!.toInt(),
-                  totalSeconds: 5,
-                ),
-              );
-            }
-            return const SizedBox();
-          },
-        ),
+        // BlocBuilder<GameBloc, GameState>(
+        //   builder: (context, state) {
+        //     if (state is GameLoaded){
+        //       return SizedBox(
+        //         width: 40,
+        //         height: 40,
+        //         child: PieCountdownTimer(
+        //           remainingSeconds: state.remainingSecondsToExpireBreak!.toInt(),
+        //           totalSeconds: 5,
+        //         ),
+        //       );
+        //     }
+        //     return const SizedBox();
+        //   },
+        // ),
       ],
     );
   }

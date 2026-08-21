@@ -7,6 +7,7 @@ import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dar
 import 'package:hinges_frontend/features/game/presentation/pages/my_squad_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/players_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/points_table_screen.dart';
+import 'package:hinges_frontend/features/game/presentation/pages/rule_summary_screen.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/profile_screen.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/rule_book_screen.dart';
 import 'package:hinges_frontend/features/home/presentation/pages/setting_screen.dart';
@@ -270,6 +271,14 @@ final router = GoRouter(
         GoRoute(
           path: '/game/pointsTable',
           builder: (context, state) => const PointsTableScreen(),
+        ),
+
+        /// =========================
+        /// 📖 RULE SUMMARY
+        /// =========================
+        GoRoute(
+          path: '/game/ruleSummary',
+          builder: (context, state) => const RuleSummaryScreen(),
         ),
       ],
     )

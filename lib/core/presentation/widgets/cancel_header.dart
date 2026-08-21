@@ -19,7 +19,7 @@ class CancelHeader extends StatelessWidget {
           SizedBox(width: 10,),
           GestureDetector(
             onTap: () {
-              playTap();
+              playVibrateOnly(duration: 10);
               Navigator.of(context).pop();
             },
             child: Image.asset(

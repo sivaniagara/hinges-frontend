@@ -44,7 +44,6 @@ class ExitDialog extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      playTap();
                       if (onTapYes != null) {
                         onTapYes!();
                         return;
@@ -87,7 +86,6 @@ class ExitDialog extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: (){
-                      playTap();
                       Navigator.pop(context);
                     },
                     child: Container(
@@ -127,7 +125,7 @@ class ExitDialog extends StatelessWidget {
           top: 8,
           child: GestureDetector(
             onTap: () {
-              playTap();
+              playVibrateOnly(duration: 10);
               Navigator.pop(context);
             },
             child: Image.asset(

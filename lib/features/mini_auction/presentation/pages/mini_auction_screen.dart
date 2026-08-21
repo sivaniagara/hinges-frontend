@@ -12,6 +12,7 @@ import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.da
 import 'package:hinges_frontend/core/theme/app_theme.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 
+import '../../../../core/utils/so_loud.dart';
 import '../../../game/presentation/pages/game_screen.dart';
 import '../../../home/domain/entities/auction_category_item_entity.dart';
 import '../../../home/domain/entities/user_data_entity.dart';
@@ -177,6 +178,7 @@ class _Header extends StatelessWidget {
         TopUserBar(loading: false, userData: userData, onAddTap: () {  },),
         GestureDetector(
           onTap: () {
+            playVibrateOnly(duration: 10);
             context.pop();
           },
           child: Column(
@@ -236,6 +238,7 @@ class _ArenaSelection extends StatelessWidget {
               fee: item.fee.toString(),
               isLocked: item.locked,
               onTap: () {
+                playSoundFromList(5);
                 onSelect(item);
               },
               miniAuctionItem: item,
@@ -280,6 +283,7 @@ class _ModeSelection extends StatelessWidget {
             GameCard(
               image: AppImages.playOnline,
               onTap: () {
+                playSoundFromList(5);
                 context.go('/game', extra: {
                   "mode": mode,
                   "matchType": MatchTypeEnum.normalMatch,
@@ -292,6 +296,7 @@ class _ModeSelection extends StatelessWidget {
             GameCard(
               image: AppImages.playWithFriends,
               onTap: () {
+                playSoundFromList(5);
                 context.push('/playWithFriends', extra: mode);
               },
               size: size,
@@ -508,6 +513,7 @@ class _MiniAuctionLiteCardState extends State<MiniAuctionLiteCard>
               child: InfoIcon(
                 isLocked: false,
                 onTap: (){
+                  playSoundFromList(7);
                   showClassicRoomDialog(context, widget.miniAuctionItem);
                 },
 

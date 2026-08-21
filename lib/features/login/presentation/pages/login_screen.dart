@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/core/utils/dialog_box_and_bottom_sheet_utils.dart';
+import 'package:hinges_frontend/core/utils/so_loud.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/terms_text.dart';
 import '../bloc/user_auth_bloc.dart';
 import '../../../../core/presentation/widgets/long_button.dart';
@@ -74,6 +75,7 @@ class LoginScreen extends StatelessWidget {
                           title: 'Continue with Google',
                           prefixIcon: FontAwesomeIcons.google,
                           onPressed: () {
+                            playVibrateOnly();
                             context.read<UserAuthBloc>().add(
                                 GoogleSignInRequested());
                           },
@@ -92,6 +94,7 @@ class LoginScreen extends StatelessWidget {
                           title: 'Continue as Guest',
                           prefixIcon: Icons.person_outline,
                           onPressed: () {
+                            playVibrateOnly();
                             showGuestNameBottomSheet(
                               context,
                               onContinue: (name) {

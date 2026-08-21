@@ -67,7 +67,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      playTap();
+                      playVibrateOnly(duration: 10);
                       // Show Interstitial Ad then go home
                       context.read<AdBloc>().add(ShowInterstitialAd(
                         onAdClosed: () {

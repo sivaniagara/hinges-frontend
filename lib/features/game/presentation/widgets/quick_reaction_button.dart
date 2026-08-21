@@ -27,6 +27,7 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
   ];
 
   void _togglePopup() {
+    playSoundFromList(9);
     if (_overlayEntry == null) {
       _overlayEntry = _createOverlay();
       Overlay.of(context).insert(_overlayEntry!);
@@ -102,6 +103,7 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
   Widget _quickItem(String emoji, String text) {
     return GestureDetector(
       onTap: () {
+        playVibrateOnly();
         final message = "$emoji $text";
         _overlayEntry?.remove();
         _overlayEntry = null;

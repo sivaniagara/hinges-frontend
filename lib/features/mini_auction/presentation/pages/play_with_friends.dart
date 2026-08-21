@@ -83,7 +83,7 @@ class PlayWithFriends extends StatelessWidget {
                         GameCard(
                           image: AppImages.createRoom,
                           onTap: () {
-                            playTap();
+                            playVibrateOnly();
                             context.push('/createRoom', extra: mode);
                           },
                           size: size,
@@ -92,7 +92,7 @@ class PlayWithFriends extends StatelessWidget {
                         GameCard(
                           image: AppImages.joinRoom,
                           onTap: () {
-                            playTap();
+                            playVibrateOnly();
                             context.push('/joinRoom', extra: mode);
                           },
                           size: size,

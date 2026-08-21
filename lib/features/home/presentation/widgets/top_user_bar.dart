@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/core/utils/so_loud.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/user_data_entity.dart';
@@ -33,6 +34,7 @@ class TopUserBar extends StatelessWidget {
         GestureDetector(
           onTap: () {
             if (userData != null) {
+              playSoundFromList(9);
               context.push('/profile');
             }
           },
@@ -44,8 +46,6 @@ class TopUserBar extends StatelessWidget {
 
         const SizedBox(width: 20),
 
-        // KeyedSubtree just carries the key without affecting layout,
-        // so we can find CurrencyBar's RenderBox later.
         KeyedSubtree(
           key: currencyBarKey,
           child: CurrencyBar(

@@ -68,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
                       top: 5,
                       child: GestureDetector(
                         onTap: () {
-                          playTap();
+                          playVibrateOnly(duration: 10);
                           context.pop();
                         },
                         child: Image.asset(AppImages.homeMenuIcon, width: 60),
@@ -186,6 +186,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: (){
+                        playSoundFromList(4);
                         showLogoutDialog(context);
                       },
                       child: Padding(
@@ -271,7 +272,6 @@ class GoldenLogOutDialog extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: (){
-                      playTap();
                       context.read<UserAuthBloc>().add(SignOutRequested());
                       context.go('/login');
                     },
@@ -302,7 +302,6 @@ class GoldenLogOutDialog extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: (){
-                      playTap();
                       Navigator.pop(context);
                     },
                     child: Container(
@@ -342,7 +341,7 @@ class GoldenLogOutDialog extends StatelessWidget {
           top: 8,
           child: GestureDetector(
             onTap: () {
-              playTap();
+              playVibrateOnly(duration: 10);
               Navigator.pop(context);
             },
             child: Image.asset(

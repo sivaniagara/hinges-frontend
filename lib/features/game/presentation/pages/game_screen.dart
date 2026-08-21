@@ -10,7 +10,6 @@ import 'package:hinges_frontend/features/game/presentation/widgets/emoji_button.
 import 'package:hinges_frontend/features/game/presentation/widgets/quick_reaction_button.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:square_progress_indicator/square_progress_indicator.dart';
 
 import 'package:hinges_frontend/core/theme/app_theme.dart';
 import 'package:hinges_frontend/core/utils/app_ids.dart';
@@ -19,29 +18,18 @@ import 'package:hinges_frontend/core/utils/constant.dart';
 import 'package:hinges_frontend/core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import 'package:hinges_frontend/core/network/http_service_impl.dart';
 import 'package:hinges_frontend/core/presentation/widgets/adaptive_status_bar.dart';
-import 'package:hinges_frontend/core/presentation/widgets/gradient_text.dart';
-import 'package:hinges_frontend/features/game/data/models/auction_player_status_model.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/result_screen.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/strategic_break_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/game_expire_widget.dart';
-import 'package:hinges_frontend/features/game/presentation/widgets/player_auction_status_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/player_style_widget.dart';
-import 'package:hinges_frontend/features/game/presentation/widgets/game_start_duration.dart';
-import 'package:hinges_frontend/features/game/presentation/widgets/player_name_widget.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/accelerated_round_intro.dart';
 import 'package:hinges_frontend/features/home/presentation/bloc/home_bloc.dart';
-import 'package:hinges_frontend/features/home/presentation/widgets/app_background.dart';
-import 'package:hinges_frontend/features/home/domain/entities/player_entity.dart';
-import 'package:hinges_frontend/features/home/domain/entities/user_data_entity.dart';
-import 'package:hinges_frontend/features/home/presentation/pages/profile_screen.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/pages/mini_auction_screen.dart';
 import 'package:hinges_frontend/features/game/domain/entities/auction_player_status_entity.dart';
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/domain/entities/user_status_entity.dart';
 import '../../../../core/di/dependency_injection.dart';
-import '../../../../core/utils/app_sounds.dart';
-import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../../core/vibtration/vibration_service.dart';
 import '../bloc/game_bloc.dart';
@@ -72,12 +60,10 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  static const List<Color> _redTagColors = [Colors.white, Color(0xffFF1D2B)];
   static const List<Color> _yellowTagColors = [Color(0xff330000), Color(0xffFF1D2B)];
 
   static const _teamGlowDuration = Duration(milliseconds: 300);
   static const _reconnectDelay = Duration(milliseconds: 500);
-  static const _playerImageSize = 90.0;
   final List<GlobalKey> _teamKeys = List.generate(5, (_) => GlobalKey());
   bool _hasVibratedForPause = false;
 
@@ -149,24 +135,15 @@ class _GameScreenState extends State<GameScreen> {
       child: Scaffold(
         body: MandalaBackground(
           showParticle: false,
-          child: Container(
-            // decoration: BoxDecoration(
-            //   image: DecorationImage(
-            //     image: AssetImage(AppImages.cricketStadium),
-            //     fit: BoxFit.fill,
-            //     opacity: 0.5,
-            //   ),
-            // ),
-            child: Row(
-              spacing: 10,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildFirstColumn(),
-                Expanded(child: _buildMainContent()),
-                _buildThirdColumn(),
-              ],
-            ),
+          child: Row(
+            spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildFirstColumn(),
+              Expanded(child: _buildMainContent()),
+              _buildThirdColumn(),
+            ],
           ),
         ),
       ),
@@ -206,7 +183,7 @@ class _GameScreenState extends State<GameScreen> {
         await Future.delayed(_reconnectDelay);
       },
       color: Colors.amber,
-      backgroundColor: Colors.red.withOpacity(0.8),
+      backgroundColor: Colors.red.withValues(alpha: 0.8),
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(
           overscroll: false, // removes the glow/stretch overscroll indicator
@@ -504,7 +481,7 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     GestureDetector(
                       onTap: (){
-                        playTap();
+                        playSoundFromList(6);
                         // print("userList[index].userId : ${userList[index].userId}");
                         context.push('/game/mySquad?userId=${userList[index].userId}');
                       },
@@ -728,13 +705,13 @@ class _GameScreenState extends State<GameScreen> {
                     _buildSideMenuIcon(
                         image: AppImages.bat,
                         onTap: () {
-                          playTap();
+                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', isAcceleratedRoundStarted ? '1' : '0');
                         }),
                     _buildSideMenuIcon(
                         image: AppImages.wicketKeepingGloves,
                         onTap: () {
-                          playTap();
+                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS', '0');
                         }),
                   ],
@@ -745,13 +722,13 @@ class _GameScreenState extends State<GameScreen> {
                     _buildSideMenuIcon(
                         image: AppImages.batBall,
                         onTap: () {
-                          playTap();
+                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS', '0');
                         }),
                     _buildSideMenuIcon(
                         image: AppImages.ball,
                         onTap: () {
-                          playTap();
+                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS', '0');
                         }),
                   ],
@@ -761,11 +738,17 @@ class _GameScreenState extends State<GameScreen> {
                     image: AppImages.acceleratedRound,
                     t1: 'ACCELERATED',
                     onTap: () {
-                      playTap();
+                      playSoundFromList(6);
                       _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', '1');
                     }),
 
-              _buildSideMenu(image: AppImages.ruleBookWhite, t1: 'RULE BOOK'),
+              _buildSideMenu(
+                  image: AppImages.ruleBookWhite,
+                  t1: 'RULE BOOK',
+                  onTap: () {
+                    playSoundFromList(9);
+                    context.push('/game/ruleSummary');
+                  }),
               // if(isAcceleratedRoundStarted)
               //   Expanded(
               //     child: SizedBox(
@@ -828,6 +811,7 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      playSoundFromList(4);
                       showExitDialog(context);
                     },
                     child: Container(
@@ -840,7 +824,7 @@ class _GameScreenState extends State<GameScreen> {
                         spacing: 5,
                         children: [
                           Image.asset(width: 20, height: 20, AppImages.exit),
-                          Text('EXIT',
+                          Text('QUIT',
                               maxLines: 1,
                               style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
                         ],
@@ -949,11 +933,11 @@ class _GameScreenState extends State<GameScreen> {
               }
           ),
           _buildTileCard(image: AppImages.pointsTable, t1: 'POINTS TABLE', onTap: () {
-            playTap();
+            playSoundFromList(6);
             context.push('/game/pointsTable');
           }),
           _buildTileCard(image: AppImages.mySquad, t1: 'MY SQUAD', onTap: () {
-            playTap();
+            playSoundFromList(6);
             context.push('/game/mySquad?userId=$userId');
           }),
           _buildRemainingPurseCard(userId),
@@ -1003,7 +987,7 @@ class _GameScreenState extends State<GameScreen> {
             return GestureDetector(
               onTap: _isThereAmountToBid(currentState.userData.userId) && !isBidDisabled
                   ? () {
-                playTap();
+                playSoundFromList(2);
                 context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
               }
                   : null,
@@ -1126,12 +1110,6 @@ class _GameScreenState extends State<GameScreen> {
         return (AppImages.fp, 'FP');
     }
   }
-
-  bool _isDisqualified(String userId){
-    final currentState = context.read<GameBloc>().state as GameLoaded;
-    final user = currentState.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
-    return user.matchWinStatusEnum == MatchWinStatusEnum.disqualified;
-  }
 }
 
 class _GlowAuctioneer extends StatefulWidget {
@@ -1183,14 +1161,11 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
       listener: (context, state) {
         if (state is GameLoaded) {
           final playerData = state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
-          print('audioPlayed : $audioPlayed');
           if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy && !audioPlayed) {
-            print("state.gameData.currentAuctionPlayerIndex : ${state.gameData.currentAuctionPlayerIndex}");
             // Plays a voice instruction once when player is sold
             playSoldAudio();
             audioPlayed = !audioPlayed;
           }else if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.unSold && !audioPlayed) {
-            print("state.gameData.currentAuctionPlayerIndex : ${state.gameData.currentAuctionPlayerIndex}");
             // Plays a voice instruction once when player is sold
             playUnSoldAudio();
             audioPlayed = !audioPlayed;
@@ -1221,6 +1196,7 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
         child: ClipOval(
           child: BlocBuilder<GameBloc, GameState>(
             builder: (context, state) {
+
               return Image.asset(
                 showAnnounceSoldGif() ? AppImages.announceSold : AppImages.welcomeAuctioner,
                 width: 100,

@@ -165,7 +165,7 @@ class GoldenDialog extends StatelessWidget {
           top: 10, // was -10
           child: GestureDetector(
             onTap: () {
-              playTap();
+              playVibrateOnly(duration: 10);
               Navigator.pop(context);
             },
             child: Image.asset(

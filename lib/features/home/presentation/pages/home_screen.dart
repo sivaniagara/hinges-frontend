@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   locked: item.locked,
                                   mode: item.auctionModeEnum,
                                   onTap: () {
-                                    playTap();
+                                    playSoundFromList(5);
                                     if (!item.locked &&
                                         item.route.isNotEmpty) {
                                       context.push(item.route, extra:  item);
@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: AppImages.ruleBookMenuIcon,
                               title: "RULE BOOK",
                               onTap: () async{
-                                playTap();
+                                playSoundFromList(9);
                                 context.push('/ruleBook');
                               },
                             ),
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: AppImages.exitMenuIcon,
                               title: "EXIT",
                               onTap: () {
-                                playTap();
+                                playSoundFromList(4);
                                 _showExitGameDialog(context);
                               },
                             ),
@@ -329,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 0,
                   child: GestureDetector(
                     onTap: () {
-                      playTap();
+                      playVibrateOnly(duration: 10);
                       Navigator.pop(dialogContext);
                     },
                     child: Image.asset(AppImages.cancel, width: 40),
@@ -469,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: AppImages.rewardMenuIcon,
                 title: 'AD REWARDS',
                 onTap: (){
-                  playTap();
+                  playSoundFromList(9);
                   _showRewardsDialog(context);
                 },
                 iconSize: 40,
@@ -478,7 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: AppImages.shopMenuIcon,
                 title: 'SHOP',
                 onTap:  () {
-                  playTap();
+                  playSoundFromList(9);
                   context.push('/shop');
                 },
                 iconSize: 40,
@@ -487,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: AppImages.settingsMenuIcon,
                 title: 'SETTINGS',
                 onTap: () {
-                  playTap();
+                  playSoundFromList(9);
                   context.push('/settings');
                 },
                 iconSize: 40,
@@ -590,7 +590,7 @@ class _AuctionCardState extends State<AuctionCard>
               child: InfoIcon(
                 isLocked: widget.locked,
                 onTap: () {
-                  playTap();
+                  playSoundFromList(7);
                   showDialog(
                     context: context,
                     barrierDismissible: true,

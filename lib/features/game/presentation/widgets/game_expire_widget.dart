@@ -336,7 +336,7 @@ class GameExpireWidget extends StatelessWidget {
                     GoldenTitle(title: 'MATCH EXPIRED GO TO HOME', fontSize: 18,),
                     GestureDetector(
                       onTap: () {
-                        playTap();
+                        playSoundFromList(4);
                         context.go('/home');
                       },
                       child: Container(

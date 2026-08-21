@@ -14,6 +14,7 @@ bool _isVibrationEnabled = true;
 
 // Pre-loaded instruction audio sources (instruction_1.mp3 → instruction_11.mp3)
 final List<AudioSource?> instructionSources = List.filled(11, null);
+final List<AudioSource?> soundList = List.filled(9, null);
 
 Future<void> initSoLoud() async {
   await soloud.init();
@@ -46,6 +47,13 @@ Future<void> initSoLoud() async {
       mode: LoadMode.memory,
     );
   }
+
+  for (int i = 0; i < 9; i++) {
+    soundList[i] = await soloud.loadAsset(
+      'assets/audio/${i + 1}.mp3',
+      mode: LoadMode.memory,
+    );
+  }
 }
 
 /// Updates the local cache of sound and vibration settings.
@@ -68,6 +76,13 @@ void playTap() {
   if (tapSound == null) return;
   soloud.play(tapSound!, volume: 1.0, paused: false);
 }
+
+void playVibrateOnly({int duration = 50}){
+  if (_isVibrationEnabled) {
+    Vibration.vibrate(duration: duration);
+  }
+}
+
 
 void playWelcome() {
   if (!_isSoundEnabled) return;
@@ -105,5 +120,13 @@ Future<void> playInstruction(
   // Listen BEFORE play so the event is never missed
   source.allInstancesFinished.first.then((_) => onComplete());
 
+  soloud.play(source, volume: 1.0, paused: false);
+}
+
+void playSoundFromList(int num) async {
+  final source = soundList[num - 1];
+  if (source == null) {
+    return;
+  }
   soloud.play(source, volume: 1.0, paused: false);
 }

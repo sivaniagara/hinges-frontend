@@ -11,6 +11,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
 
 import '../../../../core/utils/dialog_box_and_bottom_sheet_utils.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../game/presentation/bloc/game_bloc.dart';
 import '../../../game/presentation/pages/game_screen.dart';
 import '../../../home/presentation/bloc/home_bloc.dart';
@@ -234,7 +235,10 @@ class CreateRoom extends StatelessWidget {
                                 return GestureDetector(
                                   onTap: code == null
                                       ? null
-                                      : () => copyRoomCode(context, code!),
+                                      : () {
+                                    playSoundFromList(7);
+                                    copyRoomCode(context, code!);
+                                  },
                                   child: Container(
                                     width: 150,
                                     height: 40,
@@ -282,7 +286,10 @@ class CreateRoom extends StatelessWidget {
                           return GestureDetector(
                             onTap: code == null
                                 ? null
-                                : () => shareViaWhatsApp(code!),
+                                : (){
+                              playVibrateOnly();
+                              shareViaWhatsApp(code!);
+                            },
                             child: Container(
                               width: 400,
                               height: 50,
@@ -326,6 +333,7 @@ class CreateRoom extends StatelessWidget {
                       GestureDetector(
                         onTap: (){
                           try{
+                            playVibrateOnly();
                             final homeLoaded = context.read<HomeBloc>().state as HomeLoaded;
                             if(context.read<GameBloc>().state is RoomCodeLoaded){
                               context.go('/game', extra: {
