@@ -30,19 +30,11 @@ class PlayerAuctionStatusWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// 🔹 Top Row (Name + icons)
-            Row(
-              children: [
-                PlayerNameWidget(gameData: gameData),
-              ],
-            ),
-
+            PlayerNameWidget(gameData: gameData),
             const SizedBox(height: 2),
-
             /// 🔹 Style
             PlayerStyleWidget(gameData: gameData),
-
             const SizedBox(height: 4),
-
             /// 🔹 Price + Rating (ultra compact)
             Row(
               children: [

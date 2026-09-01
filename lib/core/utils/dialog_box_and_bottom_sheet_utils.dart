@@ -419,7 +419,7 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF0B1220),
+            color: Colors.black,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
             border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1.5),
             boxShadow: [
@@ -447,13 +447,8 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-
-                  /// LOGO
-                  Image.asset(AppImages.indianBiddingLeague, height: 40),
-                  const SizedBox(height: 8),
-
                   Text(
-                    'WELCOME, GUEST',
+                    'GUEST Login',
                     style: GoogleFonts.rajdhani(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -463,7 +458,7 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Enter your name to join the auction room',
+                    'Please Enter Your Name',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.oxanium(
                       color: Colors.white70,

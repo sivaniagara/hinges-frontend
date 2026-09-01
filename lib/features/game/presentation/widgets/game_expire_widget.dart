@@ -9,6 +9,7 @@ import 'package:hinges_frontend/core/presentation/widgets/dot_circular_loader.da
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/pacman_count_down.dart';
 import 'package:hinges_frontend/features/game/presentation/widgets/pie_count_down_timer.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 
 import '../../../../core/presentation/widgets/back_icon.dart';
 import '../../../../core/presentation/widgets/gradient_text.dart';
@@ -37,8 +38,10 @@ class GameExpireWidget extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
+      child: MandalaBackground(
         animateContent: false,
+        showParticle: false,
+
         child: BlocListener<GameBloc, GameState>(
           listenWhen: (previous, current) {
             if (current is GameLoaded &&
@@ -108,10 +111,9 @@ class GameExpireWidget extends StatelessWidget {
                                 spacing: 8,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CrownTitle(text: 'ALLOCATION PANEL'),
                                   Container(
                                     width: size.width * 0.4,
-                                    height: 50,
+                                    height: 85,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
@@ -119,34 +121,39 @@ class GameExpireWidget extends StatelessWidget {
                                         image: AssetImage(AppImages.goldenFrame),
                                       ),
                                     ),
-                                    child: Text(
-                                      'MINI AUCTION LITE',
-                                      style: GoogleFonts.rajdhani(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.borderGold,
-                                      ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'MINI AUCTION LITE',
+                                          style: GoogleFonts.rajdhani(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.borderGold,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Image.asset(
+                                              AppImages.goldenStarLine,
+                                              width: 50,
+                                            ),
+                                            Text('  ${mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 14, fontWeight: FontWeight.bold)),),
+                                            Transform(
+                                              alignment: Alignment.center,
+                                              transform: Matrix4.rotationY(math.pi),
+                                              child: Image.asset(
+                                                AppImages.goldenStarLine,
+                                                width: 50,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        AppImages.goldenStarLine,
-                                        width: 50,
-                                      ),
-                                      Text('  ${mode.miniAuctionItem.name.toUpperCase()} ROOM  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 14, fontWeight: FontWeight.bold)),),
-                                      Transform(
-                                        alignment: Alignment.center,
-                                        transform: Matrix4.rotationY(math.pi),
-                                        child: Image.asset(
-                                          AppImages.goldenStarLine,
-                                          width: 50,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
+                                  CrownTitle(text: 'ALLOCATION PANEL'),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: List.generate(5, (index){
@@ -282,7 +289,6 @@ class GameExpireWidget extends StatelessWidget {
     }
   }
 
-
   void showExitDialog(BuildContext context) {
     final gameBloc = context.read<GameBloc>();
     final homeBloc = context.read<HomeBloc>();
@@ -373,8 +379,6 @@ class GameExpireWidget extends StatelessWidget {
       },
     );
   }
-
-
 }
 
 class _AnimatedCard extends StatefulWidget {

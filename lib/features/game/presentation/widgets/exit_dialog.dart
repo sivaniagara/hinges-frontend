@@ -14,7 +14,7 @@ class ExitDialog extends StatelessWidget {
 
   const ExitDialog({
     super.key,
-    this.title = 'ARE YOU SURE YOU WANT TO EXIT',
+    this.title = 'ARE YOU SURE YOU WANT TO QUIT',
     this.onTapYes,
   });
 

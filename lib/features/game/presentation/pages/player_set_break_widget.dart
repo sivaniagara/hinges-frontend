@@ -34,22 +34,48 @@ class PlayerSetBreakWidget extends StatelessWidget {
               Column(
                 spacing: 20,
                 children: [
-                  Text('AUCTION RESUMES IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
-                  BlocBuilder<GameBloc, GameState>(
-                    builder: (context, state) {
-                      if (state is GameLoaded){
-                        return SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: PieCountdownTimer(
-                            remainingSeconds: state.remainingSecondsToExpireBreak!.toInt() - 5,
-                            totalSeconds: 30 - 5,
-                          ),
-                        );
-                      }
-                      return const SizedBox();
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        AppImages.goldenStarLine,
+                        width: 50,
+                      ),
+                      Text('   AUCTION RESUMES IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+                      BlocBuilder<GameBloc, GameState>(
+                          builder: (context, state){
+                            if(state is GameLoaded){
+                              return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
+                            }
+                            return SizedBox();
+                          }
+                      ),
+                      Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: Image.asset(
+                          AppImages.goldenStarLine,
+                          width: 50,
+                        ),
+                      ),
+                    ],
                   ),
+                  // Text('AUCTION RESUMES IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                  // BlocBuilder<GameBloc, GameState>(
+                  //   builder: (context, state) {
+                  //     if (state is GameLoaded){
+                  //       return SizedBox(
+                  //         width: 40,
+                  //         height: 40,
+                  //         child: PieCountdownTimer(
+                  //           remainingSeconds: state.remainingSecondsToExpireBreak!.toInt() - 5,
+                  //           totalSeconds: 30 - 5,
+                  //         ),
+                  //       );
+                  //     }
+                  //     return const SizedBox();
+                  //   },
+                  // ),
                   // Container(
                   //   width: 80,
                   //   height: 60,

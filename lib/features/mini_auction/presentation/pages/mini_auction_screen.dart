@@ -175,7 +175,8 @@ class _Header extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TopUserBar(loading: false, userData: userData, onAddTap: () {  },),
+        SizedBox(width: 20,),
+        // TopUserBar(loading: false, userData: userData, onAddTap: () {  },),
         GestureDetector(
           onTap: () {
             playVibrateOnly(duration: 10);
@@ -238,7 +239,7 @@ class _ArenaSelection extends StatelessWidget {
               fee: item.fee.toString(),
               isLocked: item.locked,
               onTap: () {
-                playSoundFromList(5);
+                playSoundFromList(8);
                 onSelect(item);
               },
               miniAuctionItem: item,
@@ -283,7 +284,7 @@ class _ModeSelection extends StatelessWidget {
             GameCard(
               image: AppImages.playOnline,
               onTap: () {
-                playSoundFromList(5);
+                playSoundFromList(8);
                 context.go('/game', extra: {
                   "mode": mode,
                   "matchType": MatchTypeEnum.normalMatch,
@@ -296,7 +297,7 @@ class _ModeSelection extends StatelessWidget {
             GameCard(
               image: AppImages.playWithFriends,
               onTap: () {
-                playSoundFromList(5);
+                playSoundFromList(8);
                 context.push('/playWithFriends', extra: mode);
               },
               size: size,
@@ -376,12 +377,12 @@ class _BottomBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          IconWithCircularBorder(
-            image: AppImages.ruleBookMenuIcon,
-            settingName: "RULE BOOK",
-          ),
+          // IconWithCircularBorder(
+          //   image: AppImages.ruleBookMenuIcon,
+          //   settingName: "RULE BOOK",
+          // ),
           Container(
             width: size.width * 0.4,
             height: 50,
@@ -401,10 +402,10 @@ class _BottomBar extends StatelessWidget {
               ),
             ),
           ),
-          IconWithCircularBorder(
-            image: AppImages.settingsMenuIcon,
-            settingName: "SETTINGS",
-          ),
+          // IconWithCircularBorder(
+          //   image: AppImages.settingsMenuIcon,
+          //   settingName: "SETTINGS",
+          // ),
         ],
       ),
     );

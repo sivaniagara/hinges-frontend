@@ -167,6 +167,7 @@ class MySquadScreen extends StatelessWidget {
                                       rating: '${player.baseRating}',
                                       soldPrice: context.read<GameBloc>().formatPriceShort(player.currentPrice),
                                       isOdd: index.isOdd,
+                                      playerStatus: player.playerAuctionStatus
                                     );
                                   } else {
                                     return _buildTableRow(
@@ -178,6 +179,7 @@ class MySquadScreen extends StatelessWidget {
                                       rating: '-',
                                       soldPrice: '-',
                                       isOdd: index.isOdd,
+                                      playerStatus: PlayerAuctionStatusEnum.unSold
                                     );
                                   }
                                 },
@@ -300,6 +302,7 @@ class MySquadScreen extends StatelessWidget {
     required String rating,
     required String soldPrice,
     required bool isOdd,
+    required PlayerAuctionStatusEnum playerStatus,
   }) {
     Color categoryColor = const Color(0xFF00AFFF); // ICP light blue
     if (category == 'IUP') categoryColor = const Color(0xFFFF8C00); // IUP orange/brown
@@ -307,7 +310,7 @@ class MySquadScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: name == '-' ? AppTheme.navyBlue : Colors.transparent,
+        color: (name == '-' || playerStatus == PlayerAuctionStatusEnum.buy) ? AppTheme.navyBlue : Colors.transparent,
         border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
       ),
       child: Row(

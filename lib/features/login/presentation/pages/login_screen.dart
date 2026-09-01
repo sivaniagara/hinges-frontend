@@ -46,6 +46,7 @@ class LoginScreen extends StatelessWidget {
       child: Scaffold(
         body: MandalaBackground(
           animateContent: false,
+          backGroundColor: Colors.black,
           child: Stack(
             children: [
               // const GoldenRingBackground(),

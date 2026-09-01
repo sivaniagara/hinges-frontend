@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
@@ -27,8 +28,9 @@ class ProfileScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
+      child: MandalaBackground(
         animateContent: false,
+        backGroundColor: Colors.black,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -81,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
                 width: size.width * 0.86,
                 height: size.height * 0.3,
                 decoration: BoxDecoration(
-                    color: AppTheme.navyBlue,
+                    color: Colors.black45,
                     borderRadius: BorderRadius.circular(12),
                   image: DecorationImage(
                       image: AssetImage(AppImages.goldenChamberFrame),
@@ -215,9 +217,9 @@ class ProfileScreen extends StatelessWidget {
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GoldenChamberCard(image: AppImages.firstPrize, title: 'FIRST PRIZE', value: userData.firstPrice.toString(), color: AppTheme.navyBlue,),
-                  GoldenChamberCard(image: AppImages.secondPrize, title: 'SECOND PRIZE', value: userData.secondPrice.toString(), color: AppTheme.navyBlue,),
-                  GoldenChamberCard(image: AppImages.thirdPrize, title: 'THIRD PRIZE', value: userData.thirdPrice.toString(), color: AppTheme.navyBlue,),
+                  GoldenChamberCard(image: AppImages.firstPrize, title: 'FIRST PRIZE', value: userData.firstPrice.toString(), color: Colors.black45,),
+                  GoldenChamberCard(image: AppImages.secondPrize, title: 'SECOND PRIZE', value: userData.secondPrice.toString(), color: Colors.black45,),
+                  GoldenChamberCard(image: AppImages.thirdPrize, title: 'THIRD PRIZE', value: userData.thirdPrice.toString(), color: Colors.black45,),
                 ],
               ),
             ],

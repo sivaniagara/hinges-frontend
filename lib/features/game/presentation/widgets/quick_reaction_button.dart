@@ -27,7 +27,6 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
   ];
 
   void _togglePopup() {
-    playSoundFromList(9);
     if (_overlayEntry == null) {
       _overlayEntry = _createOverlay();
       Overlay.of(context).insert(_overlayEntry!);

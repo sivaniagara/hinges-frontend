@@ -219,7 +219,7 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 130,
+                            height: 130,
                             child: _buildTeamRow(state, gameData)
                         ),
                       ],
@@ -344,7 +344,7 @@ class _GameScreenState extends State<GameScreen> {
         playerData,
         homeState.userData.categoryAndItsItem,
       ),
-      style: const TextStyle(fontSize: 20),
+      style: const TextStyle(fontSize: 30),
     );
   }
 
@@ -406,7 +406,7 @@ class _GameScreenState extends State<GameScreen> {
     String title = 'BASE PRICE';
     final isFranchiseBought = gameState.gameData.auctionPlayersStatusList[gameState.gameData.currentAuctionPlayerIndex].playerAuctionStatus == PlayerAuctionStatusEnum.buy;
     if(currentAuctionPlayer.teamId != AppIds.teamIdNone && !isFranchiseBought){
-      title = 'CURRENT PRICE';
+      title = 'CURRENT BID';
     }else if(isFranchiseBought){
       title = 'SOLD PRICE';
     }
@@ -481,7 +481,6 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     GestureDetector(
                       onTap: (){
-                        playSoundFromList(6);
                         // print("userList[index].userId : ${userList[index].userId}");
                         context.push('/game/mySquad?userId=${userList[index].userId}');
                       },
@@ -692,7 +691,7 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     const SizedBox(width: 5),
                     Image.asset(width: 30, height: 30, AppImages.user),
-                    Text('PLAYER SET', maxLines: 1, style: GoogleFonts.rajdhani(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text('PLAYERS SET', maxLines: 1, style: GoogleFonts.rajdhani(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -705,13 +704,11 @@ class _GameScreenState extends State<GameScreen> {
                     _buildSideMenuIcon(
                         image: AppImages.bat,
                         onTap: () {
-                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', isAcceleratedRoundStarted ? '1' : '0');
                         }),
                     _buildSideMenuIcon(
                         image: AppImages.wicketKeepingGloves,
                         onTap: () {
-                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.wicketKeeperId, 'WICKET-KEEPERS', '0');
                         }),
                   ],
@@ -722,13 +719,11 @@ class _GameScreenState extends State<GameScreen> {
                     _buildSideMenuIcon(
                         image: AppImages.batBall,
                         onTap: () {
-                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.allRounderId, 'ALL-ROUNDERS', '0');
                         }),
                     _buildSideMenuIcon(
                         image: AppImages.ball,
                         onTap: () {
-                          playSoundFromList(6);
                           _navigateToPlayerList(AppIds.bowlerId, 'BOWLERS', '0');
                         }),
                   ],
@@ -738,7 +733,6 @@ class _GameScreenState extends State<GameScreen> {
                     image: AppImages.acceleratedRound,
                     t1: 'ACCELERATED',
                     onTap: () {
-                      playSoundFromList(6);
                       _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', '1');
                     }),
 
@@ -746,7 +740,6 @@ class _GameScreenState extends State<GameScreen> {
                   image: AppImages.ruleBookWhite,
                   t1: 'RULE BOOK',
                   onTap: () {
-                    playSoundFromList(9);
                     context.push('/game/ruleSummary');
                   }),
               // if(isAcceleratedRoundStarted)
@@ -897,7 +890,7 @@ class _GameScreenState extends State<GameScreen> {
         child: Row(
           spacing: 10,
           children: [
-            const SizedBox(width: 5),
+            const SizedBox(width: 15),
             Image.asset(width: 30, height: 30, image),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -926,18 +919,16 @@ class _GameScreenState extends State<GameScreen> {
           _buildAuctionerSection(),
           BlocBuilder<GameBloc, GameState>(
               builder: (context, state){
-               if(state is GameLoaded){
-                 return  _buildTileCard(image: AppImages.playerRound, t1: 'ROUND ${state.gameData.round}/5');
+                if(state is GameLoaded){
+                  return  _buildTileCard(image: AppImages.playerRound, t1: 'ROUND ${state.gameData.round}/5');
                 }
-               return  _buildTileCard(image: AppImages.playerRound, t1: 'ROUND 0/5');
+                return  _buildTileCard(image: AppImages.playerRound, t1: 'ROUND 0/5');
               }
           ),
           _buildTileCard(image: AppImages.pointsTable, t1: 'POINTS TABLE', onTap: () {
-            playSoundFromList(6);
             context.push('/game/pointsTable');
           }),
           _buildTileCard(image: AppImages.mySquad, t1: 'MY SQUAD', onTap: () {
-            playSoundFromList(6);
             context.push('/game/mySquad?userId=$userId');
           }),
           _buildRemainingPurseCard(userId),
@@ -987,7 +978,7 @@ class _GameScreenState extends State<GameScreen> {
             return GestureDetector(
               onTap: _isThereAmountToBid(currentState.userData.userId) && !isBidDisabled
                   ? () {
-                playSoundFromList(2);
+                playSoundFromList(8);
                 context.read<GameBloc>().add(BidAuctionPlayer(currentState.userData.userId));
               }
                   : null,
@@ -1149,7 +1140,7 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
     final state = context.read<GameBloc>().state;
     if (state is! GameLoaded) return false;
     return state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
-            .playerAuctionStatus ==
+        .playerAuctionStatus ==
         PlayerAuctionStatusEnum.buy || state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex]
         .playerAuctionStatus ==
         PlayerAuctionStatusEnum.unSold || state.isStrategicAudioPlaying;
@@ -1246,7 +1237,7 @@ class _HammerStatusWidgetState extends State<_HammerStatusWidget> {
     }
 
     final bool isSold = widget.status == PlayerAuctionStatusEnum.buy ||
-                       widget.status == PlayerAuctionStatusEnum.sold;
+        widget.status == PlayerAuctionStatusEnum.sold;
 
     return Image.asset(
       isSold ? AppImages.sold : AppImages.unsold,

@@ -136,6 +136,7 @@ class AppImages {
   static const String bat = '${gameBase}bat.png';
   static const String cap = '${gameBase}cap.png';
   static const String indiaFlag = '${gameBase}india_flag.png';
+  static const String goldenDoubleStartFrame = '${gameBase}golden_double_star_frame.png';
 
   /// franchise
   static const String csk = '${base}csk.png';

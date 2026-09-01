@@ -150,7 +150,7 @@ class _ResultScreenState extends State<ResultScreen> {
       child: Row(
         children: const [
           _HeaderCell("USER NAME", 2),
-          _HeaderCell("FRANCHISE", 3),
+          _HeaderCell("FRANCHISE", 4),
           _HeaderCell("QUALIFICATION", 3),
           _HeaderCell("PURSE REMAINING", 2),
           _HeaderCell("FINAL RATING", 2),
@@ -212,7 +212,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
             /// FRANCHISE
             Expanded(
-              flex: 3,
+              flex: 4,
               child: GestureDetector(
                 onTap: (){
                   playTap();
@@ -221,8 +221,9 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    const SizedBox(width: 20),
                     Image.asset(franchise.image(), height: 40),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 10),
                     Flexible(
                       child: Text(
                         franchise.fullName(),

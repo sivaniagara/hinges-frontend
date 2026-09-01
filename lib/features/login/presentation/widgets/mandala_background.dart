@@ -8,12 +8,14 @@ class MandalaBackground extends StatefulWidget {
   final Widget child;
   final bool animateContent;
   final bool showParticle;
+  final Color backGroundColor;
 
   const MandalaBackground({
     super.key,
     required this.child,
     this.animateContent = true,
     this.showParticle = true,
+    this.backGroundColor = const Color(0xff012255),
   });
 
   @override
@@ -106,7 +108,7 @@ class _MandalaBackgroundState extends State<MandalaBackground>
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            color: Color(0xff012255),
+            color: widget.backGroundColor,
             // gradient: widget.showParticle ? RadialGradient(
             //   colors: [
             //     Color(0xFF023FA8),
@@ -121,27 +123,27 @@ class _MandalaBackgroundState extends State<MandalaBackground>
           child: Stack(
             children: [
               /// Center Glow
-              Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF3B82F6).withOpacity(0.15),
-                        blurRadius: 100,
-                        spreadRadius: 50,
-                      ),
-                      BoxShadow(
-                        color: Color(0xFF60A5FA).withOpacity(0.08),
-                        blurRadius: 150,
-                        spreadRadius: 80,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // Center(
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width * 0.5,
+              //     height: MediaQuery.of(context).size.height * 0.5,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       boxShadow: [
+              //         BoxShadow(
+              //           color: Color(0xFF3B82F6).withOpacity(0.15),
+              //           blurRadius: 100,
+              //           spreadRadius: 50,
+              //         ),
+              //         BoxShadow(
+              //           color: Color(0xFF60A5FA).withOpacity(0.08),
+              //           blurRadius: 150,
+              //           spreadRadius: 80,
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               if(widget.showParticle)
               ...[
                 Positioned(

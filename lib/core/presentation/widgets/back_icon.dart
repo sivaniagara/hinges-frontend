@@ -15,7 +15,7 @@ class BackIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap ?? (){
-        playTap();
+        playVibrateOnly();
         context.pop();
       },
       child: Padding(

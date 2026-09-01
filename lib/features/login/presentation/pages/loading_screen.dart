@@ -90,6 +90,7 @@ class _LoadingScreenState extends State<LoadingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: MandalaBackground(
+        backGroundColor: Colors.black,
         animateContent: false,
         showParticle: false,
         child: SafeArea(

@@ -31,11 +31,12 @@ class LongButton extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width * 0.35,
       decoration: BoxDecoration(
-        color: AppTheme.cardBlue,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(10),
         border: outlined ? Border.all(color: AppTheme.borderGold, width: 1) : null,
       ),
       child: MaterialButton(
+        color: Colors.black,
         onPressed: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

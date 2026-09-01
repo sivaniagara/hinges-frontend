@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/di/dependency_injection.dart';
@@ -60,8 +61,9 @@ class _SettingScreenState extends State<SettingScreen> {
     final size = MediaQuery.of(context).size;
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
+      child: MandalaBackground(
         animateContent: false,
+        backGroundColor: Colors.black,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -122,7 +124,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 padding: EdgeInsets.all(20),
                 width: size.width * 0.8,
                 decoration: BoxDecoration(
-                  color: AppTheme.navyBlue,
+                  color: Colors.black,
                   borderRadius: BorderRadius.circular(30),
                   image: DecorationImage(
                     image: AssetImage(AppImages.goldenOutline),
@@ -338,7 +340,7 @@ class _SettingScreenState extends State<SettingScreen> {
         width: 500,
         padding: const EdgeInsets.symmetric(horizontal: 15),
         decoration: BoxDecoration(
-            color: AppTheme.navyBlue,
+            color: Colors.black,
             image: DecorationImage(
                 image: AssetImage(AppImages.goldenChamberFrame),
                 fit: BoxFit.fill

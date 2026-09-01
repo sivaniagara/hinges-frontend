@@ -31,7 +31,7 @@ class PlayerRoundStartsIn extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.fill,
-              image: AssetImage(AppImages.chamberBox),
+              image: AssetImage(AppImages.goldenDoubleStartFrame),
             ),
           ),
           child: Text(
@@ -45,12 +45,12 @@ class PlayerRoundStartsIn extends StatelessWidget {
         ),
         Container(
           width: 260,
-          height: 40,
+          height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.fill,
-              image: AssetImage(AppImages.chamberBox),
+              image: AssetImage(AppImages.goldenDoubleStartFrame),
             ),
           ),
           child: Row(
@@ -79,6 +79,32 @@ class PlayerRoundStartsIn extends StatelessWidget {
             ],
           ),
         ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Image.asset(
+        //       AppImages.goldenStarLine,
+        //       width: 50,
+        //     ),
+        //     Text('  STARTS IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+        //     BlocBuilder<GameBloc, GameState>(
+        //         builder: (context, state){
+        //           if(state is GameLoaded){
+        //             return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
+        //           }
+        //           return SizedBox();
+        //         }
+        //     ),
+        //     Transform(
+        //       alignment: Alignment.center,
+        //       transform: Matrix4.rotationY(math.pi),
+        //       child: Image.asset(
+        //         AppImages.goldenStarLine,
+        //         width: 50,
+        //       ),
+        //     ),
+        //   ],
+        // ),
         // BlocBuilder<GameBloc, GameState>(
         //   builder: (context, state) {
         //     if (state is GameLoaded){

@@ -34,7 +34,7 @@ class TopUserBar extends StatelessWidget {
         GestureDetector(
           onTap: () {
             if (userData != null) {
-              playSoundFromList(9);
+              playSoundFromList(8);
               context.push('/profile');
             }
           },

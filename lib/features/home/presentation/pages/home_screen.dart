@@ -19,6 +19,7 @@ import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../game/presentation/widgets/exit_dialog.dart';
 import '../../../login/presentation/bloc/user_auth_bloc.dart';
+import '../../../login/presentation/widgets/mandala_background.dart';
 import '../../domain/entities/user_data_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/app_background.dart';
@@ -112,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return AdaptiveStatusBar(
           color: Theme.of(context).colorScheme.surface,
-          child: AppBackground(
+          child: MandalaBackground(
+            backGroundColor: Colors.black,
             child: Stack(
               children: [
                 /// ✅ YOUR ORIGINAL UI (UNCHANGED)
@@ -166,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   locked: item.locked,
                                   mode: item.auctionModeEnum,
                                   onTap: () {
-                                    playSoundFromList(5);
+                                    playSoundFromList(8);
                                     if (!item.locked &&
                                         item.route.isNotEmpty) {
                                       context.push(item.route, extra:  item);
@@ -189,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: AppImages.ruleBookMenuIcon,
                               title: "RULE BOOK",
                               onTap: () async{
-                                playSoundFromList(9);
+                                playSoundFromList(8);
                                 context.push('/ruleBook');
                               },
                             ),
@@ -469,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: AppImages.rewardMenuIcon,
                 title: 'AD REWARDS',
                 onTap: (){
-                  playSoundFromList(9);
+                  playSoundFromList(8);
                   _showRewardsDialog(context);
                 },
                 iconSize: 40,
@@ -478,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: AppImages.shopMenuIcon,
                 title: 'SHOP',
                 onTap:  () {
-                  playSoundFromList(9);
+                  playSoundFromList(8);
                   context.push('/shop');
                 },
                 iconSize: 40,
@@ -487,7 +489,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: AppImages.settingsMenuIcon,
                 title: 'SETTINGS',
                 onTap: () {
-                  playSoundFromList(9);
+                  playSoundFromList(8);
                   context.push('/settings');
                 },
                 iconSize: 40,
@@ -590,7 +592,6 @@ class _AuctionCardState extends State<AuctionCard>
               child: InfoIcon(
                 isLocked: widget.locked,
                 onTap: () {
-                  playSoundFromList(7);
                   showDialog(
                     context: context,
                     barrierDismissible: true,

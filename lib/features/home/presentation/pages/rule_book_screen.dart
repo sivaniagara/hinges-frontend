@@ -12,6 +12,7 @@ import '../../../../core/utils/app_images.dart';
 import '../../../../core/utils/app_sounds.dart';
 import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
+import '../../../login/presentation/widgets/mandala_background.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../widgets/app_background.dart';
 
@@ -24,8 +25,9 @@ class RuleBookScreen extends StatelessWidget {
 
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
+      child: MandalaBackground(
         animateContent: false,
+        backGroundColor: Colors.black,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -90,7 +92,7 @@ class RuleBookScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: SizedBox(
-                    width: size.width * 0.65,
+                    width: 550,
                     child: GridView.count(
                       crossAxisCount: 2,
                       mainAxisSpacing: 20,
