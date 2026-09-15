@@ -168,4 +168,9 @@ class AppImages {
   static const String gifBase = 'assets/gif/';
   static const String announceSold = '${gifBase}announce_sold.gif';
   static const String hammerAnimate = '${gifBase}hammer_animate.gif';
+
+  /// mp3
+  static const String videoBase = 'assets/video/';
+  static const String auctionerVideo = '${videoBase}announce.mp4';
+
 }

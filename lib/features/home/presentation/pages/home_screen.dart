@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return AdaptiveStatusBar(
           color: Theme.of(context).colorScheme.surface,
           child: MandalaBackground(
-            backGroundColor: Colors.black,
+            backGroundColor: AppTheme.deepNavy,
             child: Stack(
               children: [
                 /// ✅ YOUR ORIGINAL UI (UNCHANGED)
@@ -313,107 +313,124 @@ class _HomeScreenState extends State<HomeScreen> {
       // context needed for that) but the flying-coin animation never
       // appeared.
       builder: (dialogContext) => Center(
-        child: Material(
-          color: AppTheme.navyBlue,
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.8,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(AppImages.goldenDialogFrame),
-                fit: BoxFit.fill,
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 10,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      playVibrateOnly(duration: 10);
-                      Navigator.pop(dialogContext);
-                    },
-                    child: Image.asset(AppImages.cancel, width: 40),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // 1. Navy fill — sized slightly INSIDE the frame's gold line,
+              //    instead of filling the whole rectangular Material bounds
+              //    (which was sticking out past the frame's rounded corners).
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(8), // tune to match frame's stroke thickness
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.navyBlue,
+                      borderRadius: BorderRadius.circular(28), // tune to match frame's corner radius
+                    ),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+              ),
 
-                    Text(
-                      'EARN REWARDS',
-                      style: GoogleFonts.rajdhani(
-                        color: AppTheme.borderGold,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 15,),
-                    Image.asset(
-                      AppImages.watchAds,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(AppImages.coinMenuIcon, width: 30),
-                        const SizedBox(width: 10),
-                        Text(
-                          '200 COINS',
-                          style: GoogleFonts.rajdhani(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () {
-                        playTap();
-                        // Pop the dialog using ITS OWN context...
-                        Navigator.pop(dialogContext);
-                        // ...then continue using the stable outer
-                        // (HomeScreen State) context, which stays valid
-                        // for as long as the screen itself is mounted.
-                        _onRewardsTap(context);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 35, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF004D00), // Very dark green
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: AppTheme.borderGold,
-                            width: 2,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.play_arrow,
-                                color: Colors.yellow, size: 28),
-                            const SizedBox(width: 10),
-                            Text(
-                              'WATCH AD',
-                              style: GoogleFonts.rajdhani(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+              // 2. Golden dialog frame drawn on top, untouched, at full size
+              Positioned.fill(
+                child: Image.asset(
+                  AppImages.goldenDialogFrame,
+                  fit: BoxFit.fill,
                 ),
-              ],
-            ),
+              ),
+
+              // 3. Close button
+              Positioned(
+                top: 10,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    playVibrateOnly(duration: 10);
+                    Navigator.pop(dialogContext);
+                  },
+                  child: Image.asset(AppImages.cancel, width: 40),
+                ),
+              ),
+
+              // 4. Content
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'EARN REWARDS',
+                    style: GoogleFonts.rajdhani(
+                      color: AppTheme.borderGold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Image.asset(
+                    AppImages.watchAds,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(AppImages.coinMenuIcon, width: 30),
+                      const SizedBox(width: 10),
+                      Text(
+                        '200 COINS',
+                        style: GoogleFonts.rajdhani(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      playTap();
+                      // Pop the dialog using ITS OWN context...
+                      Navigator.pop(dialogContext);
+                      // ...then continue using the stable outer
+                      // (HomeScreen State) context, which stays valid
+                      // for as long as the screen itself is mounted.
+                      _onRewardsTap(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 35, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF004D00), // Very dark green
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.borderGold,
+                          width: 2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.play_arrow,
+                              color: Colors.yellow, size: 28),
+                          const SizedBox(width: 10),
+                          Text(
+                            'WATCH AD',
+                            style: GoogleFonts.rajdhani(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -428,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
       barrierColor: Colors.black.withOpacity(0.7),
       builder: (context) {
         return Dialog(
-          backgroundColor: AppTheme.navyBlue,
+          backgroundColor: Colors.transparent, // was AppTheme.navyBlue
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
           child: ExitDialog(
             title: 'ARE YOU SURE YOU WANT TO EXIT THE GAME?',

@@ -90,19 +90,20 @@ class GameExpireWidget extends StatelessWidget {
                         constraints: BoxConstraints(minHeight: size.height),
                         child: Stack(
                           children: [
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  children: [
-                                    PieCountdownTimer(remainingSeconds: state.remainingSecondsToStart.toInt(), totalSeconds: 120,),
-                                    // PacmanCountdown(remaining: state.remainingSecondsToStart.toInt(), total: 120),
-                                  ],
+                            if(state.gameData.usersStatusList.length < 5)
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    children: [
+                                      PieCountdownTimer(remainingSeconds: state.remainingSecondsToStart.toInt(), totalSeconds: 120,),
+                                      // PacmanCountdown(remaining: state.remainingSecondsToStart.toInt(), total: 120),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
 
                             SizedBox(
                               width: size.width,
@@ -183,7 +184,7 @@ class GameExpireWidget extends StatelessWidget {
                                         AppImages.goldenStarLine,
                                         width: 50,
                                       ),
-                                      Text('WAIT FOR THE OTHER USERS TO JOIN THE AUCTION ROOM', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
+                                      Text(state.gameData.usersStatusList.length < 5 ? 'WAIT FOR THE OTHER USERS TO JOIN THE AUCTION ROOM' : 'Loading...', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),),
                                       Transform(
                                         alignment: Alignment.center,
                                         transform: Matrix4.rotationY(math.pi),
@@ -203,7 +204,8 @@ class GameExpireWidget extends StatelessWidget {
                               child: BackIcon(
                                 onTap: () {
                                   showExitDialog(context);
-                                },                        ),
+                                },
+                              ),
                             ),
 
                           ],
@@ -303,7 +305,7 @@ class GameExpireWidget extends StatelessWidget {
             BlocProvider.value(value: homeBloc),
           ],
           child: Dialog(
-            backgroundColor: AppTheme.navyBlue,
+            backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.symmetric(horizontal: 20),
             child: ExitDialog(),
           ),
@@ -319,55 +321,73 @@ class GameExpireWidget extends StatelessWidget {
       barrierColor: Colors.black.withOpacity(0.7),
       builder: (context) {
         return Dialog(
-          backgroundColor: AppTheme.navyBlue,
+          backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
           child: Stack(
             children: [
               /// 🔸 GOLDEN FRAME CONTAINER
-              Container(
+              SizedBox(
                 width: 500,
                 height: 200,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(AppImages.dialogFrame),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                child: Column(
-                  spacing: 20,
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    GoldenTitle(title: 'MATCH EXPIRED GO TO HOME', fontSize: 18,),
-                    GestureDetector(
-                      onTap: () {
-                        playSoundFromList(4);
-                        context.go('/home');
-                      },
-                      child: Container(
-                        width: 150,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                  AppImages.dialogFrame,
-                                ),
-                                fit: BoxFit.fill
-                            ),
-                            color: const Color(0xff000F3A)
-                        ),
-                        child: Center(
-                          child: Text(
-                              'HOME',
-                              style: GoogleFonts.rajdhani(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20
-                              )
+                    // Navy fill layer
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.navyBlue,
+                            borderRadius: BorderRadius.circular(28),
                           ),
                         ),
+                      ),
+                    ),
+                    // Frame image layer
+                    Positioned.fill(
+                      child: Image.asset(
+                        AppImages.dialogFrame,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    // Content layer
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      child: Column(
+                        spacing: 20,
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GoldenTitle(title: 'MATCH EXPIRED GO TO HOME', fontSize: 18,),
+                          GestureDetector(
+                            onTap: () {
+                              playSoundFromList(4);
+                              context.go('/home');
+                            },
+                            child: Container(
+                              width: 150,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: const Color(0xff000F3A),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: AppTheme.borderGold,
+                                    width: 2,
+                                  )
+                              ),
+                              child: Center(
+                                child: Text(
+                                    'HOME',
+                                    style: GoogleFonts.rajdhani(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20
+                                    )
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

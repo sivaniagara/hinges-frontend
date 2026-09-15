@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
 import '../widgets/mandala_background.dart';
 import '../widgets/shared_decorations.dart';
@@ -90,7 +91,7 @@ class _LoadingScreenState extends State<LoadingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: MandalaBackground(
-        backGroundColor: Colors.black,
+        backGroundColor: AppTheme.deepNavy,
         animateContent: false,
         showParticle: false,
         child: SafeArea(

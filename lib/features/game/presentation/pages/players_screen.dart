@@ -149,7 +149,6 @@ class PlayersScreen extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          playTap();
                           Navigator.pop(context);
                         },
                         child: Image.asset(AppImages.backMenuIcon, width: 50),
@@ -316,9 +315,9 @@ class PlayersScreen extends StatelessWidget {
   }) {
     Color categoryColor = const Color(0xFF00BFFF); // ICP blue
     if (category == 'IUP') {
-      categoryColor = const Color(0xFFFF8C00); // IUP orange
+      categoryColor = Colors.white; // IUP orange
     } else if (category == 'FP') {
-      categoryColor = const Color(0xFFFF00FF);
+      categoryColor = Colors.orange;
     } // FP purple
 
     return Container(

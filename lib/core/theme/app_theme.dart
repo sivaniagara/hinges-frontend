@@ -9,6 +9,7 @@ class AppTheme {
   static const Color navyBlue = Color(0xFF08142E); // Deep layer
   static const Color cardBlue = Color(0xFF102A5C); // Cards / buttons
   static const Color borderGold = Color(0xFFEFCD83);
+  static const Color deepNavy = Color(0xFF001231);
 
   static const Color white = Colors.white;
   static const Color white70 = Colors.white70;

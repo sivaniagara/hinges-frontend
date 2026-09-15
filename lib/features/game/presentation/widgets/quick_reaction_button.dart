@@ -18,12 +18,12 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
   OverlayEntry? _overlayEntry;
 
   final List<Map<String, String>> quickMessages = [
-    {"emoji": "🔥", "text": "War started!!"},
-    {"emoji": "😎", "text": "Easy win!"},
-    {"emoji": "💯", "text": "Let’s go!"},
-    {"emoji": "😂", "text": "Too funny!"},
-    {"emoji": "😡", "text": "Come on!!"},
-    {"emoji": "👏", "text": "Nice move!"},
+    {"emoji": "🔥", "text": "I WANT HIM!"},
+    {"emoji": "😈", "text": "COME ON, BID!"},
+    {"emoji": "💰", "text": "OVERPAYING!"},
+    {"emoji": "👀", "text": "WAIT FOR IT..."},
+    {"emoji": "✋", "text": "I'M OUT!"},
+    {"emoji": "👏", "text": "GOOD BUY!"},
   ];
 
   void _togglePopup() {

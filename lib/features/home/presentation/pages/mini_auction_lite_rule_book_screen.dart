@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -352,15 +353,15 @@ class _RuleBookScreenState extends State<MiniAuctionLiteRuleBookScreen> {
   Widget build(BuildContext context) {
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
+      child: MandalaBackground(
         animateContent: false,
+        backGroundColor: AppTheme.deepNavy,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
             children: [
               const SizedBox(height: 10),
               _Header(onBack: () {
-                playTap();
                 context.pop();
               }),
               const SizedBox(height: 6),

@@ -8,6 +8,7 @@ import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import 'package:hinges_frontend/core/utils/so_loud.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/terms_text.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../bloc/user_auth_bloc.dart';
 import '../../../../core/presentation/widgets/long_button.dart';
 import '../widgets/mandala_background.dart';
@@ -46,7 +47,7 @@ class LoginScreen extends StatelessWidget {
       child: Scaffold(
         body: MandalaBackground(
           animateContent: false,
-          backGroundColor: Colors.black,
+          backGroundColor: AppTheme.deepNavy,
           child: Stack(
             children: [
               // const GoldenRingBackground(),

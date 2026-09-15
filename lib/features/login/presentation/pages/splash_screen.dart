@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../bloc/user_auth_bloc.dart';
 import '../widgets/mandala_background.dart';
 import '../widgets/shared_decorations.dart';
@@ -53,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
       },
       child: Scaffold(
         body: MandalaBackground(
-          backGroundColor: Colors.black,
+          backGroundColor: AppTheme.deepNavy,
           showParticle: false,
           animateContent: true,
           child: Stack(

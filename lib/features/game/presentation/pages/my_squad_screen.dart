@@ -25,69 +25,74 @@ class MySquadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xff065387),
-          // gradient: RadialGradient(
-          //   colors: [
-          //     AppTheme.navyBlue,
-          //     Color(0xFF000511), // Deep black edges
-          //   ],
-          //   radius: 1.2,
-          //   center: Alignment.center,
-          // ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+    return MandalaBackground(
+      animateContent: false,
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: BlocBuilder<GameBloc, GameState>(
             builder: (context, state) {
               if (state is! GameLoaded) return const SizedBox.shrink();
-
+      
               final userState = context.read<HomeBloc>().state as HomeLoaded;
               final mySquad = context.read<GameBloc>().getMySquad(userId);
               final userStatus = state.gameData.usersStatusList.firstWhere((e) => e.userId == userId);
               final franchise = context.read<GameBloc>().getFranchise(state.gameData.usersStatusList, state.gameData.teamList, userId);
-
+      
               return Column(
                 children: [
                   // --- Header Row ---
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // MY SQUAD Title Frame
                       Container(
-                        width: 120,
-                        height: 50,
+                        width: 150,
+                        height: 42,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage(AppImages.titleGoldenFrame),
                             fit: BoxFit.fill,
                           ),
                         ),
-                        child: Center(
-                          child: Text(
-                            'MY SQUAD',
-                            style: GoogleFonts.rajdhani(
-                              color: const Color(0xFFD4AF37),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${userStatus.userName.split(' ').first.toUpperCase()}'S",
+                              style: GoogleFonts.rajdhani(
+                                color: const Color(0xFFD4AF37),
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
+                            Text(
+                              "SQUAD",
+                              style: GoogleFonts.rajdhani(
+                                color: const Color(0xFFD4AF37),
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
                       // Team Logo
                       Row(
                         children: [
-                          Image.asset(franchise.image(), height: 60),
+                          Image.asset(franchise.image(), height: 50),
+                          const SizedBox(width: 4),
                           Text(
                             franchise.fullName().toUpperCase(),
                             style: GoogleFonts.rajdhani(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -95,34 +100,40 @@ class MySquadScreen extends StatelessWidget {
                       ), // Team Name
 
                       // Stats Section
-                      _buildHeaderStat('TOTAL PURSE', '60 CR', AppImages.purse),
-                      const SizedBox(width: 10),
-                      _buildHeaderStat(
-                        'PURSE REM',
-                        context.read<GameBloc>().formatPriceShort(userStatus.balanceAmount),
-                        AppImages.purseRem,
-                        valueColor: const Color(0xFF00FF00)
+                      Flexible(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildHeaderStat('TOTAL PURSE', '60 CR', AppImages.purse),
+                            const SizedBox(width: 6),
+                            _buildHeaderStat(
+                                'PURSE REM',
+                                context.read<GameBloc>().formatPriceShort(userStatus.balanceAmount),
+                                AppImages.purseRem,
+                                valueColor: const Color(0xFF00FF00)
+                            ),
+                            const SizedBox(width: 6),
+                            _buildHeaderStat(
+                                'TOTAL RATING',
+                                getSquadRating(mySquad).toStringAsFixed(1),
+                                AppImages.rating,
+                                valueColor: const Color(0xFFFFD700)
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      _buildHeaderStat(
-                        'TOTAL RATING',
-                        getSquadRating(mySquad).toStringAsFixed(1),
-                        AppImages.rating,
-                        valueColor: const Color(0xFFFFD700)
-                      ),
-                      const SizedBox(width: 15),
+                      const SizedBox(width: 8),
                       // Back Button
                       GestureDetector(
                         onTap: () {
-                          playTap();
                           Navigator.pop(context);
                         },
-                        child: Image.asset(AppImages.backMenuIcon, width: 45),
+                        child: Image.asset(AppImages.backMenuIcon, width: 42),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-
+      
                   // --- Table Section ---
                   Expanded(
                     child: Container(
@@ -147,16 +158,16 @@ class MySquadScreen extends StatelessWidget {
                                   final key = index + 1;
                                   final player = mySquad[key];
                                   final role = context.read<GameBloc>().getRole(key);
-
+      
                                   // Slot labeling to match image: BAT 1, BAT 2, BAT 3, WK 1, WK 2, ALR 1-4, BOWL 1-3
                                   int subIndex = 0;
                                   if (key <= 3) subIndex = key;
                                   else if (key <= 5) subIndex = key - 3;
                                   else if (key <= 9) subIndex = key - 5;
                                   else subIndex = key - 9;
-
+      
                                   final slotLabel = "$role";
-
+      
                                   if (player != null) {
                                     return _buildTableRow(
                                       slot: slotLabel,
@@ -191,7 +202,7 @@ class MySquadScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-
+      
                   // --- Bottom Sections: SLOT WISE, CATEGORY WISE, BOWLING WISE ---
                   Row(
                     children: [
@@ -248,23 +259,23 @@ class MySquadScreen extends StatelessWidget {
 
   Widget _buildHeaderStat(String label, String value, String iconPath, {Color valueColor = const Color(0xFFFFD700)}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5), width: 1.2),
-        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5), width: 1.0),
+        borderRadius: BorderRadius.circular(4),
         color: Colors.black.withOpacity(0.3),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(iconPath, width: 30, height: 30),
-          const SizedBox(width: 8),
+          Image.asset(iconPath, width: 26, height: 26),
+          const SizedBox(width: 6),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(label, style: GoogleFonts.rajdhani(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold)),
-              Text(value, style: GoogleFonts.rajdhani(fontSize: 16, color: valueColor, fontWeight: FontWeight.w900)),
+              Text(label, style: GoogleFonts.quantico(fontSize: 8.5, color: Colors.white, fontWeight: FontWeight.bold)),
+              Text(value, style: GoogleFonts.rajdhani(fontSize: 14, color: valueColor, fontWeight: FontWeight.w900)),
             ],
           ),
         ],

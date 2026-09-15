@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
       color: Theme.of(context).colorScheme.surface,
       child: MandalaBackground(
         animateContent: false,
-        backGroundColor: Colors.black,
+        backGroundColor: AppTheme.deepNavy,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -236,7 +236,7 @@ class ProfileScreen extends StatelessWidget {
       barrierColor: Colors.black.withOpacity(0.7),
       builder: (context) {
         return Dialog(
-          backgroundColor: AppTheme.navyBlue,
+          backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
           child: GoldenLogOutDialog(),
         );
@@ -253,85 +253,101 @@ class GoldenLogOutDialog extends StatelessWidget {
     return Stack(
       children: [
         /// 🔸 GOLDEN FRAME CONTAINER
-        Container(
+        SizedBox(
           width: 500,
           height: 200,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(AppImages.dialogFrame), // your generated frame
-              fit: BoxFit.fill,
-            ),
-          ),
-          child: Column(
-            spacing: 20,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              GoldenTitle(title: 'ARE YOU SURE YOU WANT TO LOGOUT', fontSize: 18,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      context.read<UserAuthBloc>().add(SignOutRequested());
-                      context.go('/login');
-                    },
-                    child: Container(
-                      width: 150,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                            image: AssetImage(
-                                AppImages.dialogFrame,
+              // Navy fill layer
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.navyBlue,
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                  ),
+                ),
+              ),
+              // Frame image layer
+              Positioned.fill(
+                child: Image.asset(
+                  AppImages.dialogFrame,
+                  fit: BoxFit.fill,
+                ),
+              ),
+              // Content layer
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: Column(
+                  spacing: 20,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GoldenTitle(title: 'ARE YOU SURE YOU WANT TO LOGOUT', fontSize: 18,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: (){
+                            context.read<UserAuthBloc>().add(SignOutRequested());
+                            context.go('/login');
+                          },
+                          child: Container(
+                            width: 150,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xff000F3A),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppTheme.borderGold,
+                                  width: 2,
+                                )
                             ),
-                          fit: BoxFit.fill
-                        ),
-                        color: Color(0xff000F3A)
-                      ),
-                      child: Center(
-                        child: Text(
-                          'YES',
-                          style: GoogleFonts.rajdhani(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20
-                          )
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      width: 150,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                              image: AssetImage(
-                                AppImages.dialogFrame,
+                            child: Center(
+                              child: Text(
+                                  'YES',
+                                  style: GoogleFonts.rajdhani(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20
+                                  )
                               ),
-                              fit: BoxFit.fill
+                            ),
                           ),
-                          color: Color(0xff370000)
-                      ),
-                      child: Center(
-                        child: Text(
-                            'NO',
-                            style: GoogleFonts.rajdhani(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
-                            )
                         ),
-                      ),
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: 150,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xff370000),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppTheme.borderGold,
+                                  width: 2,
+                                )
+                            ),
+                            child: Center(
+                              child: Text(
+                                  'NO',
+                                  style: GoogleFonts.rajdhani(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20
+                                  )
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

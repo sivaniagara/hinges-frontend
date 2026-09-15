@@ -30,6 +30,7 @@ import 'package:hinges_frontend/features/game/domain/entities/auction_player_sta
 import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/domain/entities/user_status_entity.dart';
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/utils/asset_media_player.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../../core/vibtration/vibration_service.dart';
 import '../bloc/game_bloc.dart';
@@ -65,6 +66,7 @@ class _GameScreenState extends State<GameScreen> {
   static const _teamGlowDuration = Duration(milliseconds: 300);
   static const _reconnectDelay = Duration(milliseconds: 500);
   final List<GlobalKey> _teamKeys = List.generate(5, (_) => GlobalKey());
+  final GlobalKey<OverlayState> _overlayKey = GlobalKey<OverlayState>();
   bool _hasVibratedForPause = false;
 
   @override
@@ -133,18 +135,25 @@ class _GameScreenState extends State<GameScreen> {
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
-        body: MandalaBackground(
-          showParticle: false,
-          child: Row(
-            spacing: 10,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildFirstColumn(),
-              Expanded(child: _buildMainContent()),
-              _buildThirdColumn(),
-            ],
-          ),
+        body: Overlay(
+          key: _overlayKey,
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) => MandalaBackground(
+                showParticle: false,
+                child: Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildFirstColumn(),
+                    Expanded(child: _buildMainContent()),
+                    _buildThirdColumn(),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -275,20 +284,28 @@ class _GameScreenState extends State<GameScreen> {
             textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 10,
-          children: [
-            PlayerStyleWidget(gameData: gameData),
-            Image.asset(
-              width: 25,
-              height: 25,
-              context.read<GameBloc>().getPlayerRoleImage(
-                playerData,
-                homeState.userData.categoryAndItsItem,
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          decoration: BoxDecoration(
+            color: Colors.white70,
+            borderRadius: BorderRadius.circular(8)
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            spacing: 10,
+            children: [
+              PlayerStyleWidget(gameData: gameData),
+              Image.asset(
+                width: 25,
+                height: 25,
+                context.read<GameBloc>().getPlayerRoleImage(
+                  playerData,
+                  homeState.userData.categoryAndItsItem,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 10),
         _buildPlayerStatsRow(state, playerData),
@@ -376,18 +393,43 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildTimer(GameLoaded state) {
     return SizedBox(
       width: 70,
-      child: Center(
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: PieCountdownTimer(
-            remainingSeconds: state.remainingSecondsToExpireAuctionPlayer!.toInt(),
-            totalSeconds: 10,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('TIMER', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+          Container(
+            decoration: BoxDecoration(image: DecorationImage(image: AssetImage(AppImages.timerCircle))),
+            width: 60,
+            height: 60,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('${state.remainingSecondsToExpireAuctionPlayer!.toInt()}',
+                    style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold))),
+                Text('SEC', style: GoogleFonts.cinzel(textStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+
+  // Widget _buildTimer(GameLoaded state) {
+  //   return SizedBox(
+  //     width: 70,
+  //     child: Center(
+  //       child: SizedBox(
+  //         width: 40,
+  //         height: 40,
+  //         child: PieCountdownTimer(
+  //           remainingSeconds: state.remainingSecondsToExpireAuctionPlayer!.toInt(),
+  //           totalSeconds: 10,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildStatusImage(PlayerAuctionStatusEnum status, String playerId) {
     return _HammerStatusWidget(
@@ -410,24 +452,33 @@ class _GameScreenState extends State<GameScreen> {
     }else if(isFranchiseBought){
       title = 'SOLD PRICE';
     }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(title,
-            style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
-        Row(
-          children: [
-            Image.asset(AppImages.shockWaves, width: 50, height: 20),
-            Text(
-              context.read<GameBloc>().formatPriceShort(
-                  state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].currentPrice.toDouble()
+    return SizedBox(
+      width: 200,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title,
+              style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Image.asset(AppImages.shockWaves, width: 50, height: 20),
+              SizedBox(
+                width: 100,
+                child: Center(
+                  child: Text(
+                    context.read<GameBloc>().formatPriceShort(
+                        state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].currentPrice.toDouble()
+                    ),
+                    style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 25, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
+                  ),
+                ),
               ),
-              style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 25, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
-            ),
-            Image.asset(AppImages.shockWaves, width: 50, height: 20),
-          ],
-        )
-      ],
+              Image.asset(AppImages.shockWaves, width: 50, height: 20),
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -545,6 +596,20 @@ class _GameScreenState extends State<GameScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              SizedBox(
+                width: 50,
+                child: Text(
+                  userName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.rajdhani(
+                    color: AppTheme.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -554,11 +619,17 @@ class _GameScreenState extends State<GameScreen> {
 
   void showChatPopup(GlobalKey key, String message) {
     context.read<GameBloc>().add(MessageShowed());
+    if (key.currentContext == null) return;
+
     final renderBox = key.currentContext!.findRenderObject() as RenderBox;
-    final position = renderBox.localToGlobal(Offset.zero);
+    final overlayRenderBox =
+        _overlayKey.currentContext?.findRenderObject() as RenderBox?;
+    final position =
+        renderBox.localToGlobal(Offset.zero, ancestor: overlayRenderBox);
     final size = renderBox.size;
 
-    final overlay = Overlay.of(context);
+    final overlay = _overlayKey.currentState;
+    if (overlay == null) return;
 
     late OverlayEntry entry;
 
@@ -689,7 +760,7 @@ class _GameScreenState extends State<GameScreen> {
                 child: Row(
                   spacing: 10,
                   children: [
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 8),
                     Image.asset(width: 30, height: 30, AppImages.user),
                     Text('PLAYERS SET', maxLines: 1, style: GoogleFonts.rajdhani(color: AppTheme.borderGold, fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
@@ -732,6 +803,7 @@ class _GameScreenState extends State<GameScreen> {
                 _buildSideMenu(
                     image: AppImages.acceleratedRound,
                     t1: 'ACCELERATED',
+                    t2: 'SET',
                     onTap: () {
                       _navigateToPlayerList(AppIds.batsmanId, 'BATSMEN', '1');
                     }),
@@ -851,7 +923,7 @@ class _GameScreenState extends State<GameScreen> {
             BlocProvider.value(value: homeBloc),
           ],
           child: Dialog(
-            backgroundColor: AppTheme.navyBlue,
+            backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.symmetric(horizontal: 20),
             child: ExitDialog(),
           ),
@@ -890,7 +962,7 @@ class _GameScreenState extends State<GameScreen> {
         child: Row(
           spacing: 10,
           children: [
-            const SizedBox(width: 15),
+            const SizedBox(width: 10),
             Image.asset(width: 30, height: 30, image),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1187,9 +1259,17 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
         child: ClipOval(
           child: BlocBuilder<GameBloc, GameState>(
             builder: (context, state) {
-
+              // return AssetMediaPlayer(
+              //   assetPath: showAnnounceSoldGif()
+              //       ? AppImages.auctionerVideo
+              //       : AppImages.welcomeAuctioner,
+              //   width: 100,
+              //   height: 100,
+              //   fit: BoxFit.fitHeight,
+              // );
               return Image.asset(
-                showAnnounceSoldGif() ? AppImages.announceSold : AppImages.welcomeAuctioner,
+                // showAnnounceSoldGif() ? AppImages.announceSold :
+                AppImages.welcomeAuctioner,
                 width: 100,
                 height: 100,
                 fit: BoxFit.fitHeight,

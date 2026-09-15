@@ -73,14 +73,14 @@ class _EmojiButtonState extends State<EmojiButton> {
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                   children: [
-                    _emoji("😀"),
-                    _emoji("😂"),
-                    _emoji("😍"),
-                    _emoji("😎"),
                     _emoji("🔥"),
-                    _emoji("👍"),
+                    _emoji("😈"),
+                    _emoji("💰"),
+                    _emoji("👀"),
+                    _emoji("😤"),
                     _emoji("🎯"),
-                    _emoji("💯"),
+                    _emoji("👏"),
+                    _emoji("🏆"),
                   ],
                 ),
               ),
@@ -110,6 +110,13 @@ class _EmojiButtonState extends State<EmojiButton> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    super.dispose();
   }
 
   @override

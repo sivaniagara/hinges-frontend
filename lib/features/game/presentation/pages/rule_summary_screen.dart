@@ -74,7 +74,6 @@ class RuleSummaryScreen extends StatelessWidget {
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      playTap();
                       context.pop();
                     },
                     child: Image.asset(AppImages.backMenuIcon, width: 45),

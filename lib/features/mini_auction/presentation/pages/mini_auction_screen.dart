@@ -20,6 +20,7 @@ import '../../../home/presentation/pages/home_screen.dart';
 import '../../../home/presentation/widgets/app_background.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../widgets/golden_dialog.dart';
+import '../widgets/insufficient_coins_dialog.dart';
 
 /// ================= MODEL =================
 enum MiniAuctionLiteModeEnum {classic, premium, elite, royal}
@@ -63,9 +64,7 @@ class MiniAuctionScreen extends StatefulWidget {
 }
 
 class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
-  late UserDataEntity userData;
   MiniAuctionLiteMode? selectedMode;
-  List<MiniAuctionItem> items = [];
 
   @override
   void initState() {
@@ -77,73 +76,86 @@ class _MiniAuctionScreenState extends State<MiniAuctionScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
-    final state = context.read<HomeBloc>().state;
-    if (state is HomeLoaded) {
-      userData = state.userData;
-      if(widget.auctionItem.auctionModeEnum == AuctionModeEnum.miniAuctionLite){
-        items = userData.categoryAndItsItem.miniAuctionLiteCategoryId.map((miniAuctionLiteItem) {
-          AuctionCategoryItemEntity auctionCategoryItemEntity = userData.auctionCategoryItem.firstWhere((e) => e.categoryItemId == miniAuctionLiteItem.id);
-          final imageAndMode = {
-            AppIds.miniAuctionLiteClassicId: (AppImages.miniAuctionLiteClassic, MiniAuctionLiteModeEnum.classic, false),
-            AppIds.miniAuctionLitePremiumId: (AppImages.miniAuctionLitePremium, MiniAuctionLiteModeEnum.premium, !(userData.miniAuctionLiteClassicPlayed >= 50)),
-            AppIds.miniAuctionLiteEliteId: (AppImages.miniAuctionLiteElite, MiniAuctionLiteModeEnum.elite, !(userData.miniAuctionLitePremiumPlayed >= 50)),
-            AppIds.miniAuctionLiteRoyalId: (AppImages.miniAuctionLiteRoyal, MiniAuctionLiteModeEnum.royal, !(userData.miniAuctionLiteElitePlayed >= 50)),
-          };
-          final id = auctionCategoryItemEntity.id;
-          return MiniAuctionItem(
-              id: id,
-              image: imageAndMode[id]!.$1,
-              fee: auctionCategoryItemEntity.coinsGameFees,
-              firstPrize: auctionCategoryItemEntity.coinsFirstPrize,
-              secondPrize: auctionCategoryItemEntity.coinsSecondPrize,
-              thirdPrize: auctionCategoryItemEntity.coinsThirdPrize,
-              name: miniAuctionLiteItem.categoryItemName,
-              locked: imageAndMode[id]!.$3,
-              miniAuctionLiteModeEnum: imageAndMode[id]!.$2
-          );
-        }).toList();
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
 
-    return AdaptiveStatusBar(
-      color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
-        animateContent: false,
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _Header(userData: userData),
-        
-              /// MAIN CONTENT
-              selectedMode == null
-                  ? _ArenaSelection(
-                items: items,
-                onSelect: (item) {
-                  setState(() {
-                    selectedMode = MiniAuctionLiteMode(
-                        item
-                    );
-                  });
-                },
-              )
-                  : _ModeSelection(
-                mode: selectedMode!,
-                size: size,
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        if (state is! HomeLoaded) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        final userData = state.userData;
+        List<MiniAuctionItem> items = [];
+
+        if (widget.auctionItem.auctionModeEnum == AuctionModeEnum.miniAuctionLite) {
+          items = userData.categoryAndItsItem.miniAuctionLiteCategoryId.map((miniAuctionLiteItem) {
+            AuctionCategoryItemEntity auctionCategoryItemEntity =
+            userData.auctionCategoryItem.firstWhere((e) => e.categoryItemId == miniAuctionLiteItem.id);
+            final imageAndMode = {
+              AppIds.miniAuctionLiteClassicId: (AppImages.miniAuctionLiteClassic, MiniAuctionLiteModeEnum.classic, false),
+              AppIds.miniAuctionLitePremiumId: (AppImages.miniAuctionLitePremium, MiniAuctionLiteModeEnum.premium, !(userData.miniAuctionLiteClassicPlayed >= 50)),
+              AppIds.miniAuctionLiteEliteId: (AppImages.miniAuctionLiteElite, MiniAuctionLiteModeEnum.elite, !(userData.miniAuctionLitePremiumPlayed >= 50)),
+              AppIds.miniAuctionLiteRoyalId: (AppImages.miniAuctionLiteRoyal, MiniAuctionLiteModeEnum.royal, !(userData.miniAuctionLiteElitePlayed >= 50)),
+            };
+            final id = auctionCategoryItemEntity.id;
+            return MiniAuctionItem(
+                id: id,
+                image: imageAndMode[id]!.$1,
+                fee: auctionCategoryItemEntity.coinsGameFees,
+                firstPrize: auctionCategoryItemEntity.coinsFirstPrize,
+                secondPrize: auctionCategoryItemEntity.coinsSecondPrize,
+                thirdPrize: auctionCategoryItemEntity.coinsThirdPrize,
+                name: miniAuctionLiteItem.categoryItemName,
+                locked: imageAndMode[id]!.$3,
+                miniAuctionLiteModeEnum: imageAndMode[id]!.$2
+            );
+          }).toList();
+        }
+
+        return AdaptiveStatusBar(
+          color: Theme.of(context).colorScheme.surface,
+          child: AppBackground(
+            animateContent: false,
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _Header(userData: userData),
+
+                  /// MAIN CONTENT
+                  selectedMode == null
+                      ? _ArenaSelection(
+                    items: items,
+                    onSelect: (item) {
+                      if (userData.coinWon < item.fee) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const InsufficientCoinsDialog(),
+                        );
+                      } else {
+                        setState(() {
+                          selectedMode = MiniAuctionLiteMode(item);
+                        });
+                      }
+                    },
+                  )
+                      : _ModeSelection(
+                    mode: selectedMode!,
+                    size: size,
+                  ),
+
+                  const _BottomBar(),
+                ],
               ),
-        
-              const _BottomBar(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -172,31 +184,40 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(width: 20,),
-        // TopUserBar(loading: false, userData: userData, onAddTap: () {  },),
-        GestureDetector(
-          onTap: () {
-            playVibrateOnly(duration: 10);
-            context.pop();
-          },
-          child: Column(
-            children: [
-              Image.asset(AppImages.homeMenuIcon, width: 50),
-              Text(
-                'HOME',
-                style: GoogleFonts.rajdhani(
-                  color: AppTheme.borderGold,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TopUserBar(
+            loading: false,
+            userData: userData,
+            onAddTap: () {
+              playTap();
+              context.push('/shop');
+            },
           ),
-        ),
-      ],
+          GestureDetector(
+            onTap: () {
+              playVibrateOnly(duration: 10);
+              context.pop();
+            },
+            child: Column(
+              children: [
+                Image.asset(AppImages.homeMenuIcon, width: 50),
+                Text(
+                  'HOME',
+                  style: GoogleFonts.rajdhani(
+                    color: AppTheme.borderGold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

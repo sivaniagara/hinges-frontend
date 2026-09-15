@@ -30,32 +30,45 @@ class PlayerSetBreakWidget extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text('ROUND BREAK...!', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)),),
+              Text('ROUND BREAK...!', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 20, fontWeight: FontWeight.bold)),),
               Column(
                 spacing: 20,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        AppImages.goldenStarLine,
-                        width: 50,
-                      ),
-                      Text('   AUCTION RESUMES IN', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
-                      BlocBuilder<GameBloc, GameState>(
-                          builder: (context, state){
-                            if(state is GameLoaded){
-                              return Text('  ${(state.remainingSecondsToExpireBreak?.toInt())}  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 30, fontWeight: FontWeight.bold)));
-                            }
-                            return SizedBox();
-                          }
-                      ),
-                      Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(math.pi),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
                         child: Image.asset(
                           AppImages.goldenStarLine,
                           width: 50,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Text(' AUCTION RESUMES IN ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),),
+                          BlocBuilder<GameBloc, GameState>(
+                              builder: (context, state){
+                                if(state is GameLoaded){
+                                  return Text('  ${(state.remainingSecondsToExpireBreak!.toInt() - 5)}  Sec', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: AppTheme.borderGold, fontSize: 20, fontWeight: FontWeight.bold)));
+                                }
+                                return SizedBox();
+                              }
+                          ),
+
+                        ],
+                      ),
+
+                      Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Image.asset(
+                            AppImages.goldenStarLine,
+                            width: 50,
+                          ),
                         ),
                       ),
                     ],

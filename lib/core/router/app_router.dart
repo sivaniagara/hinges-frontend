@@ -21,6 +21,7 @@ import 'package:hinges_frontend/features/mini_auction/presentation/pages/play_wi
 import '../../features/home/presentation/bloc/home_bloc.dart';
 import '../../features/home/presentation/pages/mini_auction_lite_rule_book_screen.dart';
 import '../../features/login/presentation/pages/sign_up_screen.dart';
+import '../../features/ads/presentation/pages/ad_page.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/login/presentation/pages/loading_screen.dart';
 import '../../features/login/presentation/pages/splash_screen.dart';
@@ -111,6 +112,10 @@ final router = GoRouter(
       builder: (context, state){
         return HomeScreen();
       },
+    ),
+    GoRoute(
+      path: '/adPage',
+      builder: (context, state) => const AdPage(),
     ),
     GoRoute(
       path: '/profile',

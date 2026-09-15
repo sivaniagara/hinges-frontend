@@ -27,7 +27,7 @@ class RuleBookScreen extends StatelessWidget {
       color: Theme.of(context).colorScheme.surface,
       child: MandalaBackground(
         animateContent: false,
-        backGroundColor: Colors.black,
+        backGroundColor: AppTheme.deepNavy,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -73,7 +73,6 @@ class RuleBookScreen extends StatelessWidget {
                       top: 0,
                       child: GestureDetector(
                         onTap: () {
-                          playTap();
                           context.pop();
                         },
                         child: Image.asset(

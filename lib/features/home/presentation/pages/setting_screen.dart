@@ -63,7 +63,7 @@ class _SettingScreenState extends State<SettingScreen> {
       color: Theme.of(context).colorScheme.surface,
       child: MandalaBackground(
         animateContent: false,
-        backGroundColor: Colors.black,
+        backGroundColor: AppTheme.deepNavy,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -109,7 +109,6 @@ class _SettingScreenState extends State<SettingScreen> {
                       top: 0,
                       child: GestureDetector(
                         onTap: () async{
-                          playTap();
                           context.pop();
                         },
                         child: Image.asset(AppImages.backMenuIcon, width: 60),

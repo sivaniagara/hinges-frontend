@@ -14,10 +14,25 @@ import 'features/login/presentation/bloc/user_auth_bloc.dart';
 import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/services.dart';
 
+Future<void> testVideoAsset() async {
+  try {
+    final data = await rootBundle.load(
+      'assets/video/announce.mp4',
+    );
+
+    debugPrint(
+      '✅ VIDEO FOUND: ${data.lengthInBytes} bytes',
+    );
+  } catch (e) {
+    debugPrint('❌ VIDEO NOT FOUND: $e');
+  }
+}
 void main() async {
   // Ensure Flutter binding is initialized before using platform channels
   WidgetsFlutterBinding.ensureInitialized();
+  testVideoAsset();
   WakelockPlus.enable();
   if (kDebugMode) {
     MobileAds.instance.updateRequestConfiguration(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 import 'package:hinges_frontend/features/mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 
 import '../../domain/entities/auction_player_status_entity.dart';
@@ -13,22 +14,10 @@ class PointsTableScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xff065387),
-          // gradient: RadialGradient(
-          //   colors: [
-          //     Color(0xFF001F4D), // Dark blue center glow
-          //     Color(0xFF000511), // Deep black edges
-          //   ],
-          //   radius: 1.2,
-          //   center: Alignment.center,
-          // ),
-        ),
-        child: Padding(
+    return MandalaBackground(
+      animateContent: false,
+      child: Scaffold(
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: BlocBuilder<GameBloc, GameState>(
             builder: (context, state) {

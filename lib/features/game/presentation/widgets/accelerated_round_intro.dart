@@ -24,7 +24,7 @@ class AcceleratedRoundIntro extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.fill,
-              image: AssetImage(AppImages.chamberBox),
+              image: AssetImage(AppImages.goldenDoubleStartFrame),
             ),
           ),
           child: Text(
@@ -43,7 +43,7 @@ class AcceleratedRoundIntro extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.fill,
-              image: AssetImage(AppImages.chamberBox),
+              image: AssetImage(AppImages.goldenDoubleStartFrame),
             ),
           ),
           child: Row(
@@ -80,7 +80,7 @@ class AcceleratedRoundIntro extends StatelessWidget {
                   return SizedBox();
                 }
             ),
-            Text('..!  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
+            Text('Sec..!  ', style: GoogleFonts.rajdhani(textStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),),
             Transform(
               alignment: Alignment.center,
               transform: Matrix4.rotationY(math.pi),

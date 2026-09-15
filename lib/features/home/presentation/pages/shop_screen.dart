@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
@@ -25,8 +26,9 @@ class ShopScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return AdaptiveStatusBar(
       color: Theme.of(context).colorScheme.surface,
-      child: AppBackground(
+      child: MandalaBackground(
         animateContent: false,
+        backGroundColor: AppTheme.deepNavy,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
@@ -76,7 +78,6 @@ class ShopScreen extends StatelessWidget {
                       top: 0,
                       child: GestureDetector(
                         onTap: () {
-                          playTap();
                           context.pop();
                         },
                         child: Image.asset(AppImages.backMenuIcon, width: 60),
@@ -85,63 +86,86 @@ class ShopScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
+              SizedBox(
                 width: size.width * 0.8,
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                    color: AppTheme.navyBlue,
-                    borderRadius: BorderRadius.circular(42),
-                    image: DecorationImage(
-                        image: AssetImage(AppImages.goldenOutline),
-                        fit: BoxFit.fill
-                    )
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 10,
+                child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
+                    // 1. Navy background — sized slightly INSIDE the frame's gold line
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6), // tune to match your frame's stroke thickness
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.deepNavy,
+                            borderRadius: BorderRadius.circular(36), // slightly smaller than frame's corner radius
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // 2. Golden frame drawn on top, untouched, at full size
+                    Positioned.fill(
+                      child: Image.asset(
+                        AppImages.goldenOutline,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+
+                    // 3. Actual content, padded inward from the edges
                     Container(
-                      width: 200,
-                      height: 40,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(AppImages.titleGoldenFrame),
-                          fit: BoxFit.fill,
-                        ),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: 10,
+                        children: [
+                          Container(
+                            width: 200,
+                            height: 40,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(AppImages.titleGoldenFrame),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            child: Text(
+                              'BUY COINS',
+                              style: GoogleFonts.rajdhani(
+                                color: AppTheme.borderGold,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                          // Coin Packages
+                          ShopItemCard(
+                            price: '10',
+                            coins: '500',
+                            image: AppImages.coinsIcon,
+                            locked: true,
+                          ),
+                          ShopItemCard(
+                            price: '50',
+                            coins: '2,500',
+                            image: AppImages.coinsIcon,
+                            locked: true,
+                          ),
+                          ShopItemCard(
+                            price: '99',
+                            coins: '10,000',
+                            image: AppImages.coinsIcon,
+                            locked: true,
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        'BUY COINS',
-                        style: GoogleFonts.rajdhani(
-                          color: AppTheme.borderGold,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ),
-                    // Coin Packages
-                    ShopItemCard(
-                      price: '10',
-                      coins: '500',
-                      image: AppImages.coinsIcon,
-                      locked: true,
-                    ),
-                    ShopItemCard(
-                      price: '50',
-                      coins: '2,500',
-                      image: AppImages.coinsIcon,
-                      locked: true,
-                    ),
-                    ShopItemCard(
-                      price: '99',
-                      coins: '10,000',
-                      image: AppImages.coinsIcon,
-                      locked: true,
                     ),
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),
