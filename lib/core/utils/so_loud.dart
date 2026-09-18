@@ -8,6 +8,7 @@ AudioSource? tapSound;
 AudioSource? welcome;
 AudioSource? playSold;
 AudioSource? playUnSold;
+AudioSource? hammerSound;
 
 bool _isSoundEnabled = true;
 bool _isVibrationEnabled = true;
@@ -15,6 +16,7 @@ bool _isVibrationEnabled = true;
 // Pre-loaded instruction audio sources (instruction_1.mp3 → instruction_11.mp3)
 final List<AudioSource?> instructionSources = List.filled(11, null);
 final List<AudioSource?> soundList = List.filled(9, null);
+final List<AudioSource?> roundSources = List.filled(6, null);
 
 Future<void> initSoLoud() async {
   await soloud.init();
@@ -39,6 +41,26 @@ Future<void> initSoLoud() async {
     AppSounds.unSold,
     mode: LoadMode.memory,
   );
+  hammerSound = await soloud.loadAsset(
+    AppSounds.hammer,
+    mode: LoadMode.memory,
+  );
+
+  final List<String> roundSoundPaths = [
+    AppSounds.round1,
+    AppSounds.round2,
+    AppSounds.round3,
+    AppSounds.round4,
+    AppSounds.round5,
+    AppSounds.round6,
+  ];
+
+  for (int i = 0; i < roundSoundPaths.length; i++) {
+    roundSources[i] = await soloud.loadAsset(
+      roundSoundPaths[i],
+      mode: LoadMode.memory,
+    );
+  }
 
   // Pre-load all 11 instruction clips
   for (int i = 0; i < 11; i++) {
@@ -98,6 +120,20 @@ void playSoldAudio() {
 void playUnSoldAudio() {
   if (playUnSold == null) return;
   soloud.play(playUnSold!, volume: 1.0, paused: false);
+}
+
+void playHammerAudio() {
+  if (!_isSoundEnabled) return;
+  if (hammerSound == null) return;
+  soloud.play(hammerSound!, volume: 1.0, paused: false);
+}
+
+void playRoundAudio(int round) {
+  if (!_isSoundEnabled) return;
+  if (round < 1 || round > roundSources.length) return;
+  final source = roundSources[round - 1];
+  if (source == null) return;
+  soloud.play(source, volume: 1.0, paused: false);
 }
 
 /// Plays instruction_[index+1].mp3 (0-based index).

@@ -1186,7 +1186,6 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _glow;
-  bool audioPlayed = false;
 
   @override
   void initState() {
@@ -1220,62 +1219,44 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GameBloc, GameState>(
-      listener: (context, state) {
-        if (state is GameLoaded) {
-          final playerData = state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex];
-          if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.buy && !audioPlayed) {
-            // Plays a voice instruction once when player is sold
-            playSoldAudio();
-            audioPlayed = !audioPlayed;
-          }else if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.unSold && !audioPlayed) {
-            // Plays a voice instruction once when player is sold
-            playUnSoldAudio();
-            audioPlayed = !audioPlayed;
-          } else if (playerData.playerAuctionStatus == PlayerAuctionStatusEnum.notShown && audioPlayed) {
-            audioPlayed = !audioPlayed;
-          }
-        }
-      },
-      child: AnimatedBuilder(
-        animation: _glow,
-        builder: (context, child) {
-          return Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFFFD700).withValues(alpha: 0.2),
-                  blurRadius: _glow.value,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: child,
-          );
-        },
-        child: ClipOval(
-          child: BlocBuilder<GameBloc, GameState>(
-            builder: (context, state) {
-              // return AssetMediaPlayer(
-              //   assetPath: showAnnounceSoldGif()
-              //       ? AppImages.auctionerVideo
-              //       : AppImages.welcomeAuctioner,
-              //   width: 100,
-              //   height: 100,
-              //   fit: BoxFit.fitHeight,
-              // );
-              return Image.asset(
-                // showAnnounceSoldGif() ? AppImages.announceSold :
-                AppImages.welcomeAuctioner,
-                width: 100,
-                height: 100,
-                fit: BoxFit.fitHeight,
-              );
-            },
+    return AnimatedBuilder(
+      animation: _glow,
+      builder: (context, child) {
+        return Container(
+          width: 110,
+          height: 110,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                blurRadius: _glow.value,
+                spreadRadius: 2,
+              ),
+            ],
           ),
+          child: child,
+        );
+      },
+      child: ClipOval(
+        child: BlocBuilder<GameBloc, GameState>(
+          builder: (context, state) {
+            // return AssetMediaPlayer(
+            //   assetPath: showAnnounceSoldGif()
+            //       ? AppImages.auctionerVideo
+            //       : AppImages.welcomeAuctioner,
+            //   width: 100,
+            //   height: 100,
+            //   fit: BoxFit.fitHeight,
+            // );
+            return Image.asset(
+              // showAnnounceSoldGif() ? AppImages.announceSold :
+              AppImages.welcomeAuctioner,
+              width: 100,
+              height: 100,
+              fit: BoxFit.fitHeight,
+            );
+          },
         ),
       ),
     );
@@ -1297,11 +1278,19 @@ class _HammerStatusWidgetState extends State<_HammerStatusWidget> {
   @override
   void initState() {
     super.initState();
+    playHammerAudio();
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) {
         setState(() {
           _showHammer = false;
         });
+        final bool isSold = widget.status == PlayerAuctionStatusEnum.buy ||
+            widget.status == PlayerAuctionStatusEnum.sold;
+        if (isSold) {
+          playSoldAudio();
+        } else if (widget.status == PlayerAuctionStatusEnum.unSold) {
+          playUnSoldAudio();
+        }
       }
     });
   }

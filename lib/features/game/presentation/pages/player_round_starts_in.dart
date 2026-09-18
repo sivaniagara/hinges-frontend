@@ -7,19 +7,41 @@ import 'package:hinges_frontend/features/home/domain/entities/player_entity.dart
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../bloc/game_bloc.dart';
 import '../widgets/pie_count_down_timer.dart';
 
-class PlayerRoundStartsIn extends StatelessWidget {
+class PlayerRoundStartsIn extends StatefulWidget {
   final List<AuctionPlayerStatusEntity> auctionPlayerList;
   final CategoryAndItemsEntity categoryAndItemsEntity;
-  const PlayerRoundStartsIn({super.key, required this.categoryAndItemsEntity, required this.auctionPlayerList,});
+  const PlayerRoundStartsIn({
+    super.key,
+    required this.categoryAndItemsEntity,
+    required this.auctionPlayerList,
+  });
+
+  @override
+  State<PlayerRoundStartsIn> createState() => _PlayerRoundStartsInState();
+}
+
+class _PlayerRoundStartsInState extends State<PlayerRoundStartsIn> {
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<GameBloc>().state;
+    if (state is GameLoaded) {
+      final int round = state.gameData.round;
+      playRoundAudio(round);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final playerData = auctionPlayerList.firstWhere((p) => p.playerAuctionStatus == PlayerAuctionStatusEnum.notShown);
+    final playerData = widget.auctionPlayerList.firstWhere(
+      (p) => p.playerAuctionStatus == PlayerAuctionStatusEnum.notShown,
+    );
     return Column(
       spacing: 20,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -60,7 +82,7 @@ class PlayerRoundStartsIn extends StatelessWidget {
               Text(
                 context.read<GameBloc>().getPlayerRoleName(
                   playerData,
-                  categoryAndItemsEntity,
+                  widget.categoryAndItemsEntity,
                 ),
                 style: GoogleFonts.rajdhani(
                   fontSize: 20,
@@ -73,7 +95,7 @@ class PlayerRoundStartsIn extends StatelessWidget {
                 height: 25,
                 context.read<GameBloc>().getPlayerRoleImage(
                   playerData,
-                  categoryAndItemsEntity
+                  widget.categoryAndItemsEntity,
                 ),
               ),
             ],

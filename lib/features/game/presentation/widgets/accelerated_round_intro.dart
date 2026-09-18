@@ -6,10 +6,25 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../core/utils/so_loud.dart';
 import '../bloc/game_bloc.dart';
 
-class AcceleratedRoundIntro extends StatelessWidget {
+class AcceleratedRoundIntro extends StatefulWidget {
   const AcceleratedRoundIntro({super.key});
+
+  @override
+  State<AcceleratedRoundIntro> createState() => _AcceleratedRoundIntroState();
+}
+
+class _AcceleratedRoundIntroState extends State<AcceleratedRoundIntro> {
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<GameBloc>().state;
+    if (state is GameLoaded) {
+      playRoundAudio(state.gameData.round);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
