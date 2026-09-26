@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/so_loud.dart';
 import '../../../../core/utils/app_images.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/user_data_entity.dart';
-import '../pages/profile_screen.dart';
 import '../widgets/currency_bar.dart';
 
 class TopUserBar extends StatelessWidget {

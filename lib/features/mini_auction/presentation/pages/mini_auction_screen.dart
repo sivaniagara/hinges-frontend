@@ -164,7 +164,7 @@ void showClassicRoomDialog(BuildContext context,MiniAuctionItem miniAuctionItem)
   showDialog(
     context: context,
     barrierDismissible: true,
-    barrierColor: Colors.black.withOpacity(0.7),
+    barrierColor: Colors.black.withValues(alpha: 0.7),
     builder: (context) {
       return Dialog(
         backgroundColor: AppTheme.navyBlue,
@@ -245,11 +245,11 @@ class _ArenaSelection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             StarLine(content: 'CHOOSE YOUR AUCTION ROOM', fontSize: 18,),
-            Image.asset(
-              AppImages.goldenCrownLine,
-              width: 200,
-              height: 20,
-            ),
+         //   Image.asset(
+        //      AppImages.goldenCrownLine,
+        //      width: 200,
+        //      height: 20,
+        //    ),
           ],
         ),
         Row(
@@ -368,7 +368,7 @@ class GameCard extends StatelessWidget {
   final VoidCallback onTap;
   final Size size;
 
-  const GameCard({
+  const GameCard({super.key, 
     required this.image,
     required this.onTap,
     required this.size,
@@ -406,7 +406,7 @@ class _BottomBar extends StatelessWidget {
           // ),
           Container(
             width: size.width * 0.4,
-            height: 50,
+            height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -495,7 +495,6 @@ class _MiniAuctionLiteCardState extends State<MiniAuctionLiteCard>
     }
     widget.onTap();
   }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);

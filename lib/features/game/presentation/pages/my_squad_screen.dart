@@ -138,7 +138,7 @@ class MySquadScreen extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(color: AppTheme.borderGold, width: 0.5),
                       ),
@@ -161,12 +161,13 @@ class MySquadScreen extends StatelessWidget {
       
                                   // Slot labeling to match image: BAT 1, BAT 2, BAT 3, WK 1, WK 2, ALR 1-4, BOWL 1-3
                                   int subIndex = 0;
-                                  if (key <= 3) subIndex = key;
-                                  else if (key <= 5) subIndex = key - 3;
+                                  if (key <= 3) {
+                                    subIndex = key;
+                                  } else if (key <= 5) subIndex = key - 3;
                                   else if (key <= 9) subIndex = key - 5;
                                   else subIndex = key - 9;
       
-                                  final slotLabel = "$role";
+                                  final slotLabel = role;
       
                                   if (player != null) {
                                     return _buildTableRow(
@@ -261,9 +262,9 @@ class MySquadScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5), width: 1.0),
+        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5), width: 1.0),
         borderRadius: BorderRadius.circular(4),
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -287,7 +288,7 @@ class MySquadScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         border: const Border(bottom: BorderSide(color: Color(0xFFD4AF37), width: 1.5)),
       ),
       child: Row(
@@ -322,7 +323,7 @@ class MySquadScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: (name == '-' || playerStatus == PlayerAuctionStatusEnum.buy) ? AppTheme.navyBlue : Colors.transparent,
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
+        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1)),
       ),
       child: Row(
         children: [

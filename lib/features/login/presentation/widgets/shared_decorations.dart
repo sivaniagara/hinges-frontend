@@ -29,7 +29,7 @@ class GoldenTitle extends StatelessWidget {
           Shadow(
             offset: const Offset(0, 6),
             blurRadius: 8,
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.6),
           ),
         ],
       ),
@@ -59,7 +59,7 @@ class GoldenTitle extends StatelessWidget {
             Shadow(
               offset: const Offset(0, 6),
               blurRadius: 8,
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -94,7 +94,7 @@ class GoldenSubtitle extends StatelessWidget {
           Shadow(
             offset: const Offset(0, 6),
             blurRadius: 8,
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.6),
           ),
         ],
       ),
@@ -120,7 +120,7 @@ class GoldenSubtitle extends StatelessWidget {
             Shadow(
               offset: const Offset(0, 6),
               blurRadius: 8,
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -153,7 +153,7 @@ class SmallGoldenSubtitle extends StatelessWidget {
           Shadow(
             offset: const Offset(0, 6),
             blurRadius: 8,
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.6),
           ),
         ],
       ),
@@ -179,7 +179,7 @@ class SmallGoldenSubtitle extends StatelessWidget {
             Shadow(
               offset: const Offset(0, 6),
               blurRadius: 8,
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -298,11 +298,11 @@ class GoldenCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFFFD700).withOpacity(0.3),
+          color: const Color(0xFFFFD700).withValues(alpha: 0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFD700).withOpacity(0.1),
+            color: const Color(0xFFFFD700).withValues(alpha: 0.1),
             blurRadius: 30,
             spreadRadius: 5,
           ),

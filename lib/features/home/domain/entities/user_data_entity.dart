@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'category_and_items_entity.dart';
 import 'auction_category_item_entity.dart';
-import 'player_entity.dart';
 
 class UserDataEntity extends Equatable {
   final String userId;

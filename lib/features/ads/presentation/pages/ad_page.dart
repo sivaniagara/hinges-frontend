@@ -59,7 +59,7 @@ class _AdPageState extends State<AdPage> {
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: AppTheme.primaryGold.withOpacity(0.4),
+                    color: AppTheme.primaryGold.withValues(alpha: 0.4),
                     width: 1.5,
                   ),
                 ),
@@ -146,7 +146,7 @@ class _AdPageState extends State<AdPage> {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            AppTheme.primaryGold.withOpacity(0.2),
+            AppTheme.primaryGold.withValues(alpha: 0.2),
             Colors.transparent,
           ],
         ),
@@ -156,12 +156,12 @@ class _AdPageState extends State<AdPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryGold.withOpacity(0.4),
+            color: AppTheme.primaryGold.withValues(alpha: 0.4),
             blurRadius: 20,
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: AppTheme.primaryGold.withOpacity(0.2),
+            color: AppTheme.primaryGold.withValues(alpha: 0.2),
             blurRadius: 40,
             spreadRadius: 5,
           ),

@@ -1,7 +1,6 @@
 import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
 
 import '../../domain/entities/game_data_entity.dart';
-import '../../domain/entities/user_status_entity.dart';
 import 'user_status_model.dart';
 import 'auction_player_status_model.dart';
 

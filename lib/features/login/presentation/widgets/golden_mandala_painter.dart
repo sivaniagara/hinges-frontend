@@ -47,11 +47,11 @@ class GoldenMandalaPainter extends CustomPainter {
     double s(double v) => v * scale;
 
     Paint dotPaint(double a) => Paint()
-      ..color = goldColor.withOpacity(a * opacity)
+      ..color = goldColor.withValues(alpha: a * opacity)
       ..style = PaintingStyle.fill;
 
     Paint linePaint(double a, double width) => Paint()
-      ..color = goldColor.withOpacity(a * opacity)
+      ..color = goldColor.withValues(alpha: a * opacity)
       ..style = PaintingStyle.stroke
       ..strokeWidth = s(width);
 
@@ -137,8 +137,8 @@ class GoldenMandalaPainter extends CustomPainter {
     final discPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          Color.lerp(goldColor, Colors.white, 0.35)!.withOpacity(opacity),
-          goldColor.withOpacity(opacity),
+          Color.lerp(goldColor, Colors.white, 0.35)!.withValues(alpha: opacity),
+          goldColor.withValues(alpha: opacity),
         ],
       ).createShader(Rect.fromCircle(center: center, radius: centerRadius));
     canvas.drawCircle(center, centerRadius, discPaint);
@@ -147,7 +147,7 @@ class GoldenMandalaPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       s(9),
-      Paint()..color = Colors.white.withOpacity(opacity),
+      Paint()..color = Colors.white.withValues(alpha: opacity),
     );
   }
 

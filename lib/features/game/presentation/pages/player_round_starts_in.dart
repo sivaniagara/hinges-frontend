@@ -1,9 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hinges_frontend/features/home/domain/entities/player_entity.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
@@ -11,7 +8,6 @@ import '../../../../core/utils/so_loud.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
 import '../../domain/entities/auction_player_status_entity.dart';
 import '../bloc/game_bloc.dart';
-import '../widgets/pie_count_down_timer.dart';
 
 class PlayerRoundStartsIn extends StatefulWidget {
   final List<AuctionPlayerStatusEntity> auctionPlayerList;

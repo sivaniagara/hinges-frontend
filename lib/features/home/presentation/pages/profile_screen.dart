@@ -33,7 +33,12 @@ class ProfileScreen extends StatelessWidget {
         backGroundColor: AppTheme.deepNavy,
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: Column(
+        //  body: Column(
+        //    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //    children: [
+        body: Transform.translate(
+          offset: const Offset(0, -10),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               SizedBox(
@@ -64,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
+                   ),
                     Positioned(
                       right: 5,
                       top: 5,
@@ -212,28 +217,47 @@ class ProfileScreen extends StatelessWidget {
                   GoldenChamberCard(image: AppImages.unqualifiedIcon, title: 'DISQUALIFIED', value: userData.disqualified.toString(), color: Color(0xff284441),),
                 ],
               ),
-              StarLine(content: 'ACHIEVEMENTS', fontSize: 14, ),
+              StarLine(
+                content: 'ACHIEVEMENTS',
+                fontSize: 14,
+              ),
               Row(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GoldenChamberCard(image: AppImages.firstPrize, title: 'FIRST PRIZE', value: userData.firstPrice.toString(), color: Colors.black45,),
-                  GoldenChamberCard(image: AppImages.secondPrize, title: 'SECOND PRIZE', value: userData.secondPrice.toString(), color: Colors.black45,),
-                  GoldenChamberCard(image: AppImages.thirdPrize, title: 'THIRD PRIZE', value: userData.thirdPrice.toString(), color: Colors.black45,),
+                  GoldenChamberCard(
+                    image: AppImages.firstPrize,
+                    title: 'FIRST PRIZE',
+                    value: userData.firstPrice.toString(),
+                    color: Colors.black45,
+                  ),
+                  GoldenChamberCard(
+                    image: AppImages.secondPrize,
+                    title: 'SECOND PRIZE',
+                    value: userData.secondPrice.toString(),
+                    color: Colors.black45,
+                  ),
+                  GoldenChamberCard(
+                    image: AppImages.thirdPrize,
+                    title: 'THIRD PRIZE',
+                    value: userData.thirdPrice.toString(),
+                    color: Colors.black45,
+                  ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+              ],
+              ),
+              ),
+              ),
+              ),
+              );
+              }
 
   void showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,

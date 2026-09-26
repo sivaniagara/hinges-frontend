@@ -1,7 +1,6 @@
 import '../../domain/entities/user_data_entity.dart';
 import 'category_and_items_model.dart';
 import 'auction_category_item_model.dart';
-import 'player_model.dart';
 
 class UserDataModel extends UserDataEntity {
   const UserDataModel({

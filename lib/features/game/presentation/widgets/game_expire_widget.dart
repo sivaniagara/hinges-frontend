@@ -83,7 +83,7 @@ class GameExpireWidget extends StatelessWidget {
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                     color: Colors.amber,
-                    backgroundColor: Colors.red.withOpacity(0.8),
+                    backgroundColor: Colors.red.withValues(alpha: 0.8),
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: ConstrainedBox(
@@ -226,9 +226,9 @@ class GameExpireWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.amber.withOpacity(0.5), width: 2),
+          border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -297,7 +297,7 @@ class GameExpireWidget extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) {
         return MultiBlocProvider(
           providers: [
@@ -318,7 +318,7 @@ class GameExpireWidget extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,

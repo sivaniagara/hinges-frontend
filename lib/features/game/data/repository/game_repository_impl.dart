@@ -25,8 +25,8 @@ class GameRepositoryImpl implements GameRepository {
       });
       return Right(result);
     } catch (e, stackTrace) {
-      print("getGameData error : ${e}");
-      print("getGameData stackTrace : ${stackTrace}");
+      print("getGameData error : $e");
+      print("getGameData stackTrace : $stackTrace");
       return Left(ServerFailure(e.toString()));
     }
   }

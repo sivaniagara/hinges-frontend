@@ -18,7 +18,7 @@ class GameRemoteDataSourceImpl implements GameRemoteDataSource {
   Future<GameDataModel> getGameData(Map<String, dynamic> jsonData) async {
     try{
       print("going to get gameData.....");
-      print("jsonData => ${jsonData}");
+      print("jsonData => $jsonData");
       final response = await httpService.post(
           GameUrls.joinMatch,
           body: {

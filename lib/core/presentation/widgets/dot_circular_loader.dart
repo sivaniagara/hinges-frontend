@@ -44,7 +44,7 @@ class _DotCircleLoaderState extends State<DotCircleLoader>
                 width: 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(index / 12),
+                  color: Colors.orange.withValues(alpha: index / 12),
                   shape: BoxShape.circle,
                 ),
               ),

@@ -258,7 +258,7 @@ class _ResultScreenState extends State<ResultScreen> {
           gradient: isTop3
               ? LinearGradient(
             colors: [
-              const Color(0xFFFFD700).withOpacity(0.15),
+              const Color(0xFFFFD700).withValues(alpha: 0.15),
               Colors.transparent,
             ],
           )
@@ -434,9 +434,9 @@ class _ResultScreenState extends State<ResultScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5), width: 1.0),
+        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5), width: 1.0),
         borderRadius: BorderRadius.circular(4),
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

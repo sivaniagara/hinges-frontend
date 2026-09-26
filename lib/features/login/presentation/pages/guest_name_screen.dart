@@ -104,7 +104,7 @@ class _GuestNameScreenState extends State<GuestNameScreen> {
               // Themed Input Field
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(width: 1),
                 ),

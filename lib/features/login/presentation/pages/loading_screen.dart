@@ -193,7 +193,7 @@ class _LoadingScreenState extends State<LoadingScreen>
         color: const Color(0xFF0F5C8F),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFD700).withOpacity(0.25),
+            color: const Color(0xFFFFD700).withValues(alpha: 0.25),
             blurRadius: 8,
             spreadRadius: 0.5,
           ),
@@ -218,7 +218,7 @@ class _LoadingScreenState extends State<LoadingScreen>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFFFD700).withOpacity(0.6),
+                      color: const Color(0xFFFFD700).withValues(alpha: 0.6),
                       blurRadius: 10,
                       spreadRadius: 1.5,
                     ),
@@ -231,7 +231,7 @@ class _LoadingScreenState extends State<LoadingScreen>
             Positioned.fill(
               child: AnimatedBuilder(
                 animation: _pulseController,
-                builder: (_, __) {
+                builder: (_, _) {
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
@@ -264,7 +264,7 @@ class _LoadingScreenState extends State<LoadingScreen>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.white.withOpacity(0.25),
+                      Colors.white.withValues(alpha: 0.25),
                       Colors.transparent,
                     ],
                   ),
@@ -383,12 +383,12 @@ class _TeamRow extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: const Color(0xFF071B33),
                       border: Border.all(
-                        color: const Color(0xFFFFD700).withOpacity(0.85),
+                        color: const Color(0xFFFFD700).withValues(alpha: 0.85),
                         width: 1.2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFFD700).withOpacity(glow),
+                          color: const Color(0xFFFFD700).withValues(alpha: glow),
                           blurRadius: 10,
                           spreadRadius: 0.5,
                         ),
@@ -415,12 +415,12 @@ class _TeamRow extends StatelessWidget {
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
-                          const Color(0xFF071B33).withOpacity(0.85),
-                          const Color(0xFF0F5C8F).withOpacity(0.35),
+                          const Color(0xFF071B33).withValues(alpha: 0.85),
+                          const Color(0xFF0F5C8F).withValues(alpha: 0.35),
                         ],
                       ),
                       border: Border.all(
-                        color: const Color(0xFFFFD700).withOpacity(0.4),
+                        color: const Color(0xFFFFD700).withValues(alpha: 0.4),
                         width: 0.8,
                       ),
                     ),

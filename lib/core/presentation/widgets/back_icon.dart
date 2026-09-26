@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../di/dependency_injection.dart';
 import '../../utils/app_images.dart';
-import '../../utils/app_sounds.dart';
-import '../../utils/audio_manager.dart';
 import '../../utils/so_loud.dart';
 
 

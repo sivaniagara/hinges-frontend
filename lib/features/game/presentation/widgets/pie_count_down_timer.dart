@@ -108,7 +108,7 @@ class _PieTimerPainter extends CustomPainter {
     // is what makes the widget pop against a dark background like
     // 0xFF012255 instead of looking flat / pasted on.
     final glowPaint = Paint()
-      ..color = activeColor.withOpacity(0.45)
+      ..color = activeColor.withValues(alpha: 0.45)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
     canvas.drawCircle(center, innerRadius * 0.95, glowPaint);
 
@@ -163,9 +163,9 @@ class _PieTimerPainter extends CustomPainter {
         endAngle: 2 * math.pi,
         transform: GradientRotation(-math.pi / 2), // align with 12 o'clock
         colors: [
-          activeColor.withOpacity(1.0),
+          activeColor.withValues(alpha: 1.0),
           Color.lerp(activeColor, Colors.white, 0.35)!,
-          activeColor.withOpacity(1.0),
+          activeColor.withValues(alpha: 1.0),
         ],
         stops: const [0.0, 0.5, 1.0],
       );
@@ -199,7 +199,7 @@ class _PieTimerPainter extends CustomPainter {
         center.dy + innerRadius * math.sin(edgeAngle),
       );
       final edgePaint = Paint()
-        ..color = Colors.white.withOpacity(0.5)
+        ..color = Colors.white.withValues(alpha: 0.5)
         ..strokeWidth = 1.5
         ..style = PaintingStyle.stroke;
       canvas.drawLine(center, edgePoint, edgePaint);

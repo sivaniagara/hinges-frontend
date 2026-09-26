@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 // import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../domain/usecase/facebook_sign_in_usecase.dart';
 import '../../domain/usecase/forgot_password_usecase.dart';
 import '../../domain/usecase/google_sign_in_usecase.dart';
 import '../../domain/usecase/guest_sign_in_usecase.dart';

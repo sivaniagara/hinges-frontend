@@ -143,11 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: size.height * 0.15,
                                     ),
                                     StarLine(content: 'CHOOSE YOUR ARENA', fontSize: 18,),
-                                    Image.asset(
-                                      AppImages.goldenCrownLine,
-                                      width: 200,
-                                      height: 20,
-                                    ),
+                                 //  Image.asset(
+                                 //  AppImages.goldenCrownLine,
+                                 //  width: 200,
+                                 //  height: 20,
+                                //    ),
                                   ],
                                 ),
                                 // Image.asset(
@@ -301,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showRewardsDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
+      barrierColor: Colors.black.withValues(alpha: 0.8),
       // NOTE: renamed the builder's parameter to `dialogContext` so it
       // doesn't shadow the outer (HomeScreen State) `context`. The old
       // code reused the name `context` here, then passed *that* shadowed
@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent, // was AppTheme.navyBlue
@@ -612,7 +612,7 @@ class _AuctionCardState extends State<AuctionCard>
                   showDialog(
                     context: context,
                     barrierDismissible: true,
-                    barrierColor: Colors.black.withOpacity(0.7),
+                    barrierColor: Colors.black.withValues(alpha: 0.7),
                     builder: (context) {
                       return Dialog(
                         backgroundColor: AppTheme.navyBlue,
@@ -634,7 +634,7 @@ class _AuctionCardState extends State<AuctionCard>
 
 /// ================= LOCK ICON =================
 class LockIcon extends StatelessWidget {
-  const LockIcon();
+  const LockIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -650,7 +650,7 @@ class InfoIcon extends StatelessWidget {
   final bool isLocked;
   final void Function()? onTap;
 
-  const InfoIcon({
+  const InfoIcon({super.key, 
     required this.isLocked,
     this.onTap,
   });
@@ -678,7 +678,7 @@ class TopActionButton extends StatelessWidget {
   final double iconSize;
   final VoidCallback? onTap;
 
-  const TopActionButton({
+  const TopActionButton({super.key, 
     required this.icon,
     required this.title,
     required this.iconSize,
@@ -713,7 +713,7 @@ class BottomButton extends StatelessWidget {
   final double opacity;
   final void Function()? onTap;
 
-  const BottomButton({
+  const BottomButton({super.key, 
     required this.icon,
     required this.title,
     required this.onTap,
@@ -749,7 +749,7 @@ class GameLoadingOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black.withOpacity(0.6),
+      color: Colors.black.withValues(alpha: 0.6),
       child: const Center(
         child: CircularProgressIndicator(color: Colors.amber),
       ),
@@ -772,7 +772,7 @@ class GameErrorOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       child: Container(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withValues(alpha: 0.7),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

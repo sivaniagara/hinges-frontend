@@ -5,16 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
-import '../../../../core/utils/app_sounds.dart';
-import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../login/presentation/widgets/mandala_background.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
-import '../widgets/app_background.dart';
 
 class RuleBookScreen extends StatelessWidget {
   const RuleBookScreen({super.key});
@@ -239,48 +235,37 @@ class _RuleCardState extends State<RuleCard>
               const SizedBox(width: 10),
 
               /// 🔹 TEXT
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.title1,
-                          style: GoogleFonts.rajdhani(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          ' ${widget.title2}',
-                          style: GoogleFonts.rajdhani(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
+            Expanded(
+              child: Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+               //NEW
+                 Text(
+                    '${widget.title1} ${widget.title2}',
+                    maxLines: 1,
+                    softWrap: false,
+                    style: GoogleFonts.rajdhani(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(
-                      "RULE BOOK",
-                      style: GoogleFonts.rajdhani(
-                          color: AppTheme.borderGold,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              /// 🔹 LOCK ICON
+                  ),
+                   Text(
+                     "RULE BOOK",
+                     style: GoogleFonts.rajdhani(
+                       color: AppTheme.borderGold,
+                       fontSize: 10,
+                       fontWeight: FontWeight.bold,
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+                  /// 🔹 LOCK ICON
               if (widget.isLocked)
                 Padding(
-                  padding: const EdgeInsets.only(right: 6),
+                  padding: const EdgeInsets.only(right: 12),
                   child: Icon(
                     Icons.lock,
                     color: AppTheme.borderGold,
@@ -289,11 +274,11 @@ class _RuleCardState extends State<RuleCard>
                 ),
 
               /// 🔹 ARROW
-              Icon(
-                Icons.arrow_forward_ios,
-                color: AppTheme.borderGold,
-                size: 16,
-              ),
+          //    Icon(
+          //      Icons.arrow_forward_ios,
+           //     color: AppTheme.borderGold,
+           //     size: 16,
+          //    ),
             ],
           ),
         ),

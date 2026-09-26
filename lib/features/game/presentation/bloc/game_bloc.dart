@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,7 +7,6 @@ import '../../../../core/usecase/usecase.dart';
 import '../../../../core/utils/app_ids.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../home/domain/entities/category_and_items_entity.dart';
-import '../../../home/domain/entities/player_entity.dart';
 import '../../../mini_auction/presentation/enums/mini_auction_franchise_enum.dart';
 import '../../data/models/game_data_model.dart';
 import '../../domain/entities/auction_player_status_entity.dart';

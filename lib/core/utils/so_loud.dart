@@ -9,6 +9,9 @@ AudioSource? welcome;
 AudioSource? playSold;
 AudioSource? playUnSold;
 AudioSource? hammerSound;
+AudioSource? roundBreakSound;
+AudioSource? auctionStarts30Sound;
+
 
 bool _isSoundEnabled = true;
 bool _isVibrationEnabled = true;
@@ -45,6 +48,15 @@ Future<void> initSoLoud() async {
     AppSounds.hammer,
     mode: LoadMode.memory,
   );
+  roundBreakSound = await soloud.loadAsset(
+  'assets/audio/Round Break.mp3',
+  mode: LoadMode.memory,
+);
+auctionStarts30Sound = await soloud.loadAsset(
+  'assets/audio/Auction Starts In 30 Seconds.mp3',
+  mode: LoadMode.memory,
+);
+
 
   final List<String> roundSoundPaths = [
     AppSounds.round1,
@@ -127,6 +139,16 @@ void playHammerAudio() {
   if (hammerSound == null) return;
   soloud.play(hammerSound!, volume: 1.0, paused: false);
 }
+void playAuctionStarts30Audio() {
+  if (!_isSoundEnabled) return;
+  if (auctionStarts30Sound == null) return;
+
+  soloud.play(
+    auctionStarts30Sound!,
+    volume: 1.0,
+    paused: false,
+  );
+}
 
 void playRoundAudio(int round) {
   if (!_isSoundEnabled) return;
@@ -135,7 +157,16 @@ void playRoundAudio(int round) {
   if (source == null) return;
   soloud.play(source, volume: 1.0, paused: false);
 }
+void playRoundBreakAudio() {
+  if (!_isSoundEnabled) return;
+  if (roundBreakSound == null) return;
 
+  soloud.play(
+    roundBreakSound!,
+    volume: 1.0,
+    paused: false,
+  );
+}
 /// Plays instruction_[index+1].mp3 (0-based index).
 /// Calls [onComplete] when playback finishes.
 Future<void> playInstruction(

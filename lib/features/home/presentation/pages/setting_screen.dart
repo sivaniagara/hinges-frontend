@@ -6,16 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
-import '../../../../core/utils/app_sounds.dart';
-import '../../../../core/utils/audio_manager.dart';
 import '../../../../core/utils/so_loud.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../../domain/entities/user_data_entity.dart';
-import '../widgets/app_background.dart';
 
 class SettingScreen extends StatefulWidget {
   final UserDataEntity userData;
@@ -120,8 +116,8 @@ class _SettingScreenState extends State<SettingScreen> {
               const SizedBox(height: 10),
               // Main Settings Box
               Container(
-                padding: EdgeInsets.all(20),
-                width: size.width * 0.8,
+                padding: EdgeInsets.all(12),
+                width: size.width * 0.80,
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(30),
@@ -225,7 +221,7 @@ class _SettingScreenState extends State<SettingScreen> {
               title,
               style: GoogleFonts.rajdhani(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -271,7 +267,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             style: GoogleFonts.rajdhani(
                               color: isActive ? Colors.black : Colors.white38,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -335,9 +331,9 @@ class _SettingScreenState extends State<SettingScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 45,
-        width: 500,
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        height: 38,
+        width: 440,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
             color: Colors.black,
             image: DecorationImage(
@@ -353,7 +349,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 title,
                 style: GoogleFonts.rajdhani(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),

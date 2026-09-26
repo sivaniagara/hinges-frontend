@@ -161,9 +161,9 @@ class PlayersScreen extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: const Color(0xFF00AFFF).withOpacity(0.3), width: 1),
+                        border: Border.all(color: const Color(0xFF00AFFF).withValues(alpha: 0.3), width: 1),
                       ),
                       child: Column(
                         children: [
@@ -278,7 +278,7 @@ class PlayersScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         border: const Border(bottom: BorderSide(color: Color(0xFF00AFFF), width: 1)),
       ),
       child: Row(
@@ -323,8 +323,8 @@ class PlayersScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: isOdd ? Colors.white.withOpacity(0.02) : Colors.transparent,
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 0.5)),
+        color: isOdd ? Colors.white.withValues(alpha: 0.02) : Colors.transparent,
+        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 0.5)),
       ),
       child: Row(
         children: [

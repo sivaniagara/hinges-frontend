@@ -372,7 +372,7 @@ class _GameScreenState extends State<GameScreen> {
         borderRadius: BorderRadius.circular(20),
       ),
       width: double.infinity,
-      height: 100,
+      height: 94,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -453,28 +453,42 @@ class _GameScreenState extends State<GameScreen> {
       title = 'SOLD PRICE';
     }
     return SizedBox(
-      width: 200,
+      width: 120,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title,
-              style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold))),
+          //Text(title,
+          //    style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 11,
+          Transform.translate(
+            offset: const Offset(0, -4),
+            child: Text(
+              title,
+              style: GoogleFonts.rajdhani(
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+           mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Image.asset(AppImages.shockWaves, width: 50, height: 20),
+              Image.asset(AppImages.shockWaves, width: 25, height: 18),
               SizedBox(
-                width: 100,
+                width: 65,
                 child: Center(
                   child: Text(
                     context.read<GameBloc>().formatPriceShort(
                         state.gameData.auctionPlayersStatusList[state.gameData.currentAuctionPlayerIndex].currentPrice.toDouble()
                     ),
-                    style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 25, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
+                    style: GoogleFonts.rajdhani(textStyle: const TextStyle(fontSize: 18, color: AppTheme.borderGold, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),
-              Image.asset(AppImages.shockWaves, width: 50, height: 20),
+              Image.asset(AppImages.shockWaves, width: 25, height: 18),
             ],
           )
         ],
@@ -576,7 +590,7 @@ class _GameScreenState extends State<GameScreen> {
                   boxShadow: glow
                       ? [
                     BoxShadow(
-                      color: AppTheme.borderGold.withOpacity(0.9),
+                      color: AppTheme.borderGold.withValues(alpha: 0.9),
                       blurRadius: 20,
                       spreadRadius: 4,
                     )
@@ -668,7 +682,7 @@ class _GameScreenState extends State<GameScreen> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.amber.withOpacity(0.5), width: 2),
+          border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -915,7 +929,7 @@ class _GameScreenState extends State<GameScreen> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) {
         return MultiBlocProvider(
           providers: [
@@ -967,9 +981,9 @@ class _GameScreenState extends State<GameScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(t1, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(t1, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
                 if(t2 != null)
-                  Text(t2, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(t2, maxLines: 1, style: GoogleFonts.rajdhani(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
               ],
             ),
           ],
@@ -1252,8 +1266,8 @@ class _GlowAuctioneerState extends State<_GlowAuctioneer>
             return Image.asset(
               // showAnnounceSoldGif() ? AppImages.announceSold :
               AppImages.welcomeAuctioner,
-              width: 100,
-              height: 100,
+              width: 90,
+              height: 90,
               fit: BoxFit.fitHeight,
             );
           },

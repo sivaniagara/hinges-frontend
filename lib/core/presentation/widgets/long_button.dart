@@ -64,7 +64,7 @@ class LongButton extends StatelessWidget {
                     Shadow(
                       offset: const Offset(0, 6),
                       blurRadius: 8,
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                     ),
                   ],
                 ),

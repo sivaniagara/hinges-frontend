@@ -14,7 +14,7 @@ void showLoadingDialog(BuildContext context, {String message = "Loading..."}) {
   showDialog(
     context: context,
     barrierDismissible: false,
-    barrierColor: Colors.black.withOpacity(0.7), // 🔥 dark overlay
+    barrierColor: Colors.black.withValues(alpha: 0.7), // 🔥 dark overlay
     builder: (BuildContext context) {
       return PopScope(
         canPop: false,
@@ -73,16 +73,16 @@ class _GamingLoaderState extends State<_GamingLoader>
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 35),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.black.withOpacity(0.6),
+          color: Colors.black.withValues(alpha: 0.6),
 
           border: Border.all(
-            color: Colors.amber.withOpacity(0.6),
+            color: Colors.amber.withValues(alpha: 0.6),
             width: 1.5,
           ),
 
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withValues(alpha: 0.8),
               blurRadius: 40,
             )
           ],
@@ -103,7 +103,7 @@ class _GamingLoaderState extends State<_GamingLoader>
                   /// ROTATING RING
                   AnimatedBuilder(
                     animation: _rotation,
-                    builder: (_, __) {
+                    builder: (_, _) {
                       return Transform.rotate(
                         angle: _rotation.value * 2 * Math.pi,
                         child: Container(
@@ -122,7 +122,7 @@ class _GamingLoaderState extends State<_GamingLoader>
                   /// INNER PULSE GLOW
                   AnimatedBuilder(
                     animation: _pulse,
-                    builder: (_, __) {
+                    builder: (_, _) {
                       double scale = 0.9 + (_pulse.value * 0.2);
 
                       return Transform.scale(
@@ -132,7 +132,7 @@ class _GamingLoaderState extends State<_GamingLoader>
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.amber.withOpacity(0.4),
+                                color: Colors.amber.withValues(alpha: 0.4),
                                 blurRadius: 25,
                                 spreadRadius: 5,
                               )
@@ -155,7 +155,7 @@ class _GamingLoaderState extends State<_GamingLoader>
             /// ⚡ LOADING TEXT (PULSE)
             AnimatedBuilder(
               animation: _pulse,
-              builder: (_, __) {
+              builder: (_, _) {
                 return Opacity(
                   opacity: 0.6 + (_pulse.value * 0.4),
                   child: Text(
@@ -200,7 +200,7 @@ void showMessageDialog({
 }) {
   showDialog(
     context: context,
-    barrierColor: Colors.black.withOpacity(0.7),
+    barrierColor: Colors.black.withValues(alpha: 0.7),
     builder: (BuildContext context) {
       return Dialog(
         backgroundColor: Colors.transparent,
@@ -261,16 +261,16 @@ class _GamingMessageDialogState extends State<_GamingMessageDialog>
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.black.withOpacity(0.65),
+          color: Colors.black.withValues(alpha: 0.65),
 
           border: Border.all(
-            color: Colors.amber.withOpacity(0.6),
+            color: Colors.amber.withValues(alpha: 0.6),
             width: 1.5,
           ),
 
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.9),
+              color: Colors.black.withValues(alpha: 0.9),
               blurRadius: 40,
             )
           ],
@@ -283,7 +283,7 @@ class _GamingMessageDialogState extends State<_GamingMessageDialog>
             /// 🔥 ICON WITH GLOW
             AnimatedBuilder(
               animation: _pulse,
-              builder: (_, __) {
+              builder: (_, _) {
                 double scale = 1 + (_pulse.value * 0.1);
 
                 return Transform.scale(
@@ -295,7 +295,7 @@ class _GamingMessageDialogState extends State<_GamingMessageDialog>
                       boxShadow: [
                         BoxShadow(
                           color: (widget.icon.color ?? Colors.amber)
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                           blurRadius: 25,
                           spreadRadius: 5,
                         )
@@ -372,7 +372,7 @@ class _GamingMessageDialogState extends State<_GamingMessageDialog>
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.amber.withOpacity(0.4),
+              color: Colors.amber.withValues(alpha: 0.4),
               blurRadius: 15,
             )
           ],
@@ -421,10 +421,10 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-            border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1.5),
+            border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 blurRadius: 30,
                 offset: const Offset(0, -6),
               ),
@@ -443,7 +443,7 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
                     height: 4,
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.4),
+                      color: Colors.amber.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -474,7 +474,7 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: Colors.amber.withOpacity(0.5),
+                        color: Colors.amber.withValues(alpha: 0.5),
                         width: 1.2,
                       ),
                     ),
@@ -553,7 +553,7 @@ void showGuestNameBottomSheet(BuildContext context, {required Function(String) o
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.amber.withOpacity(0.4),
+                              color: Colors.amber.withValues(alpha: 0.4),
                               blurRadius: 12,
                             ),
                           ],
@@ -585,7 +585,7 @@ void showGameInfoDialog(BuildContext context, {required String message}) {
     context: context,
     barrierDismissible: true,
     barrierLabel: "Game Info",
-    barrierColor: Colors.black.withOpacity(0.6),
+    barrierColor: Colors.black.withValues(alpha: 0.6),
     transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (context, animation, secondaryAnimation) {
       return Center(
@@ -622,7 +622,7 @@ class _GameInfoDialog extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

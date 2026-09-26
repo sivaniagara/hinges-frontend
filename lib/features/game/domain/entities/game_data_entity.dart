@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:hinges_frontend/features/game/presentation/pages/game_screen.dart';
-import '../../data/models/auction_player_status_model.dart';
-import '../../data/models/user_status_model.dart';
 import 'user_status_entity.dart';
 import 'auction_player_status_entity.dart';
 
