@@ -9,7 +9,6 @@ import '../../../../core/utils/dialog_box_and_bottom_sheet_utils.dart';
 import '../../../../core/utils/text_field_requirements.dart';
 import '../bloc/user_auth_bloc.dart';
 import '../widgets/custom_text_field.dart';
-import 'email_auth_screen.dart';
 import 'package:flutter/gestures.dart';
 
 class SignUpScreen extends StatefulWidget {

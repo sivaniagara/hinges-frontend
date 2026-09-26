@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/core/utils/so_loud.dart';
-import 'package:hinges_frontend/features/game/domain/entities/game_data_entity.dart';
 import 'package:hinges_frontend/features/game/presentation/bloc/game_bloc.dart';
 
 import '../../../../core/theme/app_theme.dart';

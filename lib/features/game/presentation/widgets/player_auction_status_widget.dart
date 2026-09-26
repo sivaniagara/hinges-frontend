@@ -99,7 +99,7 @@ class PlayerAuctionStatusWidget extends StatelessWidget {
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
+                  errorBuilder: (_, _, _) =>
                   const Icon(Icons.person, size: 70),
                 );
               },

@@ -4,7 +4,7 @@ class ChatBubble extends StatefulWidget {
   final String message;
   final VoidCallback onDone;
 
-  const ChatBubble({
+  const ChatBubble({super.key, 
     required this.message,
     required this.onDone,
   });

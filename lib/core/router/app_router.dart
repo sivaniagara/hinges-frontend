@@ -199,7 +199,7 @@ final router = GoRouter(
             // ✅ Only trigger FetchGameData when entering /game root
             if (state.uri.toString().startsWith('/game')) {
               final extra = state.extra as Map<String, dynamic>?;
-              print("extra : ${extra}");
+              print("extra : $extra");
               if (extra != null) {
                 bloc.add(
                   FetchGameData(

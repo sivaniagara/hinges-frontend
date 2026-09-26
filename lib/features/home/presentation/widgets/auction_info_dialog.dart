@@ -153,7 +153,7 @@ class AuctionInfoDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 26), // was 40
             child: Divider(
-              color: AppTheme.borderGold.withOpacity(0.3),
+              color: AppTheme.borderGold.withValues(alpha: 0.3),
               thickness: 1,
               height: 1,
             ),

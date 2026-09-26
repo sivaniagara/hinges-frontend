@@ -259,8 +259,8 @@ class _MandalaBackgroundState extends State<MandalaBackground>
         child: CustomPaint(
           size: Size(particle.size * 2, particle.size * 2),
           painter: StarPainter(
-            color: const Color(0xFFFFD700).withOpacity(
-              (particle.opacity * clampedFade + 0.5).clamp(0.0, 1.0),
+            color: const Color(0xFFFFD700).withValues(
+              alpha: (particle.opacity * clampedFade + 0.5).clamp(0.0, 1.0),
             ),
           ),
         ),

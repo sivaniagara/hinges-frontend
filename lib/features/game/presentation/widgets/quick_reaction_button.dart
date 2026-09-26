@@ -71,7 +71,7 @@ class _QuickReactionButtonState extends State<QuickReactionButton> {
                   border: Border.all(color: Colors.greenAccent),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.greenAccent.withOpacity(0.4),
+                      color: Colors.greenAccent.withValues(alpha: 0.4),
                       blurRadius: 10,
                     )
                   ],

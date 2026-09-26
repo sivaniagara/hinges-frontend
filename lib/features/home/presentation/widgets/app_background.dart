@@ -20,7 +20,7 @@ class AppBackground extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: MandalaBackground(animateContent: animateContent,child: child, showParticle: showParticle,),
+      child: MandalaBackground(animateContent: animateContent, showParticle: showParticle,child: child,),
     );
   }
 }

@@ -67,9 +67,9 @@ class PointsTableScreen extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5), width: 1.5),
+                        border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5), width: 1.5),
                       ),
                       child: Column(
                         children: [
@@ -145,8 +145,8 @@ class PointsTableScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: isOdd ? Colors.white.withOpacity(0.02) : Colors.transparent,
-        border: Border(bottom: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.1), width: 1)),
+        color: isOdd ? Colors.white.withValues(alpha: 0.02) : Colors.transparent,
+        border: Border(bottom: BorderSide(color: const Color(0xFFD4AF37).withValues(alpha: 0.1), width: 1)),
       ),
       child: Row(
         children: [

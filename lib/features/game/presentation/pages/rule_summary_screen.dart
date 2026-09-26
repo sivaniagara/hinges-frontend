@@ -86,10 +86,10 @@ class RuleSummaryScreen extends StatelessWidget {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color(0xFFD4AF37).withOpacity(0.5),
+                      color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
                       width: 1.5,
                     ),
                   ),
@@ -123,7 +123,7 @@ class RuleSummaryScreen extends StatelessWidget {
               Text(
                 'MINI AUCTION LITE - OFFICIAL RULE BOOK',
                 style: GoogleFonts.rajdhani(
-                  color: AppTheme.borderGold.withOpacity(0.7),
+                  color: AppTheme.borderGold.withValues(alpha: 0.7),
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -180,10 +180,10 @@ class RuleSummaryScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
       decoration: BoxDecoration(
-        color: isOdd ? Colors.white.withOpacity(0.02) : Colors.transparent,
+        color: isOdd ? Colors.white.withValues(alpha: 0.02) : Colors.transparent,
         border: Border(
           bottom: BorderSide(
-            color: const Color(0xFFD4AF37).withOpacity(0.1),
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -198,7 +198,7 @@ class RuleSummaryScreen extends StatelessWidget {
               style: GoogleFonts.rajdhani(
                 fontSize: 12.5,
                 fontWeight: FontWeight.bold,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 height: 1.15,
               ),
             ),
@@ -210,7 +210,7 @@ class RuleSummaryScreen extends StatelessWidget {
               style: GoogleFonts.rajdhani(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFFFFD700).withOpacity(0.8),
+                color: const Color(0xFFFFD700).withValues(alpha: 0.8),
                 height: 1.15,
               ),
             ),

@@ -472,7 +472,7 @@ class _SimpleCopyToastState extends State<_SimpleCopyToast> {
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Colors.amber,

@@ -380,12 +380,9 @@ class _RuleBookScreenState extends State<MiniAuctionLiteRuleBookScreen> {
                       child: Container(
                         key: _viewportKey,
                         child: ListView(
+                         cacheExtent: 8000,
                           controller: _scrollController,
                           padding: const EdgeInsets.fromLTRB(10, 2, 16, 24),
-                          // Large cacheExtent keeps every section's RenderBox laid out even
-                          // when far off-screen, so tapping a page tab can always find and
-                          // animate-scroll to it (not just the sections currently nearby).
-                          cacheExtent: 8000,
                           children: [
                             for (int i = 0; i < _categories.length; i++)
                               _CategorySection(
@@ -473,8 +470,8 @@ class _OrnamentDivider extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: leadTransparent
-                ? [Colors.transparent, AppTheme.borderGold.withOpacity(0.7)]
-                : [AppTheme.borderGold.withOpacity(0.7), Colors.transparent],
+                ? [Colors.transparent, AppTheme.borderGold.withValues(alpha: 0.7)]
+                : [AppTheme.borderGold.withValues(alpha: 0.7), Colors.transparent],
           ),
         ),
       ),
@@ -492,7 +489,7 @@ class _OrnamentDivider extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(colors: [Color(0xFFFDE08D), Color(0xFFFFD700)]),
-              boxShadow: [BoxShadow(color: AppTheme.borderGold.withOpacity(0.6), blurRadius: 6, spreadRadius: 1)],
+              boxShadow: [BoxShadow(color: AppTheme.borderGold.withValues(alpha: 0.6), blurRadius: 6, spreadRadius: 1)],
             ),
           ),
           const SizedBox(width: 8),
@@ -542,7 +539,7 @@ class _CategoryRail extends StatelessWidget {
                     height: 20,
                     margin: const EdgeInsets.symmetric(vertical: 3),
                     decoration: BoxDecoration(
-                      color: (i < activeIndex ? AppTheme.borderGold : Colors.white24).withOpacity(0.55),
+                      color: (i < activeIndex ? AppTheme.borderGold : Colors.white24).withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
@@ -581,20 +578,20 @@ class _RailTab extends StatelessWidget {
           shape: BoxShape.circle,
           gradient: active
               ? const LinearGradient(colors: [Color(0xFFFDE08D), Color(0xFFFDC830)])
-              : LinearGradient(colors: [Colors.white.withOpacity(0.06), Colors.white.withOpacity(0.03)]),
+              : LinearGradient(colors: [Colors.white.withValues(alpha: 0.06), Colors.white.withValues(alpha: 0.03)]),
           border: Border.all(
-            color: active ? AppTheme.borderGold.withOpacity(0.9) : category.accent.withOpacity(0.45),
+            color: active ? AppTheme.borderGold.withValues(alpha: 0.9) : category.accent.withValues(alpha: 0.45),
             width: active ? 1.4 : 1,
           ),
           boxShadow: active
-              ? [BoxShadow(color: AppTheme.borderGold.withOpacity(0.5), blurRadius: 12, spreadRadius: 0.5)]
+              ? [BoxShadow(color: AppTheme.borderGold.withValues(alpha: 0.5), blurRadius: 12, spreadRadius: 0.5)]
               : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(category.icon, size: 14, color: active ? Colors.black : category.accent.withOpacity(0.9)),
+            Icon(category.icon, size: 14, color: active ? Colors.black : category.accent.withValues(alpha: 0.9)),
             const SizedBox(height: 1),
             Text(
               'P${index + 1}',
@@ -684,8 +681,7 @@ class _Glass extends StatelessWidget {
     this.opacity = 0.08,
     this.borderOpacity = 0.18,
     this.padding = EdgeInsets.zero,
-    this.tint,
-  });
+  }) : tint = null;
 
   @override
   Widget build(BuildContext context) {
@@ -697,9 +693,9 @@ class _Glass extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: base.withOpacity(opacity),
+            color: base.withValues(alpha: opacity),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: (tint ?? AppTheme.borderGold).withOpacity(borderOpacity), width: 1),
+            border: Border.all(color: (tint ?? AppTheme.borderGold).withValues(alpha: borderOpacity), width: 1),
           ),
           child: child,
         ),
@@ -789,7 +785,7 @@ class _RuleCard extends StatelessWidget {
               Positioned(
                 right: -6,
                 top: -6,
-                child: Icon(section.icon, size: 54, color: accent.withOpacity(0.07)),
+                child: Icon(section.icon, size: 54, color: accent.withValues(alpha: 0.07)),
               ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -806,9 +802,9 @@ class _RuleCard extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [accent, accent.withOpacity(0.75)],
+                          colors: [accent, accent.withValues(alpha: 0.75)],
                         ),
-                        boxShadow: [BoxShadow(color: accent.withOpacity(0.45), blurRadius: 8, spreadRadius: 0.5)],
+                        boxShadow: [BoxShadow(color: accent.withValues(alpha: 0.45), blurRadius: 8, spreadRadius: 0.5)],
                       ),
                       child: Text(
                         section.number,
@@ -834,7 +830,7 @@ class _RuleCard extends StatelessWidget {
                   Container(
                     height: 1,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [accent.withOpacity(0.35), Colors.transparent]),
+                      gradient: LinearGradient(colors: [accent.withValues(alpha: 0.35), Colors.transparent]),
                     ),
                   ),
                   const SizedBox(height: 9),
@@ -934,9 +930,9 @@ class _StatTileView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: tile.highlight ? accent.withOpacity(0.5) : Colors.white.withOpacity(0.08)),
+        border: Border.all(color: tile.highlight ? accent.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.08)),
       ),
       child: Column(
         children: [
@@ -965,16 +961,16 @@ class _RuleTableView extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.10)),
-        color: Colors.white.withOpacity(0.03),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        color: Colors.white.withValues(alpha: 0.03),
       ),
       clipBehavior: Clip.antiAlias,
       child: Table(
-        border: TableBorder(horizontalInside: BorderSide(color: Colors.white.withOpacity(0.07))),
+        border: TableBorder(horizontalInside: BorderSide(color: Colors.white.withValues(alpha: 0.07))),
         columnWidths: table.headers.length == 2 ? const {0: FlexColumnWidth(1.4), 1: FlexColumnWidth(1)} : null,
         children: [
           TableRow(
-            decoration: BoxDecoration(color: accent.withOpacity(0.14)),
+            decoration: BoxDecoration(color: accent.withValues(alpha: 0.14)),
             children: [
               for (final h in table.headers)
                 Padding(
@@ -995,7 +991,7 @@ class _RuleTableView extends StatelessWidget {
                     child: Text(
                       table.rows[i][j],
                       style: GoogleFonts.rajdhani(
-                        color: table.highlightLastColumn && j == lastIndex ? accent : Colors.white.withOpacity(0.86),
+                        color: table.highlightLastColumn && j == lastIndex ? accent : Colors.white.withValues(alpha: 0.86),
                         fontSize: 11.5,
                         fontWeight: table.highlightLastColumn && j == lastIndex ? FontWeight.w800 : FontWeight.w600,
                       ),
@@ -1022,9 +1018,9 @@ class _Footnote extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
       decoration: BoxDecoration(
-        color: emphasize ? const Color(0xFFFF6F6B).withOpacity(0.10) : Colors.white.withOpacity(0.03),
+        color: emphasize ? const Color(0xFFFF6F6B).withValues(alpha: 0.10) : Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: emphasize ? const Color(0xFFFF6F6B).withOpacity(0.35) : Colors.white.withOpacity(0.08)),
+        border: Border.all(color: emphasize ? const Color(0xFFFF6F6B).withValues(alpha: 0.35) : Colors.white.withValues(alpha: 0.08)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1064,7 +1060,7 @@ class _RuleNote extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       child: Column(
         children: [
-          Icon(Icons.auto_awesome, size: 15, color: accent.withOpacity(0.7)),
+          Icon(Icons.auto_awesome, size: 15, color: accent.withValues(alpha: 0.7)),
           const SizedBox(height: 7),
           Text(
             text,

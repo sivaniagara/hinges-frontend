@@ -7,10 +7,10 @@ class AdaptiveStatusBar extends StatelessWidget {
   final Widget child;
 
   const AdaptiveStatusBar({
-    Key? key,
+    super.key,
     required this.color,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

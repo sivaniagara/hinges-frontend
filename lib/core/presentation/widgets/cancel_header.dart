@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hinges_frontend/core/utils/app_images.dart';
 
-import '../../di/dependency_injection.dart';
-import '../../utils/app_sounds.dart';
-import '../../utils/audio_manager.dart';
 import '../../utils/so_loud.dart';
 
 class CancelHeader extends StatelessWidget {

@@ -6,16 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hinges_frontend/features/login/presentation/widgets/mandala_background.dart';
 
-import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/presentation/widgets/adaptive_status_bar.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_images.dart';
-import '../../../../core/utils/app_sounds.dart';
-import '../../../../core/utils/audio_manager.dart';
-import '../../../../core/utils/so_loud.dart';
 import '../../../login/presentation/widgets/shared_decorations.dart';
 import '../../domain/entities/user_data_entity.dart';
-import '../widgets/app_background.dart';
 
 class ShopScreen extends StatelessWidget {
   final UserDataEntity userData;
@@ -87,7 +82,7 @@ class ShopScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: size.width * 0.8,
+                width: size.width * 0.7,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -115,7 +110,7 @@ class ShopScreen extends StatelessWidget {
                     // 3. Actual content, padded inward from the edges
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(12),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -203,7 +198,7 @@ class ShopScreen extends StatelessWidget {
                       'Rs. ',
                       style: GoogleFonts.rajdhani(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -211,7 +206,7 @@ class ShopScreen extends StatelessWidget {
                       price,
                       style: GoogleFonts.rajdhani(
                         color: AppTheme.borderGold,
-                        fontSize: 26,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -363,7 +358,7 @@ class _ShopItemCardState extends State<ShopItemCard>
                           'Rs. ',
                           style: GoogleFonts.rajdhani(
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -371,7 +366,7 @@ class _ShopItemCardState extends State<ShopItemCard>
                           widget.price,
                           style: GoogleFonts.rajdhani(
                             color: AppTheme.borderGold,
-                            fontSize: 26,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -403,7 +398,7 @@ class _ShopItemCardState extends State<ShopItemCard>
                       widget.coins,
                       style: GoogleFonts.rajdhani(
                         color: AppTheme.borderGold,
-                        fontSize: 26,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

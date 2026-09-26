@@ -6,7 +6,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'core/di/dependency_injection.dart' as di;
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'core/utils/warm_up_sound.dart';
 import 'features/ads/bloc/ad_bloc.dart';
 import 'features/ads/bloc/ad_event.dart';
 import 'features/home/presentation/bloc/home_bloc.dart';
